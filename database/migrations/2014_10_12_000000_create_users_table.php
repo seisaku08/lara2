@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('user_tel')->nullable()->comment('電話番号');
+            $table->string('user_group')->nullable()->comment('所属部署・グループ');
+            $table->tinyInteger('role')->default(0)->index('index_role')->comment('ロール');
             $table->rememberToken();
             $table->timestamps();
         });

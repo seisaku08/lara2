@@ -1,0 +1,96 @@
+@charset "utf-8";
+/* CSS Document */
+
+body{
+    background-color: #FFFBDC;
+}
+
+h1{
+    text-align: center;
+}
+
+p{
+    text-align: center;
+}
+
+table#form, table#kizai, table#kizai2{
+    margin: auto;
+    width: 100% ;
+    max-width: 800px;
+
+}
+tr{
+    padding: 10px 0px;
+}
+tr{
+    background-color: #E3E3E3;
+}
+tr.midashi{
+    background-color: #BFBFBF;
+}
+th{
+    padding: 5px 0px;
+    font-size: larger;
+}
+table, td{
+    padding: 2px 10px;
+    box-sizing: border-box;
+}
+td{
+    float: left;
+}
+td.left{
+    width: 20%;
+}
+
+td.right{
+    width: 80%;
+}
+
+td.kizai-right{
+    width: 70%;
+}
+
+td.kizai-left{
+    width: 30%;
+}
+
+td.right-half{
+    width: 30%;
+}
+
+input[type="text"]{
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input#zip{
+    width: 90px;
+    box-sizing: border-box;
+}
+
+select.kizai{
+    width: 100%;
+}
+
+@media (max-width: 768px){
+
+td.left,td.right,td.right-half{
+    width: 100%;
+    padding: 0px 10px;
+}
+tr td:nth-child(2n+1){
+    padding-top: 5px;
+}
+tr td:nth-child(2n){
+    padding-bottom: 5px;
+}
+td.kizai-right{
+    padding: 2px 10px!important;
+}
+
+td.kizai-left{
+    padding: 2px 10px!important;
+}
+
+}
