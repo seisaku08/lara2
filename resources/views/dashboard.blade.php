@@ -28,7 +28,7 @@
                 <td class="kizai-right">セミナー名</td>
             </tr>
         @if(isset($orders))
-        <?php dump($orders);?>
+        {{-- <?php dump($orders);?> --}}
             @foreach($orders as $order)
                 <tr>
                     <td class="kizai-left">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
