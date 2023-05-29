@@ -29,7 +29,7 @@ class ConfirmController extends Controller
                 'venue_name' => 'required',
                 'venue_tel' => 'required|digits_between:5,11',
                 'shipping_arrive_day' => 'required|before:seminar_day|after:today',
-                'shipping_return_day' => 'required|after:shipping_arrive_day',
+                'shipping_return_day' => 'required|after:shipping_arrive_day|before:order_use_to',
             ];
 
         $massages = [

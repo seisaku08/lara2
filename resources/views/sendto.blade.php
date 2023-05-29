@@ -101,8 +101,8 @@
                 <th colspan="5">選択機材情報</th>
             </tr>
             <tr>
-                <td>From:{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from) }}{{ old('order_use_from') }}</td>
-                <td>To:{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</td>
+                <td>使用開始日:{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from) }}{{ old('order_use_from') }}</td>
+                <td>使用終了日:{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</td>
             </tr>
 
             <tr>
