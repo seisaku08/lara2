@@ -45,6 +45,7 @@ class ConfirmController extends Controller
                 'shipping_arrive_day.after' => '到着希望日時は本日より後の日付を入力してください。',
                 'shipping_return_day.required' => '返送予定日は必ず入力してください。',
                 'shipping_return_day.after' => '返送予定日は到着希望日より後の日付を入力してください。',
+                'shipping_return_day.before' => '返送予定日は使用終了日より前の日付を入力してください。',
                
             ];
 
