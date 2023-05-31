@@ -159,9 +159,23 @@ class CartController extends Controller
         // return redirect()->route('cart.index');
     }
 
-    public function delCart(Request $request,)
+    public function delCart(Request $request)
     {
-        dd($request);
+        //セッションからカートデータを取り出し、消去
+        $sessionCartData = $request->session()->get('Session.CartData');
+        $request->session()->forget('Session.Cartdata');
+
+        //削除対象を取り出したカートデータから削除する
+        $removed = array_diff($sessionCartData, [$request->machine_id]);
+
+        //temporariesテーブルから削除対象の仮登録分を削除する
+        Temporary::where('machine_id',$request->machine_id)->delete(); 
+        
+        //削除済みの新カートデータをセッションに保存
+        $request->session()->put('Session.CartData', $removed);
+
+        // dd($request, $sessionCartData, $removed, $request->session()->get('Session.CartData'));
+        return redirect()->route('cart.index');
     }
 
 
