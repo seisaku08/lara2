@@ -7,11 +7,42 @@
 @section('content')
 <h1>@yield('title')</h1>
 
+          <p>
+            使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。
+          </p>
+          <p>
+            「使用開始日」は<b>セミナー開催日の3営業日前以前</b>を、「使用終了日」は<b>セミナー開催日の3営業日後以降</b>を入力してください。<br>
+            例）セミナー開催日が「2023年6月13日（火）」の場合<br>
+            「使用開始日」は2023年6月8日（木）以前<br>
+            「使用終了日」は2023年6月16日（金）以降
+          </p>
 <div class="container">
   <form method="post" action="/pctool">
     @csrf
-    <input type="date" name="from" value="{{$input->from}}">～<input type="date" name="to" value="{{$input->to}}">
-    <input type="submit" value="検索">
+    <table align="center">
+      </tr>
+      <tr>
+        <th>使用開始日</th>
+        <th>　</th>
+        <th>使用終了日</th>
+      </tr>
+      <tr>
+        <td>
+          <input type="date" name="from" value="{{$input->from}}">
+        </td>
+        <td>
+          ～
+        </td>
+        <td>
+          <input type="date" name="to" value="{{$input->to}}">
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" align="center">
+          <input type="submit" value="検索">
+        </td>
+      </tr>
+    </table>
   </form>
   @if(count($errors)>0)
   <div>
