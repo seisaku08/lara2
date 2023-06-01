@@ -12,6 +12,7 @@ class DashboardController extends Controller
         $data = null;
         $data = [
 
+            'user' => Auth::user(),
             'message' => 'まいぺいじ',
             'orders' => Order::where('user_id',Auth::user()->id)->get(),
 

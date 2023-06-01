@@ -8,7 +8,7 @@
 <h1>@yield('title')</h1>
 
         @csrf
-{{-- <?php dump($input,$CartData);?> --}}
+{{-- <?php dump($input,);?> --}}
         <table id="kizai" class="container table table-sm table-striped col-8">
             <thead class="text-center">
                 <th scope="col" colspan="4">選択機材情報</th>

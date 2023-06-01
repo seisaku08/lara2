@@ -20,11 +20,13 @@
   <form method="post" action="/pctool">
     @csrf
     <table align="center">
-      </tr>
       <tr>
         <th>使用開始日</th>
         <th>　</th>
         <th>使用終了日</th>
+        <td rowspan="2" align="center">
+          <input type="submit" value="検索">
+        </td>
       </tr>
       <tr>
         <td>
@@ -35,11 +37,6 @@
         </td>
         <td>
           <input type="date" name="to" value="{{$input->to}}">
-        </td>
-      </tr>
-      <tr>
-        <td colspan="3" align="center">
-          <input type="submit" value="検索">
         </td>
       </tr>
     </table>
@@ -97,5 +94,5 @@
 @endsection
 
 @section('footer')
-(c)2023
+(c)2023 Dai-oh Co., Ltd.
 @endsection

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use DateTime;
+use Exception;
 use Illuminate\Auth\Events\Validated;
 
 class CartController extends Controller
@@ -40,7 +41,6 @@ class CartController extends Controller
             'to' => $request->session()->get('Session.UseTo'),
             
         ];
-        // dd($data);
         return view('cart', $data);
     }
     /*
@@ -170,10 +170,18 @@ class CartController extends Controller
 
         //temporariesテーブルから削除対象の仮登録分を削除する
         Temporary::where('machine_id',$request->machine_id)->delete(); 
-        
-        //削除済みの新カートデータをセッションに保存
-        $request->session()->put('Session.CartData', $removed);
 
+        //削除済みの新カートデータをセッションに保存
+        try{
+            if(!empty($removed)){
+            $request->session()->put('Session.CartData', $removed);
+            }else{
+                throw new Exception('カートの中身が空になりました。');
+            }
+        }catch(\Exception $e){
+            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+        }
+        
         // dd($request, $sessionCartData, $removed, $request->session()->get('Session.CartData'));
         return redirect()->route('cart.index');
     }
