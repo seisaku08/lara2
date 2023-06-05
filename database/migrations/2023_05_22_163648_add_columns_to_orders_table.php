@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
 
             $table->integer('token')->comment('重複対策トークン');
+            $table->boolean('seminar_venue_pending')->nullable()->comment('送付先住所後送フラグ');
+            $table->boolean('reminder_sent')->nullable()->comment('リマインダメール送付済フラグ');
             //
         });
     }
@@ -26,6 +28,8 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
 
             $table->dropColumn('token');
+            $table->dropColumn('seminar_venue_pending');
+            $table->dropColumn('reminder_sent');
             //
         });
     }

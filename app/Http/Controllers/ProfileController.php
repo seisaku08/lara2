@@ -21,6 +21,11 @@ class ProfileController extends Controller
         ]);
     }
 
+    public function pageback(): RedirectResponse
+    {
+        return back()->withInput();
+    }
+
     /**
      * Update the user's profile information.
      */

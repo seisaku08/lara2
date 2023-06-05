@@ -4,6 +4,8 @@ return [
 
     'full_name'                   => '氏名',
     'email'                       => 'メールアドレス',
+    'user_group'                       => '所属',
+    'user_tel'                       => '連絡先電話番号',
     'password'                    => 'パスワード',
     'retype_password'             => 'もう一度入力',
     'remember_me'                 => 'パスワードを記憶する',

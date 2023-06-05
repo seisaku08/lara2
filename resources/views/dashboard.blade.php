@@ -18,7 +18,29 @@
             <li>オーダー一覧ページ</li>
         </ul>
         </p>
-        <table id="kizai2">
+        <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+            @csrf
+        </form>
+            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+        <div>
+            <p class="text-sm mt-2 text-gray-800">
+                メールアドレス認証が未完了です。<br>
+                未認証のメールアドレスによるアクセスでは、システム利用に制限がかかります。
+            </p>
+
+                <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    {{ __('こちらをクリックしてEメール認証を完了してください。') }}
+                </button>
+            </p>
+
+            @if (session('status') === 'verification-link-sent')
+                <p class="mt-2 font-medium text-sm text-green-600">
+                    {{ __('認証用のメールをご記入のアドレスに送信しました。') }}
+                </p>
+            @endif
+        </div>
+    @endif
+<table id="kizai2">
             <tr class="midashi">
                 <th colspan="5">登録済セミナー</th>
             </tr>

@@ -52,6 +52,39 @@
                 </span>
             @enderror
         </div>
+        {{-- Group field --}}
+        <div class="input-group mb-3">
+            <input type="text" name="user_group" class="form-control @error('user_group') is-invalid @enderror"
+                   value="{{ old('user_group') }}" placeholder="{{ __('adminlte::adminlte.user_group') }}" autofocus>
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+            @error('user_group')
+            <span class="invalid-feedback" role="alert">
+                <strong>{{ $message }}</strong>
+            </span>
+            @enderror
+        </div>
+         {{-- Tel field --}}
+         <div class="input-group mb-3">
+            <input type="text" name="user_tel" class="form-control @error('user_tel') is-invalid @enderror"
+                   value="{{ old('user_tel') }}" placeholder="{{ __('adminlte::adminlte.user_tel') }}" autofocus>
+
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+
+           @error('user_tel')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
 
         {{-- Password field --}}
         <div class="input-group mb-3">

@@ -13,11 +13,21 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+// Auth::routes(['verify' => true]);
 
+//ログイン要・メール認証不要なページ
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
+    Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+//ログイン要・メール認証要なページ
+Route::middleware('verified')->group(function () {
 
     Route::post('/helo2', function () {
         return view('helo2');
@@ -43,10 +53,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/addCart', 'CartController@addCart')->name('addCart');
     Route::post('/delCart', 'CartController@delCart')->name('delCart');
     
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
     });
 Route::get('/adminlte', function () {
     return view('adminlte');

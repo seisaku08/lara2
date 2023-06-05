@@ -46,15 +46,15 @@
           <td class="left"><label>住所</label></td>
           <td class="right-half">{{ $input->venue_addr1 }}
           </td>
-          <td class="left"><label>ビル名</label></td>
+          <td class="left"><label>施設・ビル名</label></td>
           <td class="right-half">{{ $input->venue_addr2 }}
           </td>
       </tr>
       <tr>
-          <td class="left"><label>施設名</label></td>
+          <td class="left"><label>会社・部門名１</label></td>
           <td class="right-half">{{ $input->venue_addr3 }}
           </td>
-          <td class="left"><label>部署名</label></td>
+          <td class="left"><label>会社・部門名２</label></td>
           <td class="right-half">{{ $input->venue_addr4 }}
           </td>
       </tr>
@@ -64,7 +64,7 @@
           </td>
       </tr>
       <tr>
-          <td class="left">配達先電話番号</td>
+          <td class="left">配送先電話番号</td>
           <td class="right-half">{{ $input->venue_tel }}
           </td>
       </tr>
@@ -72,7 +72,7 @@
           <td class="left">到着希望日時</td>
           <td class="right-half">{{ $input->shipping_arrive_day }}　{{  $input->shipping_arrive_time }}
           </td>
-          <td class="left">返送予定日</td>
+          <td class="left">返送機材発送予定日</td>
           <td class="right-half">{{ $input->shipping_return_day }}
           </td>
       </tr>

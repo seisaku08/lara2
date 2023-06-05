@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'カート')
+@section('title', '選択機材情報')
 @section('css')
 <link href="/css/style.css" rel="stylesheet" type="text/css">
 
@@ -10,18 +10,18 @@
         @csrf
 {{-- <?php dump($input,);?> --}}
         <table id="kizai" class="container table table-sm table-striped col-8">
-            <thead class="text-center">
+            {{-- <thead class="text-center">
                 <th scope="col" colspan="4">選択機材情報</th>
-            </thead>
+            </thead> --}}
             <tr>
-                <td class="text-center" colspan="2">使用開始日:{{ $from }}</td>
-                <td class="text-center" colspan="2">使用終了日:{{ $to }}</td>
+                <td class="text-center" colspan="2"><label>使用開始日:</label>{{ $from }}</td>
+                <td class="text-center" colspan="2"><label>使用終了日:</label>{{ $to }}</td>
             </tr>
             <tr>
-                <td></td>
-                <td>機材番号</td>
-                <td>機種</td>
-                <td>削除</td>
+                <th>#</th>
+                <th>機材番号</th>
+                <th>機種</th>
+                <th>削除</th>
             </tr>
         @foreach($CartData as $key => $data)
             <tr>

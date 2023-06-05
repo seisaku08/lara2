@@ -1,9 +1,9 @@
 @charset "utf-8";
 /* CSS Document */
 
-body{
+/* body{
     background-color: #FFFBDC;
-}
+} */
 
 h1{
     text-align: center;
@@ -29,7 +29,7 @@ tr.midashi{
     background-color: #BFBFBF;
 }
 th{
-    padding: 5px 0px;
+    padding: 5px 10px;
     font-size: larger;
 }
 table, td{
@@ -39,27 +39,39 @@ table, td{
 td{
     float: left;
 }
-td.left{
+td.w20{
     width: 20%;
 }
-
-td.right{
-    width: 80%;
+td.w25{
+    width: 25%;
 }
-
-td.kizai-right{
+td.w30{
+    width: 30%;
+}
+td.w40{
+    width: 40%;
+}
+td.w50{
+    width: 50%;
+}
+td.w60{
+    width: 60%;
+}
+td.w70{
     width: 70%;
 }
-
-td.kizai-left{
-    width: 30%;
+td.w80{
+    width: 80%;
+}
+td.w80{
+    width: 90%;
+}
+td.w100{
+    width: 100%;
 }
 
-td.right-half{
-    width: 30%;
-}
 
-input[type="text"]{
+input[type="text"],input[type="tel"]{
     width: 100%;
     box-sizing: border-box;
 }
@@ -73,24 +85,38 @@ select.kizai{
     width: 100%;
 }
 
+.red{
+    color: red;
+}
+
 @media (max-width: 768px){
 
-td.left,td.right,td.right-half{
-    width: 100%;
-    padding: 0px 10px;
-}
 tr td:nth-child(2n+1){
     padding-top: 5px;
 }
 tr td:nth-child(2n){
     padding-bottom: 5px;
 }
-td.kizai-right{
-    padding: 2px 10px!important;
+
+td{
+    width: 100%!important;
+    padding: 0px 10px;
 }
 
-td.kizai-left{
-    padding: 2px 10px!important;
+.kizai-w20{
+    width: 20%!important;
+    padding: 10px;
 }
 
+.kizai-w80{
+    width: 80%!important;
+    padding: 10px;
+}
+
+
+}
+@media (min-width: 576px){
+    .container{
+        max-width: 100%;
+    }
 }

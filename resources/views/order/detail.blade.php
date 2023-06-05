@@ -7,18 +7,18 @@
 {{-- <?php dd($orders);?> --}}
 	<table id="kizai2">
 		<tr class="midashi">
-			<th colspan="5">セミナーID：{{ $orders->order_no }}</th>
+			<th colspan="4">セミナーID：{{ $orders->order_no }}</th>
 		</tr>
 		<tr>
 			<td class="kizai-left">セミナー名</td>
-			<td class="kizai-right">使用期間</td>
+			<td class="kizai-right">{{$orders->seminar_name}}</td>
 		</tr>
 		<tr>
-			<td class="kizai-left">{{$orders->seminar_name}}</td>
+			<td class="kizai-left">使用期間</td>
 			<td class="kizai-right">{{$orders->order_use_from}}～{{$orders->order_use_to}}</td>
 		</tr>
 		<tr class="midashi">
-			<th colspan="5">配送先情報</th>
+			<th colspan="4">配送先情報<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a></th>
 		</tr>
 		 <tr>
 		   <td class="left">セミナー開催日</td>
@@ -38,15 +38,15 @@
 			<td class="left"><label>住所</label></td>
 			<td class="right-half">{{ $orders->venue_addr1 }}
 			</td>
-			<td class="left"><label>ビル名</label></td>
+			<td class="left"><label>施設・ビル名</label></td>
 			<td class="right-half">{{ $orders->venue_addr2 }}
 			</td>
 		</tr>
 		<tr>
-			<td class="left"><label>施設名</label></td>
+			<td class="left"><label>会社・部門名１</label></td>
 			<td class="right-half">{{ $orders->venue_addr3 }}
 			</td>
-			<td class="left"><label>部署名</label></td>
+			<td class="left"><label>会社・部門名２</label></td>
 			<td class="right-half">{{ $orders->venue_addr4 }}
 			</td>
 		</tr>
@@ -55,7 +55,7 @@
 			<td class="right-half">{{ $orders->venue_name }}
 		</tr>
 		<tr>
-			<td class="left">配達先電話番号</td>
+			<td class="left">配送先電話番号</td>
 			<td class="right-half">{{ $orders->venue_tel }}
 			</td>
 		</tr>
@@ -63,7 +63,7 @@
 			<td class="left">到着希望日時</td>
 			<td class="right-half">{{ $orders->shipping_arrive_day }} 
 			</td>
-			<td class="left">返送予定日</td>
+			<td class="left">返送機材発送予定日</td>
 			<td class="right-half">{{ $orders->shipping_return_day }}
 			</td>
 		</tr>
@@ -71,7 +71,7 @@
 </table>
 <table id="form">
 	<tr class="midashi">
-		<th colspan="5">使用機材情報</th>
+		<th colspan="4">使用機材情報</th>
 	</tr>
 <tr>
 		<td class="kizai-left">機材ID</td>
@@ -80,13 +80,13 @@
 	@foreach($machines as $machine)
 		<tr>
 			<td class="kizai-left">{{$machine->machine_id}}</td>
-			<td class="kizai-right">{{$machine->machine_name}}</td>
+			<td class="kizai-right"><a href="/pctool/detail/{{$machine->machine_id}}" target="_blank">{{$machine->machine_name}}</a></td>
 		</tr>
 	@endforeach
 	</tr>
 
 </table>
-<div class="txt-center"><a class="btn btn-primary btn-sm mb-2 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a></div>
+<div class="text-center"></div>
 </article>
 </form>
 

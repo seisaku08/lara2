@@ -14,7 +14,11 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use DateTime;
 use Exception;
+use Carbon\Carbon;
+use Yasumi\Yasumi; //祝日判定
 use Illuminate\Auth\Events\Validated;
+
+
 
 class CartController extends Controller
 {
@@ -53,16 +57,28 @@ class CartController extends Controller
         //使用機材のIDを取得
         $id = $request->input('id');
 
+        //
+        $holidays = Yasumi::create('Japan', now()->year);
 
+        for ($day3after = now(),$i=0; $i<3;){
+                $day3after->addDay();
+            //平日かつ非祝日の判定
+            if ($day3after->isWeekday() && !$holidays->isHoliday($day3after)){
+                $i++;
+            }
+        }
+// dd($day3after, $day3after->format('Y-m-d'));
         $validator = Validator::make($request->all(),
         [
-            'from' => 'required',
-            'to' => 'required',
+            'from' => "required|date|after_or_equal:{$day3after}",
+            'to' => 'required|date|after:from',
             'id' => 'required',
         ],
         [
-            'from' => '使用開始日は必ず入力してください。',
-            'to' => '使用終了日は必ず入力してください。',
+            'from.required' => '使用開始日は必ず入力してください。',
+            'from.after_or_equal' => '使用開始日は本日より３営業日以降から入力可能です。',
+            'to.require' => '使用終了日は必ず入力してください。',
+            'to.after' => '使用終了日は使用開始日より後の日付を入力してください。',
             'id' => '機材は必ず一つ以上選択してください。',
         ]);
 

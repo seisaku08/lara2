@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             // $table->id();
             $table->bigInteger('order_id')->unsigned();
-            $table->string('order_no');
+            $table->string('order_no')->nullable();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('seminar_day');
-            $table->string('seminar_name');
-            $table->date('order_use_from');
-            $table->date('order_use_to');
+            $table->string('seminar_day')->nullable();
+            $table->string('seminar_name')->nullable();
+            $table->date('order_use_from')->nullable();
+            $table->date('order_use_to')->nullable();
             $table->softDeletes();
             $table->timestamps();
             $table->primary(['order_id','user_id'])->change();
