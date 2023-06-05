@@ -12,7 +12,7 @@
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
-    <form id="pageback" method="post" action="{{ route('verification.send') }}">
+    <form id="pageback" method="post" action="{{ route('profile.pageback') }}">
         @csrf
     </form>
 
