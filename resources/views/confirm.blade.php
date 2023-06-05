@@ -36,14 +36,8 @@
             <td class="w30">{{$user->user_tel}}</td>
         </tr>
         <tr class="midashi">
-            <th colspan="4">配送先情報</th>
+            <th colspan="4">セミナー情報</th>
         </tr>
-        @if( $input->seminar_venue_pending == true )
-        <tr>
-            {{ Form::hidden('seminar_venue_pending', $input->seminar_venue_pending )}}
-            <td class="w100 text-center"><label>後日入力</label></td>
-        </tr>
-        @else
         <tr>
             <td class="w25"><label>セミナー開催日</label></td>
             <td class="w25">{{ $input->seminar_day }}{{ Form::hidden('seminar_day', $input->seminar_day )}}</td>
@@ -52,6 +46,15 @@
             <td class="w25"><label>セミナー名</label></td>
             <td class="w50">{{ $input->seminar_name }}{{ Form::hidden('seminar_name', $input->seminar_name )}}</td>
         </tr>
+        <tr class="midashi">
+            <th colspan="4">配送先情報</th>
+        </tr>
+        @if( $input->seminar_venue_pending == true )
+        <tr>
+            {{ Form::hidden('seminar_venue_pending', $input->seminar_venue_pending )}}
+            <td class="w100 text-center"><label>後日入力</label></td>
+        </tr>
+        @else
         <tr>
             <td class="w25"><label>郵便番号</label></td>
             <td class="w40">{{ $input->venue_zip }}{{ Form::hidden('venue_zip', $input->venue_zip )}}</td> 
