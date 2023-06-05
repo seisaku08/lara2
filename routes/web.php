@@ -23,7 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('/profile', [ProfileController::class, 'pageback'])->name('profile.pageback');
+    Route::post('/profile', [ProfileController::class, 'pageback'])->name('profile.pageback');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 // });
 

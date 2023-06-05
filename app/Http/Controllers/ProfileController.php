@@ -21,9 +21,9 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function pageback(): RedirectResponse
+    public function pageback(): View
     {
-        return back()->withInput();
+        return view('dashboard');
     }
 
     /**
