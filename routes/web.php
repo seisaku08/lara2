@@ -24,10 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// });
 
-//ログイン要・メール認証要なページ
-Route::middleware('verified')->group(function () {
+// //ログイン要・メール認証要なページ
+// Route::middleware('verified')->group(function () {
 
     Route::post('/helo2', function () {
         return view('helo2');
