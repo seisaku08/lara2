@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('token')->comment('重複対策トークン');
             $table->boolean('seminar_venue_pending')->nullable()->comment('送付先住所後送フラグ');
             $table->boolean('reminder_sent')->nullable()->comment('リマインダメール送付済フラグ');
-            $table->datetime('nine_day_after')->nullable()->comment('リマインダメール送付日「9営業日前」');
+            $table->datetime('nine_day_before')->nullable()->comment('リマインダメール送付日「9営業日前」');
             //
         });
     }
@@ -31,7 +31,7 @@ return new class extends Migration
             $table->dropColumn('token');
             $table->dropColumn('seminar_venue_pending');
             $table->dropColumn('reminder_sent');
-            $table->dropColumn('nine_day_after');
+            $table->dropColumn('nine_day_before');
             //
         });
     }
