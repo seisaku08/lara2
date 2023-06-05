@@ -13,6 +13,10 @@ use App\Models\Venue;
 use App\Models\Shipping;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Mail\TestMail;      //Mailableクラス
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Yasumi\Yasumi;
 use DateTime;
 use Exception;
 
@@ -43,10 +47,20 @@ class FinishController extends Controller
             }
 
             //セミナー開催日から連番を取得
-            $sday = new DateTime($request->seminar_day);
+            $sday = new Carbon($request->seminar_day);
             $sno = Sequence::getNewOrderNo($sday->format('ymd'));
             $order_no = sprintf('%s%04d', $sday->format('ymd'), $sno);
 
+            //9日前の取得
+            $holidays = Yasumi::create('Japan', $sday->year);
+            for ($day9before = $sday ,$i=0; $i<9;){
+                    $day9before->subDay();
+                //平日かつ非祝日の判定
+                if ($day9before->isWeekday() && !$holidays->isHoliday($day9before)){
+                    $i++;
+                }
+            }
+            // dd($day9before);
             //ordersテーブル
             $order = new Order;
                 //order_noは日付（西暦下2桁＋月日の6桁）＋連番
@@ -57,6 +71,12 @@ class FinishController extends Controller
                 $order->order_use_from = $request->order_use_from;
                 $order->order_use_to = $request->order_use_to;
                 $order->token = $request->session()->get('Session.Token');
+                if($request->seminar_venue_pending == true){
+                    $order->seminar_venue_pending = 1;
+                }else{
+                    $order->seminar_venue_pending = 0;
+                }
+                $order->nine_day_before = $day9before;
                 $order->save();
 
             //order_idをmachine_detail_orderテーブルのために取得
@@ -116,6 +136,24 @@ class FinishController extends Controller
                 $ship->shipping_return_day = $request->shipping_return_day;
                 $ship->save();
                 
+                // $orderdata = [
+                //     'machines' => MachineDetail::wherein('machine_id', $request->id)->pluck('machine_id'),
+                //     'user' => Auth::user(),
+                //     'input' => $request,
+        
+                // ];
+
+                // dd($order, $ship, $venue);
+                // Mail::to(Auth::user())
+                //     ->bcc('order@daioh-pc.com')
+                //     ->send(new TestMail([
+                //         'order_no' =>$order_no,
+                //         'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
+                //         'user' => Auth::user(),
+                //         'input' => $request,
+            
+                //     ]));
+
             return $order_no;
 
             },5);
