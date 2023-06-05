@@ -22,8 +22,8 @@ class ConfirmController extends Controller
 
         $rules = [
                 //
-                'seminar_day' => 'exclude_if:seminar_venue_pending,true|required|date',
-                'seminar_name' => 'exclude_if:seminar_venue_pending,true|required',
+                'seminar_day' => 'required|date',
+                'seminar_name' => 'required',
                 'venue_zip' => 'exclude_if:seminar_venue_pending,true|required',
                 'venue_addr1' => 'exclude_if:seminar_venue_pending,true|required',
                 'venue_name' => 'exclude_if:seminar_venue_pending,true|required',
