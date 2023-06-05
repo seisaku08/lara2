@@ -21,7 +21,7 @@
         <form id="send-verification" method="post" action="{{ route('verification.send') }}">
             @csrf
         </form>
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            {{-- @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
         <div>
             <p class="text-sm mt-2 text-gray-800">
                 メールアドレス認証が未完了です。<br>
@@ -39,7 +39,7 @@
                 </p>
             @endif
         </div>
-    @endif
+    @endif --}}
 <table id="kizai2">
             <tr class="midashi">
                 <th colspan="5">登録済セミナー</th>
