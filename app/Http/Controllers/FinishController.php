@@ -144,15 +144,15 @@ class FinishController extends Controller
                 // ];
 
                 // dd($order, $ship, $venue);
-                // Mail::to(Auth::user())
-                //     ->bcc('order@daioh-pc.com')
-                //     ->send(new TestMail([
-                //         'order_no' =>$order_no,
-                //         'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
-                //         'user' => Auth::user(),
-                //         'input' => $request,
+                Mail::to(Auth::user())
+                    ->bcc('order@daioh-pc.com')
+                    ->send(new TestMail([
+                        'order_no' =>$order_no,
+                        'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
+                        'user' => Auth::user(),
+                        'input' => $request,
             
-                //     ]));
+                    ]));
 
             return $order_no;
 
