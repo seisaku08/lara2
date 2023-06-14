@@ -2,38 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\MachineDetail;
-use App\Models\User;
 use App\Models\DayMachine;
 use App\Models\Temporary;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
-use DateTime;
 use Exception;
 use Carbon\Carbon;
-use Yasumi\Yasumi; //祝日判定
-use Illuminate\Auth\Events\Validated;
+use App\Libs\Common;
 
 
 
 class CartController extends Controller
 {
 
-    // public function view(Request $request){
-    //     $id = $request->input('id');
-    //     $data = [
-
-    //         'cartData' => array_column($request->session()->get('cartData'), 'session_machine_id', 'session_machine_id')
- 
-    //         // 'records' => MachineDetail::whereIn('machine_id', $id)->get()
-    //     ];
-    //     // dd($data);
-    //     return view('cart', $data);
-    // }
     public function index(Request $request){
         $mid = $request->session()->get('Session.CartData');
         $data = [
@@ -41,50 +25,44 @@ class CartController extends Controller
             'user' => Auth::user()->id,
             'input' => $request,
             'CartData' => MachineDetail::wherein('machine_id', $mid)->get(),
+            'seminar_day' =>$request->session()->get('Session.SeminarDay'),
             'from' => $request->session()->get('Session.UseFrom'),
             'to' => $request->session()->get('Session.UseTo'),
             
         ];
         return view('cart', $data);
     }
-    /*
-    |--------------------------------------------------------------------------
-    | 商品詳細 → カート画面へのSession情報保存
-    |--------------------------------------------------------------------------
-    */
+
     public function addCart(Request $request,)
     {
         //使用機材のIDを取得
         $id = $request->input('id');
 
-        //
-        $holidays = Yasumi::create('Japan', now()->year);
+        $day1after = Common::dayafter(today(),1);
+        $day4after = Common::dayafter(today(),4);
+        $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
 
-        for ($day3after = now(),$i=0; $i<3;){
-                $day3after->addDay();
-            //平日かつ非祝日の判定
-            if ($day3after->isWeekday() && !$holidays->isHoliday($day3after)){
-                $i++;
-            }
-        }
-// dd($day3after, $day3after->format('Y-m-d'));
         $validator = Validator::make($request->all(),
         [
-            'from' => "required|date|after_or_equal:{$day3after}",
-            'to' => 'required|date|after:from',
+            'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day4after}"],
+            'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}"],
+            'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
             'id' => 'required',
         ],
         [
-            'from.required' => '使用開始日は必ず入力してください。',
-            'from.after_or_equal' => '使用開始日は本日より３営業日以降から入力可能です。',
-            'to.require' => '使用終了日は必ず入力してください。',
-            'to.after' => '使用終了日は使用開始日より後の日付を入力してください。',
+            'seminar_day.required_with_all' => 'セミナー開催日は入力必須ですん。',
+            'from.required_with_all' => '使用開始日は入力必須ですん。',
+            'to.required_with_all' => '使用終了日は入力必須ですん。',
+            'seminar_day.after_or_equal' => 'セミナー開催日は本日の4営業日後（'.$day4after->format('Y/m/d').'）から入力可能です。',
+            'from.after_or_equal' => '使用開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
+            'to.after_or_equal' => '使用終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
             'id' => '機材は必ず一つ以上選択してください。',
         ]);
 
         if($validator->fails()){
             //セッションに機材ID、日程を登録
             $request->session()->put('Session.CartData', $id);
+            $request->session()->put('Session.SeminarDay', $request->seminar_day);
             $request->session()->put('Session.UseFrom', $request->from);
             $request->session()->put('Session.UseTo', $request->to);
 
@@ -93,8 +71,8 @@ class CartController extends Controller
 
         //使用状況を確認
         //$uに検索日程を1日ずつ格納
-        $from = new DateTime($request->from);
-        $to = new DateTime($request->to);
+        $from = new Carbon($request->from);
+        $to = new Carbon($request->to);
         while($from <= $to){
             $u[] = $from->format('Y-m-d');
             $from->modify('1 day');
@@ -105,7 +83,8 @@ class CartController extends Controller
         //temporariesテーブルから自分「以外」の仮登録状況を取得する
         $tempUse = Temporary::where('user_id', '<>', $user)->whereIn('day', $u)->pluck('machine_id')->toarray();
         //無限増殖防止のためtemporariesテーブルからユーザー自身の仮登録分を削除する
-        Temporary::where('user_id',$user)->delete();  
+        Temporary::where('user_id',$user)->delete();
+
         $inUse = array_keys(array_count_values(array_merge($usage,$tempUse)));
 
         if(in_array($id, $inUse)){
@@ -114,7 +93,7 @@ class CartController extends Controller
         else{
             //temporariesテーブルに選択した機材ID、日程を仮登録
             foreach($id as $i){
-                $from = new DateTime($request->from);
+                $from = new Carbon($request->from);
                 while($from <= $to){
                     $temp = new Temporary;
                         $temp->user_id = $user;
@@ -126,6 +105,7 @@ class CartController extends Controller
             }
             //セッションに機材ID、日程を登録
             $request->session()->put('Session.CartData', $id);
+            $request->session()->put('Session.SeminarDay', $request->seminar_day);
             $request->session()->put('Session.UseFrom', $request->from);
             $request->session()->put('Session.UseTo', $request->to);
 
@@ -133,46 +113,6 @@ class CartController extends Controller
         // dd($id,$u,$usage,$tempUse,array_merge($usage,$tempUse),$inUse,in_array($id, $inUse),$request->session());
         
         return redirect()->route('cart.index');
-        
-
-        //商品詳細画面のhidden属性で送信（Request）された商品IDと注文個数を取得し配列として変数に格納
-        //inputタグのname属性を指定し$requestからPOST送信された内容を取得する。
-        // foreach($request->id as $sid){
-        //     $cartData = 
-        // [
-        //     'session_machine_id' => $sid, 
-            // 'session_quantity' => $request->product_quantity, 
-        // ];
-
-        // //sessionにcartData配列が「無い」場合、商品情報の配列をcartData(key)という名で$cartDataをSessionに追加
-        // if (!$request->session()->has('cartData')) {
-        //     $request->session()->put('cartData', $cartData);
-        // } else {
-        //     //sessionにcartData配列が「有る」場合、情報取得
-        //     $sessionCartData = $request->session()->get('cartData');
-
-        //     //isSameMachineId定義 product_id同一確認フラグ false = 同一ではない状態を指定
-        //     $isSameMachineId = false;
-        //     // foreach ($sessionCartData as $index => $sessionData) {
-        //     //     //product_idが同一であれば、フラグをtrueにする → 個数の合算処理、及びセッション情報更新。更新は一度のみ
-        //     //     if ($sessionData['session_machine_id'] === $cartData['session_machine_id'] ) {
-        //     //         $isSameMachineId = true;
-        //     //         // $quantity = $sessionData['session_quantity'] + $cartData['session_quantity'];
-        //     //         //cartDataをrootとしたツリー状の多次元連想配列の特定のValueにアクセスし、指定の変数でValueの上書き処理
-        //     //         // $request->session()->put('cartData.' . $index . '.session_quantity', $quantity);
-        //     //         break;
-        //     //     }
-        //     // }
-
-        //     //product_idが同一ではない状態を指定 その場合であればpushする
-        //     if ($isSameMachineId === false) {
-        //         $request->session()->push('cartData', $cartData);
-        //     }
-        // }
-        // }
-        // //POST送信された情報をsessionに保存 'users_id'(key)に$request内の'users_id'をセット
-        // $request->session()->put('users_id', ($request->users_id));
-        // return redirect()->route('cart.index');
     }
 
     public function delCart(Request $request)
@@ -200,44 +140,6 @@ class CartController extends Controller
         
         // dd($request, $sessionCartData, $removed, $request->session()->get('Session.CartData'));
         return redirect()->route('cart.index');
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | カート内商品の削除
-    |--------------------------------------------------------------------------
-    */
-
-    public function remove(Request $request){
-        //session情報の取得（product_idと個数の2次元配列）
-        $sessionCartData = $request->session()->get('cartData');
-
-        //削除ボタンから受け取ったproduct_idと個数を2次元配列に
-        $removeCartItem = [
-            ['session_machine_id' => $request->product_id, 
-            'session_quantity' => $request->product_quantity]
-        ];
-
-        //sessionデータと削除対象データを比較、重複部分を削除し残りの配列を抽出
-        $removeCompletedCartData = array_udiff($sessionCartData, $removeCartItem, function ($sessionCartData, $removeCartItem) {
-            $result1 = $sessionCartData['session_machine_id'] - $removeCartItem['session_machine_id'];
-            $result2 = $sessionCartData['session_quantity'] - $removeCartItem['session_quantity'];
-            return $result1 + $result2;
-        });
-
-        //上記の抽出情報でcartDataを上書き処理
-        $request->session()->put('cartData', $removeCompletedCartData);
-        //上書き後のsession再取得
-        $cartData = $request->session()->get('cartData');
-
-        //session情報があればtrue
-        if ($request->session()->has('cartData')) {
-            return redirect()->route('cartlist.index');
-        }
-
-        return view('products.no_cart_list', ['user' => Auth::user()]);
-
     }
 
 }

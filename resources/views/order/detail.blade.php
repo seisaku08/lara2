@@ -1,8 +1,8 @@
 @extends('adminlte::page')
-@section('title', 'セミナーID:'.$orders->order_no.' | セミナー詳細')
+@section('title', 'セミナー詳細 | ID:'.$orders->order_no)
 @section('content')
 <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
-<h1>@yield('title')</h1>
+<h1 class="p-2">@yield('title')</h1>
 <article id="list">
 {{-- <?php dd($orders);?> --}}
 	<table id="kizai2">
@@ -14,16 +14,15 @@
 			<td class="kizai-right">{{$orders->seminar_name}}</td>
 		</tr>
 		<tr>
+			<td class="w25"><label>セミナー開催日</label></td>
+			<td class="w25">{{ $orders->seminar_day }}</td>
+		</tr>
+		<tr>
 			<td class="kizai-left">使用期間</td>
 			<td class="kizai-right">{{$orders->order_use_from}}～{{$orders->order_use_to}}</td>
 		</tr>
 		<tr class="midashi">
 			<th colspan="4">配送先情報<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a></th>
-		</tr>
-		 <tr>
-		   <td class="left">セミナー開催日</td>
-			<td class="right-half">{{ $orders->seminar_day }}
-			</td>
 		</tr>
 		 <tr>
 			<td class="left">セミナー名</td>

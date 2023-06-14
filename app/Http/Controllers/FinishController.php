@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Facades\Sequence;
+use App\Libs\Common;
 use App\Models\DayMachine;
 use App\Models\MachineDetail;
 use App\Models\MachineDetailOrder;
@@ -51,16 +52,6 @@ class FinishController extends Controller
             $sno = Sequence::getNewOrderNo($sday->format('ymd'));
             $order_no = sprintf('%s%04d', $sday->format('ymd'), $sno);
 
-            //9日前の取得
-            $holidays = Yasumi::create('Japan', $sday->year);
-            for ($day9before = $sday ,$i=0; $i<9;){
-                    $day9before->subDay();
-                //平日かつ非祝日の判定
-                if ($day9before->isWeekday() && !$holidays->isHoliday($day9before)){
-                    $i++;
-                }
-            }
-            // dd($day9before);
             //ordersテーブル
             $order = new Order;
                 //order_noは日付（西暦下2桁＋月日の6桁）＋連番
@@ -76,7 +67,7 @@ class FinishController extends Controller
                 }else{
                     $order->seminar_venue_pending = 0;
                 }
-                $order->nine_day_before = $day9before;
+                $order->nine_day_before = Common::daybefore($order->seminar_day, 9);
                 $order->save();
 
             //order_idをmachine_detail_orderテーブルのために取得
@@ -144,15 +135,15 @@ class FinishController extends Controller
                 // ];
 
                 // dd($order, $ship, $venue);
-                Mail::to(Auth::user())
-                    ->bcc('order@daioh-pc.com')
-                    ->send(new TestMail([
-                        'order_no' =>$order_no,
-                        'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
-                        'user' => Auth::user(),
-                        'input' => $request,
+              //  Mail::to(Auth::user())
+                //    ->bcc('order@daioh-pc.com')
+                //    ->send(new TestMail([
+               //         'order_no' =>$order_no,
+                 //       'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
+                 //       'user' => Auth::user(),
+                     //   'input' => $request,
             
-                    ]));
+                //     ])); 
 
             return $order_no;
 

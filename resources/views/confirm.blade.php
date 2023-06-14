@@ -6,7 +6,7 @@
 
 @endsection
 @section('content')
-<h1>@yield('title')</h1>
+<h1 class="p-2">@yield('title')</h1>
 <form method="post" action="./finish">
     @csrf
     @if(count($errors)>0)
