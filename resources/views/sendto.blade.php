@@ -55,7 +55,7 @@
             </tr>
             <tr>
                 <td class="w30"><label>セミナー名</label><span class="red small">＊必須</span></td>
-                <td class="w50">{{ Carbon\Carbon::parse($input->seminar_day)->format('md') }}_<input type="text" class="ss" name="seminar_name" placeholder="" value="{{old('seminar_name')}}"></td>
+                <td class="w50"><input type="text" name="seminar_name" placeholder="" value="{{old('seminar_name')}}"></td>
             </tr>
             <tr class="midashi">
                 <th>配送先情報</th>
