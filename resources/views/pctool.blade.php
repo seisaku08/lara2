@@ -9,11 +9,13 @@
           <p>
             使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。
           </p>
-          <p>
-            「使用開始日」は<b>本日の翌営業日以降</b>かつ<b>セミナー開催日の3営業日以前</b>を、「使用終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降</b>を入力してください。<br>
-            例）セミナー開催日が「{{ App\Libs\Common::dayafter(today(),10)->isoFormat('YYYY年M月D日（ddd）'); }}」の場合<br>
+          <p>準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<br>
+            「セミナー開催日」は<b>本日より4営業日以降（{{ App\Libs\Common::dayafter(today(),4)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
+            「使用開始日」は<b>セミナー開催日の3営業日以前（上記の場合、{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
+            「使用終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
+            {{-- 例）セミナー開催日が「{{ App\Libs\Common::dayafter(today(),10)->isoFormat('YYYY年M月D日（ddd）'); }}」の場合<br>
             「使用開始日」は{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}以降かつ{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}以前<br>
-            「使用終了日」は{{ App\Libs\Common::dayafter(today(),13)->isoFormat('YYYY年M月D日（ddd）'); }}以降
+            「使用終了日」は{{ App\Libs\Common::dayafter(today(),13)->isoFormat('YYYY年M月D日（ddd）'); }}以降 --}}
           </p>
 <div class="container">
   <form method="post" action="/pctool">
