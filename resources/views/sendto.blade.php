@@ -39,7 +39,7 @@
                 <td class="w30">{{$user->user_tel}}</td>
             </tr>
             <tr class="midashi">
-                <th>セミナー情報</th>
+                <th>セミナー情報 </th>
             </tr>
            <tr>
                 <td class="w30"><label>セミナー開催日</label></td>
@@ -61,7 +61,7 @@
                 <th>配送先情報</th>
             </tr>
             <tr>
-                    <td class="w100">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" name="seminar_venue_pending" placeholder="" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></td>
+                <td class="w100">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" name="seminar_venue_pending" placeholder="" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></td>
             </tr>
             <tr>
                 <td class="w30"><label>郵便番号</label><span class="red small">＊必須</span></td>
