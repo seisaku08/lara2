@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 */
 // Auth::routes(['verify' => true]);
 
+//ログイン不要なページ
+
+    Route::get('ordermailsample', 'OrdermailController@view');
+
 //ログイン要・メール認証不要なページ
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {

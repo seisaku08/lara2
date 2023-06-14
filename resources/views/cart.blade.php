@@ -5,7 +5,7 @@
 
 @endsection
 @section('content')
-<h1>@yield('title')</h1>
+<h1 class="p-2">@yield('title')</h1>
 
         @csrf
 {{-- <?php dump($input,);?> --}}
@@ -39,11 +39,12 @@
         </table>
 
         {{Form::open(['route'=>'sendto'])}}
+        {{ Form::hidden('seminar_day', $seminar_day) }}
         {{ Form::hidden('order_use_from', $from) }}
         {{ Form::hidden('order_use_to', $to) }}
         {{ Form::hidden('id', null) }}
         <p class="text-center">
-                <button type="submit" name="back" value="back">前の画面に戻る（カートは空になります）</button>
+                <button type="submit" name="back" value="back">前の画面に戻る</button>
                 <button type="submit" name="submit" value="submit">イベント情報登録へ</button>
             </p>
         {{Form::close()}}

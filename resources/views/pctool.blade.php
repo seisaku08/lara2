@@ -2,7 +2,6 @@
 @section('title', '機材発送依頼フォーム')
 @section('css')
 <link href="/css/style.css" rel="stylesheet" type="text/css">
-
 @endsection
 @section('content')
 <h1>@yield('title')</h1>
@@ -11,39 +10,37 @@
             使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。
           </p>
           <p>
-            「使用開始日」は<b>セミナー開催日の3営業日以前</b>を、「使用終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降</b>を入力してください。<br>
-            例）セミナー開催日が「2023年6月13日（火）」の場合<br>
-            「使用開始日」は2023年6月8日（木）以前<br>
-            「使用終了日」は2023年6月16日（金）以降
+            「使用開始日」は<b>本日の翌営業日以降</b>かつ<b>セミナー開催日の3営業日以前</b>を、「使用終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降</b>を入力してください。<br>
+            例）セミナー開催日が「{{ App\Libs\Common::dayafter(today(),10)->isoFormat('YYYY年M月D日（ddd）'); }}」の場合<br>
+            「使用開始日」は{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}以降かつ{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}以前<br>
+            「使用終了日」は{{ App\Libs\Common::dayafter(today(),13)->isoFormat('YYYY年M月D日（ddd）'); }}以降
           </p>
 <div class="container">
   <form method="post" action="/pctool">
     @csrf
-    <table align="center">
-      <tr>
-        <th>使用開始日</th>
-        <th>　</th>
-        <th>使用終了日</th>
-        <td rowspan="2" align="center">
-          <input type="submit" value="検索">
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <input type="date" name="from" value="{{$input->from}}">
-        </td>
-        <td>
-          ～
-        </td>
-        <td>
-          <input type="date" name="to" value="{{$input->to}}">
-        </td>
-      </tr>
-    </table>
+      <table id="days">
+        <tr>
+          <td colspan="2" class="center">
+            <label>セミナー開催日</label>
+            <input type="date" name="seminar_day" value="{{$input->seminar_day}}{{ old('seminar_day') }}" onchange="submit(this.form)">
+          </td>
+        </tr>
+        <tr>
+          <td class="center">
+            <label>使用開始日</label>
+            <input type="date" name="from" value="{{$input->from}}{{ old('from') }}" onchange="submit(this.form)">
+          </td>
+          <td class="center">
+            <label>使用終了日</label>
+            <input type="date" name="to" value="{{$input->to}}{{ old('to') }}" onchange="submit(this.form)">
+          </td>
+        </tr>
+      </table>
+
   </form>
   @if(count($errors)>0)
   <div>
-      <ul>
+      <ul class="text-red">
           @foreach($errors->all() as $error)
               <li>{{ $error }}</li>
           @endforeach
@@ -58,6 +55,7 @@
 <div id='list'>
   {{ Form::open(['route' => 'addCart']) }}
     {{ Form::hidden('user_id', $user->id) }}
+    {{ Form::hidden('seminar_day', $input->seminar_day)}}
     {{ Form::hidden('from', $input->from)}}
     {{ Form::hidden('to', $input->to)}}
     <table class="table table-striped">
