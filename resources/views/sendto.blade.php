@@ -39,7 +39,7 @@
                 <td class="w30">{{$user->user_tel}}</td>
             </tr>
             <tr class="midashi">
-                <th>セミナー情報</th>
+                <th>セミナー情報 </th>
             </tr>
            <tr>
                 <td class="w30"><label>セミナー開催日</label></td>
