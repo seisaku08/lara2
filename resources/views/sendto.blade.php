@@ -136,11 +136,11 @@
                 </td>
             </tr>
         </table>
-    {{ Form::Close() }}
         <p class="p-2">
             <button type="submit" id="hidebutton" name="dummy" value="dummy" disabled>ダミー</button>
             <button type="submit" name="back" value="back">戻る</button>
             <button type="submit" name="submit" value="submit">入力内容の確認</button>
         </p>
 
+    {{ Form::Close() }}
 @endsection
