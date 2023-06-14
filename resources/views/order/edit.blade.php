@@ -24,22 +24,22 @@
 
 	<table id="kizai2">
 		<tr class="midashi">
-			<th colspan="5">セミナーID：{{ $orders->order_no }}</th>
+			<th colspan="5">セミナー情報</th>
 		</tr>
 		<tr>
 			<td class="w30"><label>セミナー名</label><span class="red small">＊必須</span></td>
 			<td class="w50"><input type="text" name="seminar_name" placeholder="" value="{{!empty(old('seminar_name'))? old('seminar_name'):$orders->seminar_name}}"></td>
 		</tr>
-	<tr>
+		<tr>
+			<td class="w30"><label>セミナー開催日</label><span class="red small">＊必須</span></td>
+			<td class="w25"><input type="date" name="seminar_day" placeholder="" value="{{!empty(old('seminar_day'))? old('seminar_day'):$orders->seminar_day}}"></td>
+		</tr>
+		<tr>
 			<td class="w30">使用期間<br>（変更できません。）</td>
 			<td class="">{{$orders->order_use_from}}～{{$orders->order_use_to}}</td>
 		</tr>
 		<tr class="midashi">
 			<th colspan="5">配送先情報</th>
-		</tr>
-		<tr>
-			<td class="w30"><label>セミナー開催日</label><span class="red small">＊必須</span></td>
-			<td class="w25"><input type="date" name="seminar_day" placeholder="" value="{{!empty(old('seminar_day'))? old('seminar_day'):$orders->seminar_day}}"></td>
 		</tr>
 		<tr>
 			<td class="w30"><label>郵便番号</label><span class="red small">＊必須</span></td>
@@ -96,7 +96,7 @@
 </table>
 <table id="kizai">
 	<tr class="midashi">
-		<th colspan="4">選択機材情報</th>
+		<th colspan="4">選択機材情報（変更できません。）</th>
 	</tr>
 	<tr>
 		<td class="w100">
