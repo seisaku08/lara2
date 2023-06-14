@@ -21,7 +21,7 @@
         </ul>
     </div>
     @endif
-    {{ Form::open(['url'=>'confirm']) }}
+    {{ Form::open(['url'=>'confirm', 'id' => 'sendto']) }}
         <table id="form">
             <tr class="midashi">
                 <th colspan="4">ご担当者様情報</th>
@@ -42,18 +42,26 @@
                 <th>セミナー情報</th>
             </tr>
            <tr>
-                <td class="w30"><label>セミナー開催日</label><span class="red small">＊必須</span></td>
-                <td class="w25"><input type="date" name="seminar_day" placeholder="" value="{{old('seminar_day')}}"></td>
+                <td class="w30"><label>セミナー開催日</label></td>
+                <td class="w25">{{ $input->seminar_day }}{{ Form::hidden('seminar_day', $input->seminar_day) }}{{ old('seminar_day') }}</td>
+            </tr>
+            <tr>
+                <td class="w30"><label>使用開始日:</label></td>
+                <td class="w25">{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from) }}{{ old('order_use_from') }}</td>
+            </tr>
+            <tr>
+                <td class="w30"><label>使用終了日:</label></td>
+                <td class="w25">{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</td>
             </tr>
             <tr>
                 <td class="w30"><label>セミナー名</label><span class="red small">＊必須</span></td>
-                <td class="w50"><input type="text" name="seminar_name" placeholder="" value="{{old('seminar_name')}}"></td>
+                <td class="w50">{{ Carbon\Carbon::parse($input->seminar_day)->format('md') }}_<input type="text" class="ss" name="seminar_name" placeholder="" value="{{old('seminar_name')}}"></td>
             </tr>
             <tr class="midashi">
                 <th>配送先情報</th>
             </tr>
             <tr>
-                    <td class="w100">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" name="seminar_venue_pending" placeholder="" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></td>
+                <td class="w100">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" name="seminar_venue_pending" placeholder="" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></td>
             </tr>
             <tr>
                 <td class="w30"><label>郵便番号</label><span class="red small">＊必須</span></td>
@@ -115,10 +123,6 @@
             <tr>
                 <td class="w100">
                     <div class="row">
-                        <div class="col-6 text-center"><label>使用開始日:</label>{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from) }}{{ old('order_use_from') }}</div>
-                        <div class="col-6 text-center"><label>使用終了日:</label>{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</div>
-                    </div>
-                    <div class="row">
                         <div class="col-2"><label>ID</label></div>
                         <div class="col-10"><label>機材番号</label></div>
                     </div>
@@ -132,10 +136,11 @@
                 </td>
             </tr>
         </table>
+    {{ Form::Close() }}
         <p class="p-2">
+            <button type="submit" id="hidebutton" name="dummy" value="dummy" disabled>ダミー</button>
             <button type="submit" name="back" value="back">戻る</button>
             <button type="submit" name="submit" value="submit">入力内容の確認</button>
         </p>
-    {{ Form::Close() }}
 
 @endsection
