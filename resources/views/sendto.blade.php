@@ -54,8 +54,8 @@
                 <td class="w25">{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</td>
             </tr>
             <tr>
-                <td class="w30"><label>セミナー名</label><span class="red small">＊必須</span></td>
-                <td class="w50"><input type="text" name="seminar_name" placeholder="" value="{{old('seminar_name')}}"></td>
+                <td class="w30"><label>セミナー名</label><span class="red small">＊必須 </span></td>
+                <td class="w50"><input type="text" name="seminar_name" placeholder=""  value="{{old('seminar_name')}}"></td>
             </tr>
             <tr class="midashi">
                 <th>配送先情報</th>
