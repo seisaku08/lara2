@@ -22,7 +22,6 @@ class ConfirmController extends Controller
 
         $rules = [
                 //
-                'seminar_day' => 'required|date',
                 'seminar_name' => 'required',
                 'venue_zip' => 'exclude_if:seminar_venue_pending,true|required',
                 'venue_addr1' => 'exclude_if:seminar_venue_pending,true|required',
@@ -33,8 +32,6 @@ class ConfirmController extends Controller
             ];
 
         $massages = [
-                'seminar_day.required' => 'セミナー開催日は必ず入力してください。',
-                'seminar_day.date' => 'セミナー開催日は有効な年月日で入力してください。',
                 'seminar_name.required' => 'セミナー名は必ず入力してください。',
                 'venue_zip.required' => '郵便番号は必ず入力してください。',
                 'venue_addr1.required' => '住所は必ず入力してください。',

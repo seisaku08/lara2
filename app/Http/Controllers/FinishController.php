@@ -67,7 +67,7 @@ class FinishController extends Controller
                 }else{
                     $order->seminar_venue_pending = 0;
                 }
-                $order->nine_day_before = Common::daybefore($order->seminar_day, 9);
+                $order->nine_day_before = Common::daybefore(Carbon::parse($order->seminar_day), 9);
                 $order->save();
 
             //order_idをmachine_detail_orderテーブルのために取得
