@@ -30,9 +30,9 @@ class TestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'オーダー受領確認メール('.$this->orderdata['order_no'].')',
+            subject: '【機材管理システム】予約受付完了メール（予約ID:'.$this->orderdata['order_no'].')',
             from: 'order@daioh-pc.com',
-            to: 'foo@example.net',
+            cc: 'order@daioh-pc.com',
         );
     }
 
