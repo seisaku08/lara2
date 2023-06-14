@@ -1,7 +1,9 @@
 @extends('adminlte::page')
-@section('title', 'セミナーID:'.$orders->order_no.' | セミナー情報変更')
+@section('title', 'セミナー情報変更 | ID:'.$orders->order_no)
 @section('content')
 <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+<script src="/js/number.js"></script>
+<script src="https://ajaxzip3.github.io/ajaxzip3.js"></script>
 <h1 class="p-2">@yield('title')</h1>
 @if(count($errors)>0)
 <div>
@@ -42,7 +44,7 @@
 		<tr>
 			<td class="w30"><label>郵便番号</label><span class="red small">＊必須</span></td>
 			<td class="w40">
-				<input type="text" name="venue_zip" id="zip" maxlength="8" placeholder="例）1010047" oninput="value = NUM(value)" value="{{ !empty(old('zip'))? old('zip') :$orders->venue_zip }}">
+				<input type="text" name="venue_zip" id="zip" maxlength="8" placeholder="例）1010047" oninput="value = NUM(value)" value="{{ !empty(old('venue_zip'))? old('venue_zip') :$orders->venue_zip }}">
 				<button type="button" onclick="AjaxZip3.zip2addr(venue_zip,'','venue_addr1','venue_addr1');">住所を自動入力</button>
 			</td> 
 		</tr>
@@ -77,12 +79,12 @@
 			<td class="w40">
 				<input type="date" name="shipping_arrive_day" placeholder="" value="{{ !empty(old('shipping_arrive_day'))? old('shipping_arrive_day') :$orders->shipping_arrive_day }}">
 				<select name="shipping_arrive_time">
-					<option value="指定なし"{{ (old('shipping_arrive_time') == "指定なし" | $orders->shipping_arrive_day == "指定なし") ? ' selected' : '' }}>指定なし</option>
-					<option value="午前中"{{ (old('shipping_arrive_time') == "午前中" | $orders->shipping_arrive_day == "午前中") ? ' selected' : '' }}>午前中</option>
-					<option value="14時～16時"{{ (old('shipping_arrive_time') == "14時～16時" | $orders->shipping_arrive_day == "14時～16時") ? ' selected' : '' }}>14時～16時</option>
-					<option value="16時～18時"{{ (old('shipping_arrive_time') == "16時～18時" | $orders->shipping_arrive_day == "16時～18時") ? ' selected' : '' }}>16時～18時</option>
-					<option value="18時～20時"{{ (old('shipping_arrive_time') == "18時～20時" | $orders->shipping_arrive_day == "18時～20時") ? ' selected' : '' }}>18時～20時</option>
-					<option value="20時～21時"{{ (old('shipping_arrive_time') == "20時～21時" | $orders->shipping_arrive_day == "20時～21時") ? ' selected' : '' }}>20時～21時</option>
+					<option value="指定なし"{{ (old('shipping_arrive_time') == "指定なし" | $orders->shipping_arrive_time == "指定なし") ? ' selected' : '' }}>指定なし</option>
+					<option value="午前中"{{ (old('shipping_arrive_time') == "午前中" | $orders->shipping_arrive_time == "午前中") ? ' selected' : '' }}>午前中</option>
+					<option value="14時～16時"{{ (old('shipping_arrive_time') == "14時～16時" | $orders->shipping_arrive_time == "14時～16時") ? ' selected' : '' }}>14時～16時</option>
+					<option value="16時～18時"{{ (old('shipping_arrive_time') == "16時～18時" | $orders->shipping_arrive_time == "16時～18時") ? ' selected' : '' }}>16時～18時</option>
+					<option value="18時～20時"{{ (old('shipping_arrive_time') == "18時～20時" | $orders->shipping_arrive_time == "18時～20時") ? ' selected' : '' }}>18時～20時</option>
+					<option value="20時～21時"{{ (old('shipping_arrive_time') == "20時～21時" | $orders->shipping_arrive_time == "20時～21時") ? ' selected' : '' }}>20時～21時</option>
 				</select>
 			</td>
 		</tr>
