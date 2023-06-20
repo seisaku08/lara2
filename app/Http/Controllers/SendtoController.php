@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\MachineDetail;
 use Illuminate\Http\Request;
+use Exception;
 
 class SendtoController extends Controller
 {
@@ -12,6 +13,14 @@ class SendtoController extends Controller
     public function view(Request $request){
         //セッション内のカートデータから機材情報をリストアップ
         $mid = $request->session()->get('Session.CartData');
+        try{
+            if(session()->has('Session.CartData') == false){
+                throw new Exception('選択された機材がありません。');
+            }
+        }catch(\Exception $e){
+            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+        }
+
         $data = [
             'records' => MachineDetail::whereIn('machine_id', $mid)->get(),
             'user' => Auth::user(),

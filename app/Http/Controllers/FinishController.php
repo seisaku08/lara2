@@ -9,16 +9,16 @@ use App\Models\DayMachine;
 use App\Models\MachineDetail;
 use App\Models\MachineDetailOrder;
 use App\Models\Order;
-use App\Models\Temporary;
-use App\Models\Venue;
 use App\Models\Shipping;
+use App\Models\Temporary;
+use App\Models\User;
+use App\Models\Venue;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Mail\TestMail;      //Mailableクラス
+use App\Mail\OrderMail;      //Mailableクラス
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use Yasumi\Yasumi;
-use DateTime;
 use Exception;
 
 class FinishController extends Controller
@@ -39,12 +39,13 @@ class FinishController extends Controller
 
             //識別トークンが存在しない（以前適切にセッションが通っている＝ブラウザバック等で重複データが送られてきている）
             if(!$request->session()->has('Session.Token')){
-                throw new Exception("エラー：セッショントークンが読み込めません。ブラウザを開いたまま長時間経過したか、セミナー名「".$request->seminar_name.'」が登録済みである可能性があります。');
+                throw new Exception("エラー：セッショントークンが読み込めません。ブラウザを開いたまま長時間経過したか、セミナー名「{$request->seminar_name}」が登録済みである可能性があります。", 499);
             }
             //識別トークンが既に登録済み
             elseif(Order::where('token', $request->session()->get('Session.Token'))->exists() == true){
+                
                 $err = Order::where('token', $request->session()->get('Session.Token'))->first();
-                throw new Exception('エラー：オーダーNo.'.$err->order_no.'「'.$err->seminar_name.'」は登録済みです。');
+                throw new Exception("エラー：オーダーNo.{$err->order_no}「{$err->seminar_name}」は登録済みです。", 499);
             }
 
             //セミナー開催日から連番を取得
@@ -67,6 +68,7 @@ class FinishController extends Controller
                 }else{
                     $order->seminar_venue_pending = 0;
                 }
+                $order->reminder_sent = 0;
                 $order->nine_day_before = Common::daybefore(Carbon::parse($order->seminar_day), 9);
                 $order->save();
 
@@ -79,8 +81,8 @@ class FinishController extends Controller
             foreach($id as $i){
 
                 //day_machineテーブルに機材占有状況を展開
-                $start = new DateTime($request->order_use_from);
-                $end = new DateTime($request->order_use_to);
+                $start = new Carbon($request->order_use_from);
+                $end = new Carbon($request->order_use_to);
                 while($start <= $end){
                     $day_machine = new DayMachine;
                         $day_machine->day = date($start->format('Y-m-d'));
@@ -127,38 +129,42 @@ class FinishController extends Controller
                 $ship->shipping_return_day = $request->shipping_return_day;
                 $ship->save();
                 
-                // $orderdata = [
-                //     'machines' => MachineDetail::wherein('machine_id', $request->id)->pluck('machine_id'),
-                //     'user' => Auth::user(),
-                //     'input' => $request,
-        
-                // ];
+            //shipping_idを取得
+            $last_shipping_id = DB::getPdo()->lastInsertId();
 
-                // dd($order, $ship, $venue);
-              //  Mail::to(Auth::user())
-                //    ->bcc('order@daioh-pc.com')
-                //    ->send(new TestMail([
-               //         'order_no' =>$order_no,
-                 //       'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
-                 //       'user' => Auth::user(),
-                     //   'input' => $request,
-            
-                //     ])); 
+                $orderdata = [
+                    'machines' => MachineDetail::wherein('machine_id', $request->id)->get('machine_id'),
+                    'user' => Auth::user(),
+                //     'input' => $request,
+                    'order' => Order::find($last_order_id),
+                    'venue' => Venue::find($last_venue_id),
+                    'shipping' => Shipping::find($last_shipping_id),
+                ];
+                // dump($order,  $venue, $ship);
+                // dd($orderdata);
+                Mail::to(Auth::user())
+                   ->send(new OrderMail($orderdata)); 
 
             return $order_no;
 
             },5);
 
-        //テンポラリデータをもろもろ削除、オーダーNoを抽出
+        //テンポラリデータをもろもろ削除
         Temporary::where('user_id', Auth::user())->delete();  
         $request->session()->forget('Session');
-        $data['order_no']=$order_no;
+        //オーダーNoを抽出
+        $data['order_no'] = $order_no;
 
         return view('finish', $data);
 
         }
         catch(\Exception $e){
             // echo($e->getMessage());
+            if ($e->getcode() == 499){
+
+                return redirect()->action('pctoolController@view')->withErrors($e->getMessage());
+
+            }
             return view('confirm', $data)->withErrors($e->getmessage());
         }
         finally{

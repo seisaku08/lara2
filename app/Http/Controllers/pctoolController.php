@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Libs\Common;
 use App\Models\MachineDetail;
 use App\Models\DayMachine;
+use App\Models\Temporary;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Maintenance;
@@ -59,12 +60,14 @@ class pctoolController extends Controller
                 $u[] = $from->format('Y-m-d');
                 $from->modify('1 day');
             }
-            $data['usage'] = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
+            $dm = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
+            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::user())->pluck('machine_id')->toarray()));
+            $data['usage'] = array_merge($dm, $tm);
         }else{
             $data['usage'] = [];
         }
         
-        // dd($data);
+        // dd($dm,$tm,$data['usage']);
         return view('pctool', $data);
     }
     public function retry(Request $request){
@@ -99,12 +102,14 @@ class pctoolController extends Controller
                 $u[] = $from->format('Y-m-d');
                 $from->modify('1 day');
             }
-            $data['usage'] = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
+            $dm = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
+            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::user()->id)->pluck('machine_id')->toarray()));
+            $data['usage'] = array_merge($dm, $tm);
         }else{
             $data['usage'] = [];
         }
         
-        // dd($data);
+        // dd($dm,$tm,$data['usage']);
         return view('pctool', $data,);
     }
     //

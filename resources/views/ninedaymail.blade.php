@@ -10,12 +10,20 @@
     <p class="text-left">※このメールはシステムからの自動送信です</p>
     <p class="text-left">お世話になっております。<br>
         株式会社大應【機材管理システム】より送信させていただいております。</p>
-    <p class="text-left">この度はご予約いただき誠にありがとうございます。<br>
-        以下の内容で予約を承りました。</p>
-        <h5 class="mt-3 mb-2">【キャンセル・変更について】</h5>
-<p class="text-left">キャンセルはセミナー開催日の3営業日前までに予約画面より変更をお願いいたします。<br>
-※ご不明な点がございましたら、下記までご連絡くださいますようお願いいたします。</p>
-
+    <p class="text-left">
+        セミナーID:{{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の９日前となりましたのでご連絡いたします。
+        予約内容の変更・取消などございましたら、下記よりお手続きをお願いいたします。</p>
+    {{-- 送り先未入力の場合、解消されるまで送られ続けることへの注意書 --}}
+    @if( $orderdata['order']['seminar_venue_pending'] == true )
+        <p class="text-left">また、本オーダーにつきましては<span class="text-red text-bold">配送先住所が未入力となっております。</span><br>このままでは配送のお手続きを進めることができませんので、ご入力をお願いいたします。</p>
+        <p class="text-left">なお、未入力の状態が解消されるまで、1日ごとに本メールが送信されます。ご了承ください。</p>
+    @endif
+    {{-- https://daioh-pc.com/order/detail/{{$orderdata['order']['order_id']}} --}}
+        <a href="{{route("order.detail",$orderdata['order']['order_id'])}}">変更はこちら（webブラウザが開きます）</a><br>
+        <h5 class="mt-3 mb-2">【予約の変更・取消について】</h5>
+<p class="text-left">システムを利用しての予約変更・取消は、セミナー開催日の3営業日前まで受付可能です。<br>
+    システムによる受付締切後のご相談や、ご不明な点がございましたら、下記お問い合わせ先までご連絡くださいますようお願いいたします。</p>
+    
 <table id="form">
 
     <tr class="midashi">
@@ -34,7 +42,7 @@
         <td class="w30">{{ $orderdata['user']['user_tel'] }}</td>
     </tr>
     <tr class="midashi">
-        <th colspan="4">セミナー情報</th>
+        <th colspan="4">セミナー情報（セミナーID:{{ $orderdata['order']['order_no'] }}）</th>
     </tr>
     <tr>
         <td class="w25"><label>セミナー名</label></td>
@@ -52,12 +60,12 @@
         <td class="w25"><label>使用終了日:</label></td>
         <td class="w25">{{ $orderdata['order']['order_use_to'] }}</td>
     </tr>
-<tr class="midashi">
+    <tr class="midashi">
         <th colspan="4">配送先情報</th>
     </tr>
     @if( $orderdata['order']['seminar_venue_pending'] == true )
     <tr>
-        <td class="w100 text-center"><label>後日入力</label></td>
+        <td class="w100 text-center text-red"><label>未入力</label></td>
     </tr>
     @else
     <tr>
@@ -117,7 +125,6 @@
         </td>
     </tr>
 </table>
-
 <h4 class="text-center mt-3">【お問い合わせ先】</h4>
 <p>株式会社 大應<br>
 機材管理システム　管理チーム<br>

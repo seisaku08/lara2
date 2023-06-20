@@ -16,8 +16,12 @@ use Illuminate\Support\Facades\Route;
 // Auth::routes(['verify' => true]);
 
 //ログイン不要なページ
-
-    Route::get('ordermailsample', 'OrdermailController@view');
+Route::get('ordermailsample', 'OrdermailController@view');
+Route::get('ninedaymailsample', 'NineDayMailController@view');
+Route::get('/helo', 'HeloController@view');
+    Route::post('/helo2', function () {
+        return view('helo2');
+    });
 
 //ログイン要・メール認証不要なページ
 Route::middleware('auth')->group(function () {
@@ -34,11 +38,7 @@ Route::middleware('auth')->group(function () {
 // //ログイン要・メール認証要なページ
 // Route::middleware('verified')->group(function () {
 
-    Route::post('/helo2', function () {
-        return view('helo2');
-    });
 
-    Route::get('/helo', 'HeloController@view');
     Route::match(['get','post'],'/pctool', 'pctoolController@view')->name('pctool');
     // Route::post('/pctool', 'pctoolController@view');
     // Route::get('/pctool_error', 'pctoolController@error')->name('pctool.error');

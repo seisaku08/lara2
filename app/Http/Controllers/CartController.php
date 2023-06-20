@@ -19,6 +19,14 @@ class CartController extends Controller
 {
 
     public function index(Request $request){
+        try{
+            if(session()->has('Session.CartData') == false){
+                throw new Exception('選択された機材がありません。');
+            }
+        }catch(\Exception $e){
+            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+        }
+
         $mid = $request->session()->get('Session.CartData');
         $data = [
 
@@ -40,21 +48,23 @@ class CartController extends Controller
 
         $day1after = Common::dayafter(today(),1);
         $day4after = Common::dayafter(today(),4);
+        $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
 
         $validator = Validator::make($request->all(),
         [
             'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day4after}"],
-            'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}"],
+            'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}", "before_or_equal:{$daysemi3before}"],
             'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
             'id' => 'required',
         ],
         [
-            'seminar_day.required_with_all' => 'セミナー開催日は入力必須ですん。',
-            'from.required_with_all' => '使用開始日は入力必須ですん。',
-            'to.required_with_all' => '使用終了日は入力必須ですん。',
+            'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
+            'from.required_with_all' => '使用開始日は入力必須です。',
+            'to.required_with_all' => '使用終了日は入力必須です。',
             'seminar_day.after_or_equal' => 'セミナー開催日は本日の4営業日後（'.$day4after->format('Y/m/d').'）から入力可能です。',
             'from.after_or_equal' => '使用開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
+            'from.before_or_equal' => '使用開始日はセミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能です。',
             'to.after_or_equal' => '使用終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
             'id' => '機材は必ず一つ以上選択してください。',
         ]);
@@ -132,9 +142,10 @@ class CartController extends Controller
             if(!empty($removed)){
             $request->session()->put('Session.CartData', $removed);
             }else{
-                throw new Exception('カートの中身が空になりました。');
+                throw new Exception('選択された機材がありません。');
             }
         }catch(\Exception $e){
+            session()->forget('Session.CartData');
             return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
         }
         

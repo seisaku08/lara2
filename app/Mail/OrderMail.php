@@ -6,11 +6,12 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class TestMail extends Mailable
+class OrderMail extends Mailable
 {
     use Queueable, SerializesModels;
     var $orderdata;
@@ -21,7 +22,8 @@ class TestMail extends Mailable
     {
         //
         $this->orderdata = $orderdata;
-        
+        // dd($orderdata);
+
     }
 
     /**
@@ -30,9 +32,10 @@ class TestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '【機材管理システム】予約受付完了メール（予約ID:'.$this->orderdata['order_no'].')',
-            from: 'order@daioh-pc.com',
+            subject: "【機材管理システム】予約受付完了メール（予約ID:{$this->orderdata['order']['order_no']}）",
+            from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム'),
             cc: 'order@daioh-pc.com',
+            replyTo: 'support@daioh-pc.com'
         );
     }
 
@@ -44,8 +47,8 @@ class TestMail extends Mailable
                 
         // dd($this->orderdata['machines']);
         return new Content(
-            with: [ 'orderdata' => $this->orderdata,],
-            html: 'testmail',
+            with: [ 'orderdata' => $this->orderdata, ],
+            html: 'ordermail',
         );
     }
 

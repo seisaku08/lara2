@@ -9,7 +9,7 @@ use App\Models\User;
 use App\Models\Venue;
 use App\Models\MachineDetail;
 
-class OrdermailController extends Controller
+class NineDayMailController extends Controller
 {
     public function view(Request $request){
 
@@ -24,7 +24,7 @@ class OrdermailController extends Controller
     ]
 ];
 
-        return view('ordermail', $data);
+        return view('ninedaymail', $data);
     }
     //
 }

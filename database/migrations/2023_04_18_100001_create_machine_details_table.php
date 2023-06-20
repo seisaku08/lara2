@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('machine_details', function (Blueprint $table) {
             //$table->id();
-            $table->bigIncrements('machine_id');
+            $table->bigInteger('machine_id')->unsigned();
             $table->string('machine_name');
             $table->string('machine_status');
             $table->string('machine_spec');
@@ -23,6 +23,13 @@ return new class extends Migration
             $table->boolean('machine_is_expired');
             $table->timestamps();
         });
+        Schema::table('machine_details', function (Blueprint $table) {
+
+            $table->bigIncrements('machine_id')->change();
+
+
+        });
+
     }
     
     /**

@@ -16,9 +16,9 @@ return new class extends Migration
             $table->bigInteger('shipping_id');
             $table->bigInteger('order_id')->unsigned();
             $table->bigInteger('venue_id')->unsigned();
-            $table->date('shipping_arrive_day');
-            $table->string('shipping_arrive_time');
-            $table->date('shipping_return_day');
+            $table->date('shipping_arrive_day')->nullable();
+            $table->string('shipping_arrive_time')->nullable();
+            $table->date('shipping_return_day')->nullable();
             $table->timestamps();
             $table->primary(['shipping_id','order_id','venue_id']);
         });

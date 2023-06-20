@@ -31,7 +31,7 @@
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
-            {{-- @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
                 <div>
                     <p class="text-sm mt-2 text-gray-800">
                         {{ __('Eメール認証が未完了です。') }}
@@ -47,7 +47,7 @@
                         </p>
                     @endif
                 </div>
-            @endif --}}
+            @endif
         </div>
 
         <div>

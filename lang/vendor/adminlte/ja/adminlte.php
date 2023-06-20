@@ -7,10 +7,10 @@ return [
     'user_group'                       => '所属',
     'user_tel'                       => '連絡先電話番号',
     'password'                    => 'パスワード',
-    'retype_password'             => 'もう一度入力',
+    'retype_password'             => 'パスワード（確認）',
     'remember_me'                 => 'パスワードを記憶する',
     'register'                    => '登録する',
-    'register_a_new_membership'   => 'アカウントを登録する',
+    'register_a_new_membership'   => 'アカウント登録',
     'i_forgot_my_password'        => 'パスワードを忘れた',
     'i_already_have_a_membership' => 'すでにアカウントを持っている',
     'sign_in'                     => 'ログイン',
@@ -26,4 +26,5 @@ return [
     'verify_check_your_email'     => '続行する前に、認証用リンクについてメールを確認してください。',
     'verify_if_not_recieved'      => 'メールが届かない場合',
     'verify_request_another'      => 'ここをクリックしてもう一度送信する',
+    'save'      => '保存',
 ];

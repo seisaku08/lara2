@@ -83,6 +83,7 @@ class OrderController extends Controller
         $order = Order::find($request->order_id);
         $order->seminar_day = $request->seminar_day;
         $order->seminar_name = $request->seminar_name;
+        $order->seminar_venue_pending = 0;
         $order->save();
 
         $venue = Venue::find($request->venue_id);

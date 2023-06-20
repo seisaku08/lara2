@@ -39,14 +39,22 @@
             <th colspan="4">セミナー情報</th>
         </tr>
         <tr>
+            <td class="w25"><label>セミナー名</label></td>
+            <td class="w50">{{ $input->seminar_name }}{{ Form::hidden('seminar_name', $input->seminar_name )}}</td>
+        </tr>
+        <tr>
             <td class="w25"><label>セミナー開催日</label></td>
             <td class="w25">{{ $input->seminar_day }}{{ Form::hidden('seminar_day', $input->seminar_day )}}</td>
         </tr>
         <tr>
-            <td class="w25"><label>セミナー名</label></td>
-            <td class="w50">{{ $input->seminar_name }}{{ Form::hidden('seminar_name', $input->seminar_name )}}</td>
+            <td class="w25"><label>使用開始日:</label></td>
+            <td class="w25">{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from ) }}</td>
         </tr>
-        <tr class="midashi">
+        <tr>
+            <td class="w25"><label>使用終了日:</label></td>
+            <td class="w25">{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to ) }}</td>
+        </tr>
+<tr class="midashi">
             <th colspan="4">配送先情報</th>
         </tr>
         @if( $input->seminar_venue_pending == true )
@@ -86,7 +94,7 @@
         <tr>
             <td class="w25"><label>到着希望日時</label></td>
             <td class="w40">
-                {{ $input->shipping_arrive_day }} {{ $input->shipping_arrive_time }}
+                {{ $input->shipping_arrive_day }}－{{ $input->shipping_arrive_time }}
                 {{ Form::hidden('shipping_arrive_day', $input->shipping_arrive_day )}}
                 {{ Form::hidden('shipping_arrive_time', $input->shipping_arrive_time )}}
             </td>
@@ -101,10 +109,6 @@
         </tr>
         <tr>
             <td class="w100">
-                <div class="row">
-                    <div class="col-6 text-center"><label>使用開始日:</label>{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from ) }}</div>
-                    <div class="col-6 text-center"><label>使用終了日:</label>{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to ) }}</div>
-                </div>
                 <div class="row">
                     <div class="col-2"><label>ID</label></div>
                     <div class="col-10"><label>機材番号</label></div>

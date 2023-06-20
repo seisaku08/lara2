@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             //$table->id();
-            $table->bigInteger('maintenance_id');
+            $table->bigInteger('maintenance_id')->unsigned();
             $table->bigInteger('machine_id')->unsigned();
             $table->date('maintenance_day');
             $table->string('maintenance_detail');
@@ -24,7 +24,7 @@ return new class extends Migration
 
         Schema::table('maintenances', function (Blueprint $table) {
 
-            $table->increments('maintenance_id')->change();
+            $table->bigincrements('maintenance_id')->change();
             
             // 外部キー制約
             $table->foreign('machine_id')->references('machine_id')->on('machine_details')->onDelete('cascade')->onUpdate('cascade');
