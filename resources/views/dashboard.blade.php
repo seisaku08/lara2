@@ -36,7 +36,11 @@
                 <li>登録時メール認証</li>
                 <li>オーダー登録時の返送メール</li>
                 <li>リマインダメール</li>
-            </ul>メール認証機能の実装に伴い、<span class="text-red text-bold">未認証の場合マイページとユーザー情報変更以外の機能が使用できなくなります。</span><br>マイページよりメール認証を行っていただきますよう、よろしくお願いいたします。
+            </ul>メール認証機能の実装に伴い、<span class="text-red text-bold">未認証の場合マイページとユーザー情報変更以外の機能が使用できなくなります。</span>
+            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                <br>マイページよりメール認証を行っていただきますよう、よろしくお願いいたします。<br>
+                ※既にメール認証を行っていただいている場合、認証を求める文章は表示されません。
+            @endif
         </ul>
         <h5>今後の予定</h5>
         <ul>
