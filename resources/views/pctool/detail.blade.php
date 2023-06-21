@@ -72,8 +72,8 @@
 	@endforeach
 
 </table>
-
 </article>
 </form>
+<p class="text-center" ><button onclick="window.close();">詳細画面を閉じる</button></p>
 
 @endsection
