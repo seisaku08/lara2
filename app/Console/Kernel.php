@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
         // $schedule->call(function(){
         //     echo 'tess';
         // });
-        $schedule->command('Reminder:NineDayRemindMail')->DailyAt('9:00');
+        $schedule->command('NineDayRemindMail')->DailyAt('9:00');
         $schedule->command('kill-temp')->everyMinute();
         // $schedule->command('inspire')->hourly();
     }
