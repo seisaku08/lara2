@@ -120,6 +120,7 @@ class pctoolController extends Controller
             'orders' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
                 ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
                 ->where('machine_details.machine_id',$id)
+                ->orderBy('seminar_day', 'asc')
                 ->get(),
             'maintenances' => Maintenance::where('machine_id',$id)->get()
         ];
