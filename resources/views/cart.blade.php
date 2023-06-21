@@ -14,8 +14,8 @@
                 <th scope="col" colspan="4">選択機材情報</th>
             </thead> --}}
             <tr>
-                <td class="text-center" colspan="2"><label>使用開始日:</label>{{ $from }}</td>
-                <td class="text-center" colspan="2"><label>使用終了日:</label>{{ $to }}</td>
+                <td class="text-center" colspan="2"><label>予約開始日:</label>{{ $from }}</td>
+                <td class="text-center" colspan="2"><label>予約終了日:</label>{{ $to }}</td>
             </tr>
             <tr>
                 <th>#</th>

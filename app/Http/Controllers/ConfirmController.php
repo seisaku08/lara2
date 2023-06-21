@@ -40,10 +40,10 @@ class ConfirmController extends Controller
                 'venue_tel.digits_between' => '配送先電話番号は市外局番から入力してください。',
                 'shipping_arrive_day.required' => '到着希望日は必ず入力してください。',
                 'shipping_arrive_day.before' => '到着希望日はセミナー開催日より前の日付を入力してください。',
-                'shipping_arrive_day.after' => '到着希望日は使用開始日より後の日付を入力してください。',
+                'shipping_arrive_day.after' => '到着希望日は予約開始日より後の日付を入力してください。',
                 'shipping_return_day.required' => '返送機材発送予定日は必ず入力してください。',
                 'shipping_return_day.after_or_equal' => '返送機材発送予定日はセミナー開催日以降（当日を含む）の日付を入力してください。',
-                'shipping_return_day.before' => '返送機材発送予定日は使用終了日より前の日付を入力してください。',
+                'shipping_return_day.before' => '返送機材発送予定日は予約終了日より前の日付を入力してください。',
                
             ];
 

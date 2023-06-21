@@ -50,11 +50,11 @@
                 <td class="w25">{{ $input->seminar_day }}{{ Form::hidden('seminar_day', $input->seminar_day) }}{{ old('seminar_day') }}</td>
             </tr>
             <tr>
-                <td class="w30"><label>使用開始日:</label></td>
+                <td class="w30"><label>予約開始日:</label></td>
                 <td class="w25">{{ $input->order_use_from }}{{ Form::hidden('order_use_from', $input->order_use_from) }}{{ old('order_use_from') }}</td>
             </tr>
             <tr>
-                <td class="w30"><label>使用終了日:</label></td>
+                <td class="w30"><label>予約終了日:</label></td>
                 <td class="w25">{{ $input->order_use_to }}{{ Form::hidden('order_use_to', $input->order_use_to) }}{{ old('order_use_to') }}</td>
             </tr>
             <tr class="midashi">

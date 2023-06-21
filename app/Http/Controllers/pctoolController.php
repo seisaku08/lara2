@@ -40,19 +40,19 @@ class pctoolController extends Controller
         ],
         [
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
-            'from.required_with_all' => '使用開始日は入力必須です。',
-            'to.required_with_all' => '使用終了日は入力必須です。',
+            'from.required_with_all' => '予約開始日は入力必須です。',
+            'to.required_with_all' => '予約終了日は入力必須です。',
             'seminar_day.after_or_equal' => 'セミナー開催日は本日の4営業日後（'.$day4after->format('Y/m/d').'）から入力可能です。',
-            'from.after_or_equal' => '使用開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
-            'from.before_or_equal' => '使用開始日はセミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能です。',
-            'to.after_or_equal' => '使用終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
+            'from.after_or_equal' => '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
+            'from.before_or_equal' => '予約開始日はセミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能です。',
+            'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
         ]);
 
         if($validator->fails()){
             return back()->withErrors($validator)->withInput($request->except('to'));
         }
 
-        //使用状況の確認（From:使用開始日からTo:使用終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
+        //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
         if($request->from != "" && $request->to != ""){
             $from = new Carbon($request->from);
             $to = new Carbon($request->to);
@@ -94,7 +94,7 @@ class pctoolController extends Controller
             $request->merge($merge);
         }
 
-        //使用状況の確認（From:使用開始日からTo:使用終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
+        //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
         if($request->from != "" && $request->to != ""){
             $from = new Carbon($request->from);
             $to = new Carbon($request->to);

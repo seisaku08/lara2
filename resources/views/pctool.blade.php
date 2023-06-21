@@ -11,11 +11,11 @@
           </p>
           <p>準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<br>
             「セミナー開催日」は<b>本日より4営業日以降（{{ App\Libs\Common::dayafter(today(),4)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
-            「使用開始日」は<b>セミナー開催日の3営業日以前（上記の場合、{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
-            「使用終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
+            「予約開始日」は<b>セミナー開催日の3営業日以前（上記の場合、{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
+            「予約終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
             {{-- 例）セミナー開催日が「{{ App\Libs\Common::dayafter(today(),10)->isoFormat('YYYY年M月D日（ddd）'); }}」の場合<br>
-            「使用開始日」は{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}以降かつ{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}以前<br>
-            「使用終了日」は{{ App\Libs\Common::dayafter(today(),13)->isoFormat('YYYY年M月D日（ddd）'); }}以降 --}}
+            「予約開始日」は{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}以降かつ{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}以前<br>
+            「予約終了日」は{{ App\Libs\Common::dayafter(today(),13)->isoFormat('YYYY年M月D日（ddd）'); }}以降 --}}
           </p>
 <div class="container">
   <form method="post" action="/pctool">
@@ -29,11 +29,11 @@
         </tr>
         <tr>
           <td class="center">
-            <label>使用開始日</label>
+            <label>予約開始日</label>
             <input type="date" name="from" value="{{$input->from}}{{ old('from') }}" onchange="submit(this.form)">
           </td>
           <td class="center">
-            <label>使用終了日</label>
+            <label>予約終了日</label>
             <input type="date" name="to" value="{{$input->to}}{{ old('to') }}" onchange="submit(this.form)">
           </td>
         </tr>
