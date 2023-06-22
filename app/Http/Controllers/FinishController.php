@@ -45,7 +45,7 @@ class FinishController extends Controller
             elseif(Order::where('token', $request->session()->get('Session.Token'))->exists() == true){
                 
                 $err = Order::where('token', $request->session()->get('Session.Token'))->first();
-                throw new Exception("エラー：オーダーNo.{$err->order_no}「{$err->seminar_name}」は登録済みです。", 499);
+                throw new Exception("エラー：予約No. {$err->order_no}「{$err->seminar_name}」は登録済みです。", 499);
             }
 
             //セミナー開催日から連番を取得
@@ -97,7 +97,7 @@ class FinishController extends Controller
 
                 DB::update('UPDATE machine_details SET `machine_status` = "予約中" where `machine_id` = :id', $param);
 
-                //machine_detail_orderテーブルにオーダーと機材IDの対応を1組ずつ展開
+                //machine_detail_orderテーブルに予約と機材IDの対応を1組ずつ展開
                 $mdo = new MachineDetailOrder;
                     $mdo->machine_id = $i;
                     $mdo->order_id = $last_order_id;
@@ -127,6 +127,8 @@ class FinishController extends Controller
                 $ship->shipping_arrive_day = $request->shipping_arrive_day;
                 $ship->shipping_arrive_time = $request->shipping_arrive_time;
                 $ship->shipping_return_day = $request->shipping_return_day;
+                $ship->shipping_special = $request->shipping_special == true ? 1 : 0;
+                $ship->shipping_note = $request->shipping_note;
                 $ship->save();
                 
             //shipping_idを取得
@@ -152,7 +154,7 @@ class FinishController extends Controller
         //テンポラリデータをもろもろ削除
         Temporary::where('user_id', Auth::user())->delete();  
         $request->session()->forget('Session');
-        //オーダーNoを抽出
+        //予約Noを抽出
         $data['order_no'] = $order_no;
 
         return view('finish', $data);

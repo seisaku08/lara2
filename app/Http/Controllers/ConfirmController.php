@@ -29,6 +29,7 @@ class ConfirmController extends Controller
                 'venue_tel' => 'exclude_if:seminar_venue_pending,true|required|digits_between:5,11',
                 'shipping_arrive_day' => 'exclude_if:seminar_venue_pending,true|required|before:seminar_day|after:order_use_from',
                 'shipping_return_day' => 'exclude_if:seminar_venue_pending,true|required|after_or_equal:seminar_day|before:order_use_to',
+                'shipping_note' => 'max:200',
             ];
 
         $massages = [
@@ -44,6 +45,8 @@ class ConfirmController extends Controller
                 'shipping_return_day.required' => '返送機材発送予定日は必ず入力してください。',
                 'shipping_return_day.after_or_equal' => '返送機材発送予定日はセミナー開催日以降（当日を含む）の日付を入力してください。',
                 'shipping_return_day.before' => '返送機材発送予定日は予約終了日より前の日付を入力してください。',
+                'shipping_note.max' => '備考は200文字以下で入力してください。',
+
                
             ];
 

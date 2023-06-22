@@ -11,11 +11,11 @@
     <p class="text-left">お世話になっております。<br>
         株式会社大應【機材管理システム】より送信させていただいております。</p>
     <p class="text-left">
-        セミナーID:{{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の９日前となりましたのでご連絡いたします。
+        予約No. {{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の９日前となりましたのでご連絡いたします。
         予約内容の変更・取消などございましたら、下記よりお手続きをお願いいたします。</p>
     {{-- 送り先未入力の場合、解消されるまで送られ続けることへの注意書 --}}
     @if( $orderdata['order']['seminar_venue_pending'] == true )
-        <p class="text-left">また、本オーダーにつきましては<span class="text-red text-bold">配送先住所が未入力となっております。</span><br>このままでは配送のお手続きを進めることができませんので、ご入力をお願いいたします。</p>
+        <p class="text-left">また、本予約につきましては<span class="text-red text-bold">配送先住所が未入力となっております。</span><br>このままでは配送のお手続きを進めることができませんので、ご入力をお願いいたします。</p>
         <p class="text-left">なお、未入力の状態が解消されるまで、1日ごとに本メールが送信されます。ご了承ください。</p>
     @endif
     {{-- https://daioh-pc.com/order/detail/{{$orderdata['order']['order_id']}} --}}
@@ -42,7 +42,7 @@
         <td class="w30">{{ $orderdata['user']['user_tel'] }}</td>
     </tr>
     <tr class="midashi">
-        <th colspan="4">セミナー情報（セミナーID:{{ $orderdata['order']['order_no'] }}）</th>
+        <th colspan="4">セミナー情報（予約No. {{ $orderdata['order']['order_no'] }}）</th>
     </tr>
     <tr>
         <td class="w25"><label>セミナー名</label></td>

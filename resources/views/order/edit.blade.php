@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'セミナー情報変更 | ID:'.$orders->order_no)
+@section('title', 'セミナー情報変更 | 予約No. '.$orders->order_no)
 @section('content')
 <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
 <script src="/js/number.js"></script>
@@ -119,7 +119,7 @@
 	<form action="{{ route('order.destroy', $orders->order_id) }}" method="post">
 		@csrf
 		@method('DELETE')
-		<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('オーダーを削除します。元には戻せませんがよろしいですか？');">このオーダーを削除する</button>
+		<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('予約を削除します。元には戻せませんがよろしいですか？');">この予約を削除する</button>
 	</form>
 </div>
 </article>

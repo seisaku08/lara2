@@ -41,9 +41,9 @@ class Reminder extends Command
     //9営業日前に達したorderの抽出
     $to_send_order_no = Order::where('nine_day_before', '<=', Carbon::today())->get();
 
-    //各オーダーのオーダー情報をDBより収集）
+    //各予約の予約情報をDBより収集）
     foreach($to_send_order_no as $part_of_order){
-        //「送信済み」かつ「住所未記入“ではない”」オーダーはスキップする
+        //「送信済み」かつ「住所未記入“ではない”」予約はスキップする
         if($part_of_order->reminder_sent == 1 && $part_of_order->seminar_venue_pending == 0){
             continue;
         }else{
@@ -60,7 +60,7 @@ class Reminder extends Command
                 'machines' => MachineDetail::wherein('machine_id', $machine)->get('machine_id'),
                 //担当者情報を取得
                 'user' => $user,
-                //オーダー情報を取得
+                //予約情報を取得
                 'order' => Order::where('order_id', $part_of_order->order_id)->first(),
                 //配送スケジュールを取得
                 'shipping' => Shipping::where('order_id',$part_of_order->order_id)->first(),

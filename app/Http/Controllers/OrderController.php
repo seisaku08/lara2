@@ -22,6 +22,7 @@ class OrderController extends Controller
                 ->get(),
             'orders' => Order::join('shippings','orders.order_id','=','shippings.order_id')
                 ->join('venues','shippings.venue_id','=','venues.venue_id')
+                ->join('users', 'orders.user_id', '=', 'users.id')
                 ->where('orders.order_id', $id)
                 ->first(),
         ];

@@ -1,12 +1,12 @@
 @extends('adminlte::page')
-@section('title', 'オーダーを受け付けました')
+@section('title', 'ご予約を受け付けました')
 @section('css')
 <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')
 <h1 class="p-2">@yield('title')</h1>
-  <p>オーダーIDは、「{{ $order_no }}」です。</p>
+  <p>予約No. は、「{{ $order_no }}」です。</p>
   <table id="form">
       <tr class="midashi">
           <th colspan="5">ご担当者様情報</th>
@@ -89,6 +89,14 @@
         <td class="w25">{{ $input->shipping_return_day }}</td>
     </tr>
 @endif
+<tr>
+    <td class="w25"><label>特記事項</label></td>
+    <td class="w25">{{ $input->shipping_special == true ? 'あり' : 'なし' }}</td>
+</tr>
+<tr>
+    <td class="w25"><label>備考</label></td>
+    <td class="w70">{{ $input->shipping_note }}</td>
+</tr>
     <tr class="midashi">
         <th colspan="4">選択機材情報</th>
     </tr>

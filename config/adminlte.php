@@ -318,22 +318,28 @@ return [
             'url'  => 'dashboard',
             'icon' => 'fa fa-fw fa-home',
         ],
+        ['header' => '機材予約フォーム'],
         [
-            'text' => '機材リスト/依頼',
+            'text' => '空き状況検索/依頼',
             'url'  => 'pctool',
-            'icon' => 'fa fa-fw fa-share',
+            'icon' => 'fa fa-fw fa-search',
         ],
-        // ['header' => '情報'],
+        [
+            'text' => '選択機材一覧（カート）',
+            'url'  => 'cart',
+            'icon' => 'fa fa-fw fa-list-ul',
+        ],
+        ['header' => '情報'],
         // [
         //     'text' => '予約確認/変更',
         //     'url'  => 'pctool',
         //     'icon' => 'far fa-fw fa-file',
         // ],
-        // [
-        //     'text' => '機材使用予定一覧',
-        //     'url'  => 'pctool',
-        //     'icon' => 'far fa-fw fa-file',
-        // ],
+        [
+            'text' => '予約一覧',
+            'url'  => 'orderlist',
+            'icon' => 'fas fa-fw fa-database',
+        ],
         // [
         //     'text'        => 'pages',
         //     'url'         => 'admin/pages',

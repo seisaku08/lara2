@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', '機材発送依頼フォーム')
+@section('title', '機材予約フォーム')
 @section('css')
 <link href="/css/style.css" rel="stylesheet" type="text/css">
 @endsection

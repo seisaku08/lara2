@@ -13,12 +13,12 @@ class SendtoController extends Controller
     public function view(Request $request){
         //セッション内のカートデータから機材情報をリストアップ
         $mid = $request->session()->get('Session.CartData');
-        try{
+        // try{
             if(session()->has('Session.CartData') == false){
-                throw new Exception('選択された機材がありません。');
-            }
-        }catch(\Exception $e){
-            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+        //         throw new Exception('選択された機材がありません。');
+        //     }
+        // }catch(\Exception $e){
+            return redirect()->route('pctool')->withinput();
         }
 
         $data = [

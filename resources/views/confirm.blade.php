@@ -60,7 +60,7 @@
         @if( $input->seminar_venue_pending == true )
         <tr>
             {{ Form::hidden('seminar_venue_pending', $input->seminar_venue_pending )}}
-            <td class="w100 text-center"><label>後日入力</label></td>
+            <td class="w100"><label>＊後日入力＊</label></td>
         </tr>
         @else
         <tr>
@@ -104,6 +104,17 @@
             <td class="w25">{{ $input->shipping_return_day }}{{ Form::hidden('shipping_return_day', $input->shipping_return_day )}}</td>
         </tr>
 @endif
+<tr>
+    {{ Form::hidden('shipping_special', $input->shipping_special )}}
+    <td class="w25"><label>特記事項</label></td>
+    <td class="w25">{{ $input->shipping_special == true ? 'あり' : 'なし' }}</td>
+</tr>
+<tr>
+    {{ Form::hidden('shipping_note', $input->shipping_note )}}
+    <td class="w25"><label>備考</label></td>
+    <td class="w70">{{ $input->shipping_note }}</td>
+</tr>
+
         <tr class="midashi">
             <th colspan="4">選択機材情報</th>
         </tr>

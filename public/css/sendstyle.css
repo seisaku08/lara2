@@ -79,6 +79,11 @@ td.w100{
     display: none;
 }
 
+.fullsize{
+    width: 100%;
+    
+}
+
 input[type="text"],input[type="tel"]{
     width: 100%;
     box-sizing: border-box;
@@ -98,6 +103,14 @@ select.kizai{
     width: 100%;
 }
 
+input[type="checkbox"].dekai{
+	width: 20px;
+    height: 20px;
+    margin: 0.5em;
+}
+label.thin{
+    font-weight: 400!important;
+}
 .red{
     color: red;
 }

@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'セミナー詳細 | ID:'.$orders->order_no)
+@section('title', 'セミナー詳細 | 予約No. '.$orders->order_no)
 @section('css')
 <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
 
@@ -7,9 +7,24 @@
 @section('content')
 <h1 class="p-2">@yield('title')</h1>
 <article id="list">
-{{-- <?php dd($orders);?> --}}
+{{-- <?php dd($orders, $user, $user->id == $orders->user_id);?> --}}
 	<table id="kizai2">
 		<tr class="midashi">
+			<th colspan="4">予約者情報</th>
+		</tr>
+		<tr>
+			<td class="w20"><label>ご担当者氏名</label></td>
+			<td class="w30">{{$orders->name}}</td>
+			<td class="w20"><label>所属部署</label></td>
+			<td class="w30">{{$orders->user_group}}</td>
+		</tr>
+		<tr>
+			<td class="w20"><label>メールアドレス</label></td>
+			<td class="w30">{{$orders->email}}</td>
+			<td class="w20"><label>電話番号</label></td>
+			<td class="w30">{{$orders->user_tel}}</td>
+		</tr>
+	<tr class="midashi">
 			<th colspan="4">セミナー情報</th>
 		</tr>
 		<tr>
@@ -29,7 +44,13 @@
 			<td class="w25">{{ $orders->order_use_to }}</td>
 		</tr>
 		<tr class="midashi">
-			<th colspan="4">配送先情報<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a></th>
+			<th colspan="4">配送先情報
+				@if($user->id == $orders->user_id)
+				<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a>
+				@else
+				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
+				@endif
+			</th>
 		</tr>
 		<tr>
 			<td class="w30"><label>郵便番号</label></td>
@@ -75,7 +96,15 @@
 			<td class="w50">{{ $orders->shipping_return_day }}
 			</td>
 		</tr>
-  
+		<tr>
+			<td class="w30"><label>特記事項</label></td>
+			<td class="w25">{{ $orders->shipping_special == true ? 'あり' : 'なし' }}</td>
+		</tr>
+		<tr>
+			<td class="w30"><label>備考</label></td>
+			<td class="w70">{{ $orders->shipping_note }}</td>
+		</tr>
+		
 </table>
 <table id="kizai">
 	<tr class="midashi">

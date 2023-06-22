@@ -10,17 +10,34 @@ h1{
 }
 
 #list{
-  width: 100%;
-  max-width: 1000px;
-  height: 500px;
-  overflow: scroll;
-  margin: auto;
+    width: 100%;
+    max-width: 1000px;
+    height: 500px;
+    overflow: scroll;
+    margin: auto;
+}
+  
+#detail{
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
 }
 
-.hidden{
+div .box1000{
+    max-width: 1000px;
+    margin: auto;
+}
+
+tr.trused{
     display: none;
+    vertical-align: inherit;
 }
+tr.gray{
+    display: table-row;
+    color: gray;
+    text-decoration: none;
 
+}
 p .center{
     text-align: center;
 }
@@ -31,7 +48,10 @@ table#form{
 }
 table#days{
     margin: auto;
-    width: 500px;
+    width: 650px;
+}
+table.full{
+    width:100%
 }
 .center{
     text-align: center;
@@ -45,9 +65,15 @@ tr{
 tr.midashi{
     background-color: #BFBFBF;
 }
-
+tr.midashi>th{
+    padding-left: 1em;
+}
 tr.disabled{
-  background-color: #BFBFBF;
+    background-color: #BFBFBF;
+}
+
+.darkgray{
+    background-color: #BFBFBF;
 }
 
 th{
@@ -80,33 +106,43 @@ input[type=checkbox].rent{
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* table, td{
-    padding: 2px 10px;
-    box-sizing: border-box;
-}
-td{
+/* td{
     float: left;
+} */
+td.w15{
+    width: 15%;
 }
-td.left{
+td.w20{
     width: 20%;
 }
-
-td.right{
-    width: 80%;
+td.w25{
+    width: 25%;
 }
-
-td.kizai-right{
-    width: 20%;
-}
-
-td.kizai-left{
-    width: 80%;
-}
-
-td.right-half{
+td.w30{
     width: 30%;
 }
- */
+td.w40{
+    width: 40%;
+}
+td.w50{
+    width: 50%;
+}
+td.w60{
+    width: 60%;
+}
+td.w70{
+    width: 70%;
+}
+td.w80{
+    width: 80%;
+}
+td.w80{
+    width: 90%;
+}
+td.w100{
+    width: 100%;
+}
+
 input[type="text"]{
     width: 100%;
     box-sizing: border-box;

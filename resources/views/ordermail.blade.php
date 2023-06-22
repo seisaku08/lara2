@@ -17,7 +17,7 @@
 ※ご不明な点がございましたら、下記までご連絡くださいますようお願いいたします。</p>
 
 <table id="form">
-
+    <h4 class="mt-3 text-center">ご予約情報（予約No. {{$orderdata['order']['order_no']}}）</h4>
     <tr class="midashi">
         <th colspan="5">ご担当者様情報</th>
     </tr>
@@ -99,6 +99,14 @@
         <td class="w25">{{ $orderdata['shipping']['shipping_return_day'] }}</td>
     </tr>
 @endif
+<tr>
+    <td class="w25"><label>特記事項</label></td>
+    <td class="w25">{{ $orderdata['shipping']['shipping_special'] == true ? 'あり' : 'なし' }}</td>
+</tr>
+<tr>
+    <td class="w25"><label>備考</label></td>
+    <td class="w70">{{ $orderdata['shipping']['shipping_note'] }}</td>
+</tr>
     <tr class="midashi">
         <th colspan="4">選択機材情報</th>
     </tr>

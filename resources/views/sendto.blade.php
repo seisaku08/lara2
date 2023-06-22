@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', '機材発送依頼フォーム')
+@section('title', 'セミナー情報・配送先登録')
 @section('css')
 {{-- <link href="/css/style.css" rel="stylesheet" type="text/css"> --}}
 
@@ -8,8 +8,8 @@
 <h1 class="p-2">@yield('title')</h1>
 
     <div class="container">
-        <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
-        <script src="/js/number.js"></script>
+        <link href="{{ asset('css/sendstyle.css') }}" rel="stylesheet" type="text/css">
+        <script src="{{ asset('js/number.js') }}"></script>
         <script src="https://ajaxzip3.github.io/ajaxzip3.js"></script>
      
     @if(count($errors)>0)
@@ -61,7 +61,7 @@
                 <th>配送先情報</th>
             </tr>
             <tr>
-                <td class="w100">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" name="seminar_venue_pending" placeholder="" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></td>
+                <td class="w100"><label for="pending" class="thin">配送先情報を後日入力する場合は、チェックボックスにチェックを入れてください。→<input type="checkbox" class="dekai" name="seminar_venue_pending" placeholder="" id="pending" value="true"{{ old('seminar_venue_pending') == true ? ' checked' : '' }}></label></td>
             </tr>
             <tr>
                 <td class="w30"><label>郵便番号</label><span class="red small">＊必須</span></td>
@@ -114,6 +114,14 @@
                <td class="w30"><label>返送機材発送予定日</label><span class="red small">＊必須</span></td>
                 <td class="w25"><input type="date" name="shipping_return_day" placeholder="" value="{{old('shipping_return_day')}}"></td>
             </tr>
+            <tr>
+                <td class="w100"><label for="special" >事前搬入申請等、荷扱いに特記すべき事項がある場合はチェックを入れてください。→<input type="checkbox" class="dekai" name="shipping_special" placeholder="" id="special" value="true"{{ old('shipping_special') == true ? ' checked' : '' }}></label></td>
+            </tr>
+            <tr>
+                <td class="w30"><label>備考</label></td>
+                 <td class="w70"><textarea class="fullsize" name="shipping_note" rows="4" placeholder="特記事項やメモ等、申し送る必要のある事柄をお書きください。（200文字まで）" >{{old('shipping_note')}}</textarea></td>
+             </tr>
+ 
         </table>
 
         <table id="kizai">

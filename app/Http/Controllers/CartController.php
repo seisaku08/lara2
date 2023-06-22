@@ -19,17 +19,20 @@ class CartController extends Controller
 {
 
     public function index(Request $request){
-        try{
-            if(session()->has('Session.CartData') == false){
-                throw new Exception('選択された機材がありません。');
-            }
-        }catch(\Exception $e){
-            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+        if(session()->has('Session.CartData') == false){
+            $data = [
+                'user' => Auth::user()->id,
+                'input' => $request,
+                'seminar_day' =>$request->session()->get('Session.SeminarDay'),
+                'from' => $request->session()->get('Session.UseFrom'),
+                'to' => $request->session()->get('Session.UseTo'),
+                
+            ];
+            return view('cart_empty', $data);
         }
 
         $mid = $request->session()->get('Session.CartData');
         $data = [
-
             'user' => Auth::user()->id,
             'input' => $request,
             'CartData' => MachineDetail::wherein('machine_id', $mid)->get(),
@@ -138,15 +141,11 @@ class CartController extends Controller
         Temporary::where('machine_id',$request->machine_id)->delete(); 
 
         //削除済みの新カートデータをセッションに保存
-        try{
-            if(!empty($removed)){
+        if(!empty($removed)){
             $request->session()->put('Session.CartData', $removed);
-            }else{
-                throw new Exception('選択された機材がありません。');
-            }
-        }catch(\Exception $e){
+        }else{
             session()->forget('Session.CartData');
-            return redirect()->route('pctool')->withErrors($e->getmessage())->withinput();
+            return view('cart_empty');
         }
         
         // dd($request, $sessionCartData, $removed, $request->session()->get('Session.CartData'));

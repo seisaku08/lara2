@@ -29,14 +29,15 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('dashboard');
     });
     Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
+    Route::get('/orderlist', ['uses'=>'OrderlistController@index'])->name('orderlist');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile', [ProfileController::class, 'pageback'])->name('profile.pageback');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-// });
+});
 
 // //ログイン要・メール認証要なページ
-// Route::middleware('verified')->group(function () {
+Route::middleware('verified')->group(function () {
 
 
     Route::match(['get','post'],'/pctool', 'pctoolController@view')->name('pctool');
