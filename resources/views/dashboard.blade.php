@@ -31,7 +31,11 @@
                 @endif
             </div>
         @endif
-        <h5><a class="" data-toggle="collapse" href="#updateinfo" role="button" aria-expanded="false" aria-controls="updateinfo">更新情報（クリックで開く）</a></h5>
+        <h5>最新の更新情報</h5>
+        <ul>
+            <li>セミナー開催9営業日前に送られるリマインドメールにおいて、当該セミナー情報へのリンクURLが誤って生成される不具合を修正しました。（6/26）</li>
+        </ul>
+            <p><a class="" data-toggle="collapse" href="#updateinfo" role="button" aria-expanded="false" aria-controls="updateinfo">過去の更新情報（クリックで開く）</a></p>
         <div class="collapse" id="updateinfo">
             <div class="card card-body">
               <ul>
@@ -51,7 +55,6 @@
             <li>予約一覧ページを作成しました。（6/22）<br>閲覧は全てのユーザーが可能ですが、内容の編集は予約者本人に限り行えます。</li>
             <li>依頼フォームの項目を追加しました。（6/22）</li>
             <li>機材検索時に予約中機材の表示機能を追加しました。（6/22）</li>
-            <li>セミナー開催9営業日前に送られるリマインドメールにおいて、当該セミナー情報へのリンクURLが誤って生成される不具合を修正しました。（6/22）</li>
         </ul>
     </div>
 </div>
