@@ -9,10 +9,9 @@
 </head>
 <body>
     <h1>Sample</h1>
-    <form method="post" action="helo">
-    @csrf
-        <p>{{ $_POST['str'] }}</p>
-        <input type="submit">
+    <form action="{{ url('/download') }}" method="POST">
+        @csrf
+        <h2>下記のボタンを押下してExcelファイルをダウンロードしてください。</h2>
+        <button>download</button>
     </form>
-
 </body>

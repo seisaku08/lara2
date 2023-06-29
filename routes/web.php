@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SpreadsheetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,9 +20,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('ordermailsample', 'OrdermailController@view');
 Route::get('ninedaymailsample', 'NineDayMailController@view');
 Route::get('/helo', 'HeloController@view');
-    Route::post('/helo2', function () {
-        return view('helo2');
-    });
+Route::get('/helo2',[SpreadsheetController::class, 'index']);
+Route::post('/download', [SpreadsheetController::class, 'download']);
 
 //ログイン要・メール認証不要なページ
 Route::middleware('auth')->group(function () {
@@ -39,10 +39,7 @@ Route::middleware('auth')->group(function () {
 // //ログイン要・メール認証要なページ
 Route::middleware('verified')->group(function () {
 
-
     Route::match(['get','post'],'/pctool', 'pctoolController@view')->name('pctool');
-    // Route::post('/pctool', 'pctoolController@view');
-    // Route::get('/pctool_error', 'pctoolController@error')->name('pctool.error');
     Route::match(['get','post'],'/sendto', 'SendtoController@view')->name('sendto');
     Route::get('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
     Route::post('/confirm', 'ConfirmController@post')->name('confirm');
@@ -59,7 +56,13 @@ Route::middleware('verified')->group(function () {
     Route::post('/addCart', 'CartController@addCart')->name('addCart');
     Route::post('/delCart', 'CartController@delCart')->name('delCart');
     
-    });
+});
+
+    // //ログイン要・ロール設定"administrator"
+    // Route::group(['middleware' => ['auth', 'can:administrator']], function () {
+        
+    // });
+
 Route::get('/adminlte', function () {
     return view('adminlte');
 })->middleware(['auth', 'verified'])->name('adminlte');
