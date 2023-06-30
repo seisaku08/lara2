@@ -21,7 +21,9 @@
 	{{ Form::hidden('order_id',$orders->order_id) }}
 	{{ Form::hidden('shipping_id',$orders->shipping_id) }}
 	{{ Form::hidden('venue_id',$orders->venue_id) }}
-
+	{{ Form::hidden('order_use_from',$orders->order_use_from) }}
+	{{ Form::hidden('order_use_to',$orders->order_use_to) }}
+ {{-- <?php dump($orders); ?>  --}}
 	<table id="kizai2">
 		<tr class="midashi">
 			<th colspan="5">セミナー情報</th>
@@ -35,7 +37,7 @@
 			<td class="w25"><input type="date" name="seminar_day" placeholder="" value="{{!empty(old('seminar_day'))? old('seminar_day'):$orders->seminar_day}}"></td>
 		</tr>
 		<tr>
-			<td class="w30">使用期間<br>（変更できません。）</td>
+			<td class="w30">予約期間<br>（変更できません。）</td>
 			<td class="">{{$orders->order_use_from}}～{{$orders->order_use_to}}</td>
 		</tr>
 		<tr class="midashi">
@@ -92,6 +94,14 @@
 		   <td class="w30"><label>返送機材発送予定日</label><span class="red small">＊必須</span></td>
 		   <td class="right-half"><input type="date" name="shipping_return_day" placeholder="" value="{{ !empty(old('shipping_return_day'))? old('shipping_return_day') :$orders->shipping_return_day }}"></td>
 		</tr>
+		<tr>
+			<td class="w100"><label for="special" >事前搬入申請等、荷扱いに特記すべき事項がある場合はチェックを入れてください。→<input type="checkbox" class="dekai" name="shipping_special" placeholder="" id="special" value="true"{{ old('shipping_special') == true ? ' checked' : '' }}{{ $orders->shipping_special == true ? 'checked' : '' }}></label></td>
+		</tr>
+		<tr>
+			<td class="w30"><label>備考</label></td>
+			 <td class="w70"><textarea class="fullsize" name="shipping_note" rows="4" placeholder="特記事項やメモ等、申し送る必要のある事柄をお書きください。（200文字まで）" >{{ !empty(old('shipping_note'))? old('shipping_note') :$orders->shipping_note }}</textarea></td>
+		 </tr>
+
 
 </table>
 <table id="kizai">

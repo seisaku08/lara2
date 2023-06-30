@@ -75,9 +75,10 @@ class PhpSpreadsheetService
             }
 
             }
+            //デバッグ用
+            $sheet->getActiveSheet()
+            ->setCellValue([$key+2,$i+1], floor(memory_get_usage() / 1024).'KB');
         }
-        $sheet->getActiveSheet()
-        ->setCellValue([1,$i+1], floor(memory_get_usage() / 1024).'KB');
 
 
         // 1行目(ヘッダー)を固定
@@ -89,20 +90,22 @@ class PhpSpreadsheetService
 
         // 最終行まで一括で
         $limitCol = $sheet->getActiveSheet() -> getHighestColumn();
+        $limitCol++;
         $currentCol = "B";
         while( $currentCol != $limitCol ){
             $sheet->getActiveSheet()->getColumnDimension($currentCol)->setWidth(16);
             $currentCol++;
         }
-            $sheet->getActiveSheet()->getColumnDimension($currentCol)->setWidth(16);
 
+        
         $limitRow = $sheet->getActiveSheet() -> getHighestRow();
+        $limitRow++;
+
         $currentRow = 2;
         while( $currentRow != $limitRow ){
             $sheet->getActiveSheet()->getRowDimension($currentRow)->setRowHeight(14);
             $currentRow++;
         }
-            $sheet->getActiveSheet()->getRowDimension($currentRow)->setRowHeight(14);
 
 
         $max_row = $sheet->getActiveSheet()->getHighestRow(); //最終行（最下段）の取得
