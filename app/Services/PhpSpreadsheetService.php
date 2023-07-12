@@ -65,7 +65,7 @@ class PhpSpreadsheetService
             //使用中のセミナーがある場合書き込む
             if(!empty($usage->seminar_name)){
                 $uday = Carbon::parse($usage->seminar_day)->format('md');
-                $usage_data = "{$uday}_{$usage->seminar_name}（{$usage->name}）";
+                $usage_data = "{$usage->seminar_name}（{$usage->name}）";
                 $sheet->getActiveSheet()
                 ->setCellValue([$key+2,$i+1], $usage_data);
                 $sheet->getActiveSheet()->getStyle([$key+2,$i+1])->
@@ -76,8 +76,8 @@ class PhpSpreadsheetService
 
             }
             //デバッグ用
-            $sheet->getActiveSheet()
-            ->setCellValue([$key+2,$i+1], floor(memory_get_usage() / 1024).'KB');
+            // $sheet->getActiveSheet()
+            // ->setCellValue([$key+2,$i+1], floor(memory_get_usage() / 1024).'KB');
         }
 
 
@@ -126,7 +126,7 @@ class PhpSpreadsheetService
         $sheet->getActiveSheet()->getStyle("B2");
 
         // Excelファイルをダウンロード
-        $file_name = "名簿{$today}.xlsx";
+        $file_name = "機材管理表_{$today}.xlsx";
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;');
         header("Content-Disposition: attachment; filename=\"{$file_name}\"");
         header('Cache-Control: max-age=0');
