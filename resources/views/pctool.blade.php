@@ -10,11 +10,8 @@
   <div class="box1000 ">
     <p>
       使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。<br>
-      準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo">詳細（クリックで開く）</a><br>
-      ＜参考＞東京発着荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank">こちら</a>（ヤマト運輸のサイトが開きます）
-
-    </p>
-    <div class="collapse" id="scheduleinfo">
+      準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo"><b>詳細（クリックで開く）</b></a><br>
+     <div class="collapse" id="scheduleinfo">
       <div class="card card-body">
         <p>
         「セミナー開催日（複数日開催の場合、その初日）」は<b>本日より4営業日以降（{{ App\Libs\Common::dayafter(today(),4)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
@@ -23,6 +20,9 @@
       </p>
       </div>
     </div>
+    <b> ＜参考＞</b>東京発着荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank"><b>こちら</b></a>（ヤマト運輸のサイトが開きます）
+
+    </p>
   </div>
   <form method="post" action="/pctool">
     @csrf
