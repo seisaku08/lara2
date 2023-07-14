@@ -16,6 +16,7 @@ class HeloController extends Controller
         'inUse' => $request->session()->get('inUse')
 
     ];
+    abort(500);
     // dd($data);
     return view('helo', $data);
     }

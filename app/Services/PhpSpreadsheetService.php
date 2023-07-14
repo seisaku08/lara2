@@ -9,6 +9,7 @@ use App\Models\MachineDetailOrder;
 use App\Models\DayMachine;
 use Carbon\Carbon;
 use Yasumi\Yasumi;
+use PhpOffice\PhpSpreadsheet\Style\Alignment as Align;
 
 ini_set("max_execution_time",180);
 ini_set('memory_limit', '512M');
@@ -36,9 +37,16 @@ class PhpSpreadsheetService
         //A2以降横軸＝機材
         foreach ($machines as $key => $machine) {
             $sheet->getActiveSheet()
-            ->setCellValue([$key+2,1], $machine->machine_name);
+            ->setCellValue([$key+2,1], $machine->machine_id);
             $sheet->getActiveSheet()->getStyle([$key+2,1])->
             getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00E6B8B7');
+            $sheet->getActiveSheet()->getStyle([$key+2,1])
+            ->getAlignment() -> setHorizontal(Align::HORIZONTAL_CENTER);
+            $sheet->getActiveSheet()
+            ->setCellValue([$key+2,2], $machine->machine_name);
+            $sheet->getActiveSheet()->getStyle([$key+2,2])->
+            getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00E6B8B7');
+            $sheet->getActiveSheet()->getStyle([$key+2,2])->getAlignment() -> setHorizontal(Align::HORIZONTAL_CENTER);
         }
 
 
@@ -49,9 +57,9 @@ class PhpSpreadsheetService
             $holidays = Yasumi::create('Japan', $day->year);
 
             $sheet->getActiveSheet()
-            ->setCellValue([1,$i+1], $day->isoFormat('YYYY年M月D日（ddd）'));
+            ->setCellValue([1,$i+2], $day->isoFormat('YYYY年M月D日（ddd）'));
             if($holidays->isHoliday($day) == true || $day->isweekday() != true){
-                $sheet->getActiveSheet()->getStyle([1,$i+1])->
+                $sheet->getActiveSheet()->getStyle([1,$i+2])->
                 getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ffcccc');
 
             }
@@ -73,8 +81,8 @@ class PhpSpreadsheetService
                 $uday = Carbon::parse($usage->seminar_day)->format('md');
                 $usage_data = "{$usage->seminar_name}（{$usage->name}）";
                 $sheet->getActiveSheet()
-                ->setCellValue([$key+2,$i+1], $usage_data);
-                $sheet->getActiveSheet()->getStyle([$key+2,$i+1])->
+                ->setCellValue([$key+2,$i+2], $usage_data);
+                $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
                 getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ff7f50');
 
 
@@ -87,10 +95,11 @@ class PhpSpreadsheetService
 
 
         // 1行目(ヘッダー)を固定
-        $sheet->getActiveSheet()->freezePane('A2');
+        $sheet->getActiveSheet()->freezePane('A3');
 
         // 列幅を調整
-        $sheet->getActiveSheet()->getRowDimension(1)->setRowHeight(40);
+        $sheet->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
+        $sheet->getActiveSheet()->getRowDimension(2)->setRowHeight(20);
         $sheet->getActiveSheet()->getColumnDimension('A')->setWidth(20);
 
         // 最終行まで一括で

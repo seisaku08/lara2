@@ -19,7 +19,7 @@
         @foreach($orders as $order)
         <div class="row border">
             <div class="col-3">{{$order->order_use_from}}～{{$order->order_use_to}}</div>
-            <div class="col-2"><a href="order/detail/{{$order->order_id}}" target="_blank">{{$order->order_no}}</a></div>
+            <div class="col-2"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></div>
             <div class="col">{{$order->seminar_name}}</div>
             <div class="col-2">{{$order->name}}</div>
         </div>

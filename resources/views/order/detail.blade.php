@@ -108,7 +108,14 @@
 </table>
 <table id="kizai">
 	<tr class="midashi">
-		<th colspan="4">選択機材情報</th>
+		<th colspan="4">選択機材情報
+			@if($user->id == $orders->user_id)
+			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">追加</a>
+			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.delpc', $orders->order_id) }}">削除</a>
+			@else
+			<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
+			@endif
+</th>
 	</tr>
 	<tr>
 		<td class="w100">
@@ -125,8 +132,19 @@
 		</td>
 	</tr>
 </table>
-</article>
 </form>
+<form action="{{ route('order.destroy', $orders->order_id) }}" method="post">
+	@csrf
+	@method('DELETE')
+<div>
+	@if($user->id == $orders->user_id)
+	<p>
+		<button type="submit" class="text-center m-3 btn btn-danger" onclick="return confirm('予約を削除します。元には戻せませんがよろしいですか？');">この予約を削除する</button>
+	</p>
+	@endif
+</div>
+</form>
+</article>
 
 @endsection
 

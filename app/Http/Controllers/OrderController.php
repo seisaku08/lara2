@@ -7,18 +7,26 @@ use App\Models\Order;
 use App\Models\Venue;
 use App\Models\Shipping;
 use App\Models\DayMachine;
+use App\Models\MachineDetail;
+use App\Models\Temporary;
+use App\Models\MachineDetailOrder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Exception;
 
 class OrderController extends Controller
 {
     public function detail(Request $request){
         $id= $request->id;
         $data = [
+            'id'=> $id,
             'user' => Auth::user(),
             'machines' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
                 ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
                 ->where('orders.order_id',$id)
+                ->orderBy('machine_detail_order.machine_id','asc')
                 ->get(),
             'orders' => Order::join('shippings','orders.order_id','=','shippings.order_id')
                 ->join('venues','shippings.venue_id','=','venues.venue_id')
@@ -26,12 +34,18 @@ class OrderController extends Controller
                 ->where('orders.order_id', $id)
                 ->first(),
         ];
+        if($data['orders'] == null){
+            return view('order/error', $data);
+        }
+
         return view('order/detail', $data);
     }
 
     public function edit(Request $request){
         $id= $request->id;
         $data = [
+            'id'=> $id,
+            'input' => $request,
             'user' => Auth::user(),
             'machines' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
             ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
@@ -42,19 +56,217 @@ class OrderController extends Controller
                 ->where('orders.order_id', $id)
                 ->first(),
         ];
+        if($data['orders'] == null){
+            return view('order/error', $data);
+        }
+
         return view('order/edit', $data);
     }
+    public function addpc(Request $request){
+        $id= $request->id;
+        $order = Order::where('order_id', $id)->first();
+        $data = [
+            'id'=> $id,
+            'records' => MachineDetail::all(),
+            'input' => $request,
+            'order' => $order,
+            'user' => Auth::user(),
+            'machines' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
+            ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
+            ->where('orders.order_id',$id)
+            ->get(),
+        ];
+        if($data['order'] == null){
+            return view('order/error', $data);
+        }
+
+        //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
+        // if($request->from != "" && $request->to != ""){
+            $from = new Carbon($order->order_use_from);
+            $to = new Carbon($order->order_use_to);
+            while($from <= $to){
+                $u[] = $from->format('Y-m-d');
+                $from->modify('1 day');
+            }
+        // dd($from, $to, $u);
+            $dm = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
+            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::user()->id)->pluck('machine_id')->toarray()));
+            $data['usage'] = array_merge($dm, $tm);
+        // }else{
+        //     $data['usage'] = [];
+        // }
+
+        
+        return view('order/addpc', $data);
+    }
+
+    public function addprocess(Request $request, $id){
+        $order = Order::find($id);
+        if($request->input('back') == '前の画面に戻る'){
+            return redirect()->action('OrderController@detail', $id);
+        }        
+        try{
+            DB::transaction(function ()use($request,$order,$id) {
+                if(!is_array($request->id)){
+                    throw new Exception("機材が選択されていません。", 499);
+                }else{
+                    $addid = $request->id;
+
+                    foreach($addid as $i){
+                        //machine_detail_orderテーブルに既登録がある場合は処理を中断
+                        if(MachineDetailOrder::where('order_id', '=', $id)->where('machine_id', '=', $i)->first() != null){
+                            throw new Exception("選択した機材は既に登録されています。", 499);
+                        }
+                        //day_machineテーブルに機材占有状況を展開
+                        $start = new Carbon($order->order_use_from);
+                        $end = new Carbon($order->order_use_to);
+                        while($start <= $end){
+                            // dump($start->format('Y-m-d'), $i, Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first());
+                            //day_machineテーブルに既登録がある場合は処理を中断
+                            if(Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first() != null){
+                                throw new Exception("選択した機材は既に登録されています。", 499);
+                            }
+                        $day_machine = new DayMachine;
+                        $day_machine->day = date($start->format('Y-m-d'));
+                        $day_machine->machine_id = $i;
+                        $day_machine->save();
+                        $start->modify('1 day');
+                        }
+
+                        //machine_detail_orderテーブルに予約と機材IDの対応を1組ずつ展開
+                        $mdo = new MachineDetailOrder;
+                        $mdo->machine_id = $i;
+                        $mdo->order_id = $id;
+                        $mdo->save();
+
+                    }
+                    // dd($request, $id, $request->id, $order);
+                    
+                    // throw new Exception("トランザクション阻止");
+
+                }
+            });
+            
+            return redirect()->route('order.detail', $id);
+
+        }
+        catch(\Exception $e){
+            // echo($e->getMessage());
+            if ($e->getcode() == 499){
+
+            return redirect()->action('OrderController@addpc', $id)->withErrors($e->getMessage());
+
+            }
+            return back()->withErrors($e->getmessage());
+        }
+        finally{
+
+        }
+    }
+
+    public function delpc(Request $request){
+        $id= $request->id;
+        $data = [
+            'id'=> $id,
+            'user' => Auth::user(),
+            'machines' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
+                ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
+                ->where('orders.order_id',$id)
+                ->orderBy('machine_detail_order.machine_id','asc')
+                ->get(),
+            'orders' => Order::join('shippings','orders.order_id','=','shippings.order_id')
+                ->join('venues','shippings.venue_id','=','venues.venue_id')
+                ->join('users', 'orders.user_id', '=', 'users.id')
+                ->where('orders.order_id', $id)
+                ->first(),
+        ];
+        if($data['orders'] == null){
+            return view('order/error', $data);
+        }
+
+        return view('order/delpc', $data);
+    }
+
+    public function delprocess(Request $request, $id){
+        $order = Order::find($id);
+        if($request->input('back') == '前の画面に戻る'){
+            return redirect()->action('OrderController@detail', $id);
+        }        
+        try{
+            DB::transaction(function ()use($request,$order,$id) {
+                if(!is_array($request->id)){
+                    throw new Exception("機材が選択されていません。", 499);
+                }else{
+                    $addid = $request->id;
+
+                    foreach($addid as $i){
+                        //machine_detail_orderテーブルに既登録がある場合は処理を中断
+                        if(MachineDetailOrder::where('order_id', '=', $id)->where('machine_id', '=', $i)->first() == null){
+                            throw new Exception("選択した機材は登録されていません。既に削除されている可能性があります。", 499);
+                        }
+                        //day_machineテーブルに機材占有状況を展開
+                        $start = new Carbon($order->order_use_from);
+                        $end = new Carbon($order->order_use_to);
+                        while($start <= $end){
+                            // dump($start->format('Y-m-d'), $i, Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first());
+                            //day_machineテーブルに既登録がある場合は処理を中断
+                            if(Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first() == null){
+                                throw new Exception("選択した機材は登録されていません。既に削除されている可能性があります。", 499);
+                            }
+                        $day_machine = new DayMachine;
+                        $day_machine->where('day', '=', $start)->where('machine_id', '=', $i)->delete();
+                        $start->modify('1 day');
+                        }
+
+                        //machine_detail_orderテーブルに予約と機材IDの対応を1組ずつ展開
+                        $mdo = new MachineDetailOrder;
+                        // dd($mdo->where('order_id', '=', $id)->where('machine_id', '=', $i)->get());
+
+                        $mdo->where('order_id', '=', $id)->where('machine_id', '=', $i)->delete();
+
+                    }
+                    // dd($request, $id, $request->id, $order);
+                    
+                    // throw new Exception("トランザクション阻止");
+
+                }
+            });
+            
+            return redirect()->route('order.detail', $id);
+
+        }
+        catch(\Exception $e){
+            // echo($e->getMessage());
+            if ($e->getcode() == 499){
+
+            return redirect()->action('OrderController@delpc', $id)->withErrors($e->getMessage());
+
+            }
+            return back()->withErrors($e->getmessage());
+        }
+        finally{
+
+        }
+    }
+
+
 
     public function update(Request $request, $id){
-        // $id= $request->id;
+        $id= $request->id;
+        if($request->input('back') == '前の画面に戻る'){
+            return redirect()->action('OrderController@detail', $id);
+        }        
 
         $rules = [
                 //
                 'seminar_day' => 'required',
                 'seminar_name' => 'required',
                 'venue_zip' => 'exclude_if:seminar_venue_pending,true|required',
-                'venue_addr1' => 'exclude_if:seminar_venue_pending,true|required',
-                'venue_name' => 'exclude_if:seminar_venue_pending,true|required',
+                'venue_addr1' => ['exclude_if:seminar_venue_pending,true','required','max:200'],
+                'venue_addr2' => 'max:200',
+                'venue_addr3' => 'max:200',
+                'venue_addr4' => 'max:200',
+                'venue_name' => ['exclude_if:seminar_venue_pending,true','required',],
                 'venue_tel' => 'exclude_if:seminar_venue_pending,true|required|digits_between:5,11',
                 'shipping_arrive_day' => 'exclude_if:seminar_venue_pending,true|required|before:seminar_day|after:order_use_from',
                 'shipping_return_day' => 'exclude_if:seminar_venue_pending,true|required|after_or_equal:seminar_day|before:order_use_to',
@@ -62,24 +274,32 @@ class OrderController extends Controller
             ];
 
         $massages = [
-                'seminar_day.required' => 'セミナー開催日は必ず入力してください。',
-                'seminar_name.required' => 'セミナー名は必ず入力してください。',
-                'venue_zip.required' => '郵便番号は必ず入力してください。',
-                'venue_addr1.required' => '住所は必ず入力してください。',
-                'venue_name.required' => '配送先担当者は必ず入力してください。',
-                'venue_tel.required' => '配送先電話番号は必ず入力してください。',
                 'venue_tel.digits_between' => '配送先電話番号は市外局番から入力してください。',
-                'shipping_arrive_day.required' => '到着希望日は必ず入力してください。',
                 'shipping_arrive_day.before' => '到着希望日はセミナー開催日より前の日付を入力してください。',
                 'shipping_arrive_day.after' => '到着希望日は予約開始日より後の日付を入力してください。',
-                'shipping_return_day.required' => '返送機材発送予定日は必ず入力してください。',
                 'shipping_return_day.after_or_equal' => '返送機材発送予定日はセミナー開催日以降（当日を含む）の日付を入力してください。',
                 'shipping_return_day.before' => '返送機材発送予定日は予約終了日より前の日付を入力してください。',
-                'shipping_note.max' => '備考は200文字以下で入力してください。',
               
             ];
+
+            $attributes = [
+
+                'seminar_day' => 'セミナー開催日',
+                'seminar_name' => 'セミナー名',
+                'venue_zip' => '郵便番号',
+                'venue_name' => '配送先担当者',
+                'venue_tel' => '配送先電話番号',
+                'venue_addr1' => '「住所」',
+                'venue_addr2' => '「施設・ビル名」',
+                'venue_addr3' => '「会社・部門名１」',
+                'venue_addr4' => '「会社・部門名２」',
+                'shipping_arrive_day' => '到着希望日',
+                'shipping_return_day' => '返送機材発送予定日',
+                'shipping_note' => '備考',
+
+            ];
    
-        $validator = Validator::make($request->all(), $rules, $massages);
+        $validator = Validator::make($request->all(), $rules, $massages, $attributes);
         if($validator->fails()){
             return back()->withErrors($validator)->withInput();
         }
@@ -127,4 +347,15 @@ class OrderController extends Controller
 
         return redirect()->route('dashboard');
     }
+
+    public function list(){
+        $data = null;
+        $data = [
+
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('seminar_day', 'asc')->get(),
+
+        ];
+        return view('order.index', $data);
+    }
+
 }

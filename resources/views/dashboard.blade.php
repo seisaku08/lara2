@@ -9,7 +9,13 @@
 <h1 class="text-center p-2">@yield('title')</h1>
         {{-- <?php dump($orders);?> --}}
     <div class="box1000">
-        <p>こちらはマイページです。</p>
+        <p>こちらはマイページです。
+        @can('sys-ad'){{-- 管理者に表示される --}}
+        そしてあなたはシステム管理者です。
+        @elsecan('daioh') {{-- 大應ユーザーに表示される --}}
+        そしてあなたは大應の人です。
+        @endcan
+        </p>
         <p>ユーザー個人の登録セミナー一覧や、各種情報（の概要）を要約したページにする予定です。</p>
         {{-- ユーザー認証 --}}
         @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
@@ -33,7 +39,8 @@
         @endif
         <h5>最新の更新情報</h5>
         <ul>
-            <li>セミナー開催9営業日前に送られるリマインドメールにおいて、当該セミナー情報へのリンクURLが誤って生成される不具合を修正しました。（6/26）</li>
+            <li>機材使用状況一覧（旧来の管理表と同等の表）出力機能、操作マニュアル表示機能を実装しました。（7/14）</li>
+            <li>予約詳細画面において、機材の追加・削除ができるようになりました。（7/14）</li>
         </ul>
             <p><a class="" data-toggle="collapse" href="#updateinfo" role="button" aria-expanded="false" aria-controls="updateinfo">過去の更新情報（クリックで開く）</a></p>
         <div class="collapse" id="updateinfo">
@@ -55,6 +62,7 @@
             <li>予約一覧ページを作成しました。（6/22）<br>閲覧は全てのユーザーが可能ですが、内容の編集は予約者本人に限り行えます。</li>
             <li>依頼フォームの項目を追加しました。（6/22）</li>
             <li>機材検索時に予約中機材の表示機能を追加しました。（6/22）</li>
+            <li>セミナー開催9営業日前に送られるリマインドメールにおいて、当該セミナー情報へのリンクURLが誤って生成される不具合を修正しました。（6/26）</li>
         </ul>
     </div>
 </div>
@@ -80,7 +88,7 @@
             @foreach($orders as $order)
                 <tr>
                     <td class="kizai-left">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
-                    <td class="kizai-right"><a href="order/detail/{{$order->order_id}}" target="_blank">{{$order->order_no}}</a></td>
+                    <td class="kizai-right"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></td>
                     <td class="kizai-right">{{$order->seminar_name}}</td>
                 </tr>
             @endforeach

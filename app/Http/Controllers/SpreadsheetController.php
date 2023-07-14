@@ -28,7 +28,7 @@ class SpreadsheetController extends Controller
      */
     public function index(): View
     {
-        return view('helo2');
+        return view('xlsdl');
     }
 
     /**
@@ -39,7 +39,7 @@ class SpreadsheetController extends Controller
     public function download(): View
     {
         $this->spreadsheet->export();
-        return view('helo2');
+        return view('xlsdl');
     }
 }
 

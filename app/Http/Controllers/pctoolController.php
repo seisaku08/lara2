@@ -34,7 +34,7 @@ class pctoolController extends Controller
         // dd($request,$day1after,$daysemi3after);
         $validator = Validator::make($request->all(),
         [
-            'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day4after}"],
+            'seminar_day' => ['date','required_with_all:from,to', "after_or_equal:{$day4after}"],
             'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}", "before_or_equal:{$daysemi3before}"],
             'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
         ],
@@ -116,6 +116,7 @@ class pctoolController extends Controller
     public function detail(Request $request){
         $id= $request->id;
         $data = [
+            'id'=> $id,
             'machine_details' => MachineDetail::find($id),
             'orders' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
                 ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
@@ -124,7 +125,10 @@ class pctoolController extends Controller
                 ->get(),
             'maintenances' => Maintenance::where('machine_id',$id)->get()
         ];
+        // dd($data);
+        if($data['machine_details'] == null){
+            return view('pctool/error', $data);
+        }
         return view('pctool/detail', $data);
     }
-
 }

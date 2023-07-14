@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('ordermailsample', 'OrdermailController@view');
 Route::get('ninedaymailsample', 'NineDayMailController@view');
 Route::get('/helo', 'HeloController@view');
-Route::get('/helo2',[SpreadsheetController::class, 'index']);
+Route::get('/xlsdl',[SpreadsheetController::class, 'index']);
 Route::post('/download', [SpreadsheetController::class, 'download']);
 
 //ログイン要・メール認証不要なページ
@@ -29,7 +29,6 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('dashboard');
     });
     Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
-    Route::get('/orderlist', ['uses'=>'OrderlistController@index'])->name('orderlist');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile', [ProfileController::class, 'pageback'])->name('profile.pageback');
@@ -42,25 +41,35 @@ Route::middleware('verified')->group(function () {
     Route::match(['get','post'],'/pctool', 'pctoolController@view')->name('pctool');
     Route::match(['get','post'],'/sendto', 'SendtoController@view')->name('sendto');
     Route::get('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
+    Route::get('/pctool/detail/{id}', 'pctoolController@detail');
     Route::post('/confirm', 'ConfirmController@post')->name('confirm');
     Route::post('/finish', 'FinishController@finish')->name('finish');
 
-    Route::get('/order/detail/{id}', 'OrderController@detail')->name('order.detail');
-    Route::get('/order/edit/{id}', 'OrderController@edit')->name('order.edit');
-    Route::put('/order/update/{id}', 'OrderController@update')->name('order.update');
-    Route::delete('/order/destroy/{id}', 'OrderController@destroy')->name('order.destroy');
-    Route::get('/pctool/detail/{id}', 'pctoolController@detail');
-    
     Route::get('/cart', 'CartController@index')->name('cart.index');
     Route::post('/cart', 'CartController@view')->name('cart');
     Route::post('/addCart', 'CartController@addCart')->name('addCart');
     Route::post('/delCart', 'CartController@delCart')->name('delCart');
     
+    Route::get('/order', 'OrderController@list')->name('order.list');
+    Route::get('/order/detail/{id}', 'OrderController@detail')->name('order.detail');
+    Route::get('/order/edit/{id}', 'OrderController@edit')->name('order.edit');
+    Route::get('/order/edit/del/{id}', 'OrderController@delpc')->name('order.delpc');
+    Route::get('/order/edit/add/{id}', 'OrderController@addpc')->name('order.addpc');
+    Route::post('/order/edit/addprocess/{id}', 'OrderController@addprocess')->name('order.addprocess');
+    Route::post('/order/edit/delprocess/{id}', 'OrderController@delprocess')->name('order.delprocess');
+    Route::put('/order/update/{id}', 'OrderController@update')->name('order.update');
+    Route::delete('/order/destroy/{id}', 'OrderController@destroy')->name('order.destroy');
+    
 });
 
-    // //ログイン要・ロール設定"administrator"
-    // Route::group(['middleware' => ['auth', 'can:administrator']], function () {
-        
+    // //ログイン要・ロール設定"daioh"
+    // Route::group(['middleware' => ['auth', 'can:daioh']], function () {
+        Route::get('/maintenance', 'MaintenanceController@index')->name('maintenance');
+        Route::post('/maintenance/selorder', 'MaintenanceController@selorder')->name('selorder');
+        Route::post('/maintenance/selpc', 'MaintenanceController@selpc')->name('selpc');
+
+        Route::get('/shipping', 'ShippingController@index')->name('shipping');
+
     // });
 
 Route::get('/adminlte', function () {

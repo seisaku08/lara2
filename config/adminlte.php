@@ -322,7 +322,7 @@ return [
         [
             'text' => '空き状況検索/依頼',
             'url'  => 'pctool',
-            'icon' => 'fa fa-fw fa-search',
+            'icon' => 'fas fa-fw fa-laptop',
         ],
         [
             'text' => '選択機材一覧（カート）',
@@ -330,15 +330,21 @@ return [
             'icon' => 'fa fa-fw fa-list-ul',
         ],
         ['header' => '情報'],
-        // [
-        //     'text' => '予約確認/変更',
-        //     'url'  => 'pctool',
-        //     'icon' => 'far fa-fw fa-file',
-        // ],
         [
             'text' => '予約一覧',
-            'url'  => 'orderlist',
+            'url'  => 'order',
             'icon' => 'fas fa-fw fa-database',
+        ],
+        [
+            'text' => '機材使用状況一覧DL',
+            'url'  => 'xlsdl',
+            'icon' => 'fas fa-fw fa-download',
+        ],
+        [
+            'text' => '操作マニュアル（別窓）',
+            'url'  => '/manual.pdf',
+            'icon' => 'fas fa-fw fa-newspaper',
+            'target' => '_blank',
         ],
         // [
         //     'text'        => 'pages',
@@ -347,17 +353,39 @@ return [
         //     'label'       => 1,
         //     'label_color' => 'success',
         // ],
+        [
+            'header' => 'メンテ・発送',
+            'can' => ['daioh', 'sys-ad']
+        ],
+        [
+            'text' => '機材メンテナンス',
+            'route'  => 'maintenance',
+            'icon' => 'fas fa-fw fa-wrench',
+            'can' => ['daioh', 'sys-ad']
+        ],
+        [
+            'text' => '機材発送・受領確認',
+            'route'  => 'maintenance',
+            'icon' => 'fas fa-fw fa-shipping-fast',
+            'can' => ['daioh', 'sys-ad']
+        ],
         ['header' => 'account_settings'],
         [
             'text' => 'ユーザー情報変更',
             'route'  => 'profile.edit',
             'icon' => 'fas fa-fw fa-user',
         ],
-        // [
-        //     'text' => 'change_password',
-        //     'url'  => 'admin/settings',
-        //     'icon' => 'fas fa-fw fa-lock',
-        // ],
+        [
+            'header' => 'システム管理',
+            'can' => ['sys-ad']
+        ],
+        [
+            'text' => 'ユーザー属性変更',
+            'route'  => 'maintenance',
+            'icon' => 'fas fa-fw fa-user-cog',
+            'can' => ['sys-ad']
+        ],
+
         // [
         //     'text'    => 'multilevel',
         //     'icon'    => 'fas fa-fw fa-share',

@@ -23,7 +23,7 @@ return new class extends Migration
 
             $table->increments('id')->change();
 
-            // 外部キー制約
+            // 外部キー制約（dayは使わなくなるので適宜削除）
             $table->foreign('day')->references('day')->on('days')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('machine_id')->references('machine_id')->on('machine_details')->onDelete('cascade')->onUpdate('cascade');
 

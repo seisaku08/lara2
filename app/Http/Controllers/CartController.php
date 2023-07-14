@@ -28,7 +28,7 @@ class CartController extends Controller
                 'to' => $request->session()->get('Session.UseTo'),
                 
             ];
-            return view('cart_empty', $data);
+            return view('cart.empty', $data);
         }
 
         $mid = $request->session()->get('Session.CartData');

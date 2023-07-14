@@ -14,7 +14,7 @@
 <body>
     <h1>@yield('title')</h1>
 
-    @yield('content')
+    @yield('contents')
 
     <footer>
         @yield('footer')

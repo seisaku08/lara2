@@ -19,6 +19,8 @@ return new class extends Migration
             $table->date('shipping_arrive_day')->nullable();
             $table->string('shipping_arrive_time')->nullable();
             $table->date('shipping_return_day')->nullable();
+            // $table->boolean('shipping_special')->comment('特記事項あり')->nullable();
+            // $table->string('shipping_note')->comment('備考')->nullable();
             $table->timestamps();
             $table->primary(['shipping_id','order_id','venue_id']);
         });

@@ -8,7 +8,9 @@ body{
 h1{
     text-align: center;
 }
-
+.larger{
+    font-size: larger;
+}
 #list{
     width: 100%;
     max-width: 1000px;
@@ -22,7 +24,9 @@ h1{
     max-width: 800px;
     margin: auto;
 }
-
+label.thin{
+    font-weight: 400!important;
+}
 div .box1000{
     max-width: 1000px;
     margin: auto;
@@ -35,6 +39,7 @@ tr.trused{
 tr.gray{
     display: table-row;
     color: gray;
+    background-color: #cccccc!important;
     text-decoration: none;
 
 }
@@ -80,6 +85,7 @@ th{
     padding: 5px 0px;
     font-size: larger;
 }
+
 
 input[type=checkbox].rent{
   display: hidden;

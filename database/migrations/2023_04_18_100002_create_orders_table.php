@@ -20,7 +20,12 @@ return new class extends Migration
             $table->string('seminar_name')->nullable();
             $table->date('order_use_from')->nullable();
             $table->date('order_use_to')->nullable();
-            $table->softDeletes();
+            // $table->integer('token')->comment('重複対策トークン');
+            // $table->boolean('seminar_venue_pending')->nullable()->comment('送付先住所後送フラグ');
+            // $table->boolean('reminder_sent')->nullable()->comment('リマインダメール送付済フラグ');
+            // $table->datetime('nine_day_before')->nullable()->comment('リマインダメール送付日「9営業日前」');
+            // $table->boolean('order_finished')->nullable()->comment('完了セミナーフラグ');
+            $table->softDeletes();//削除・Model\Orderのuseも削除する
             $table->timestamps();
             $table->primary(['order_id','user_id'])->change();
 

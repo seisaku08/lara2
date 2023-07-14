@@ -20,7 +20,7 @@
       </p>
       </div>
     </div>
-    <b> ＜参考＞</b>東京発着荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank"><b>こちら</b></a>（ヤマト運輸のサイトが開きます）
+    <b> ＜参考＞</b>荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank"><b>こちら</b></a>から検索できます（ヤマト運輸のサイトが開きます）
 
     </p>
   </div>

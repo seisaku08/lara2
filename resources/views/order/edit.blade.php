@@ -115,7 +115,7 @@
 				<div class="col-10"><label>機材番号</label></div>
 			</div>
 			@foreach($machines as $machine)
-			<div class="row">
+			<div class="row p-1">
 				<div class="col-2">{{$machine->machine_id}}</div>
 				<div class="col-10">{{$machine->machine_name}}</div>
 			</div>
@@ -124,12 +124,8 @@
 	</tr>
 </table>
 <div class="text-center">
-	<button type="submit" class="btn btn-primary btn-sm m-2 p-1" href="">変更を送信する</button>
-	</form>
-	<form action="{{ route('order.destroy', $orders->order_id) }}" method="post">
-		@csrf
-		@method('DELETE')
-		<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('予約を削除します。元には戻せませんがよろしいですか？');">この予約を削除する</button>
+	<span class="text-center">{{ Form::submit('前の画面に戻る', ['name' => 'back', 'class' => 'btn btn-primary m-2 p-1', ]) }}</span>
+	<button type="submit" class="btn btn-primary m-2 p-1" href="">変更を送信する</button>
 	</form>
 </div>
 </article>

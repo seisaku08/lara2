@@ -19,6 +19,12 @@ return new class extends Migration
             $table->string('machine_spec');
             $table->string('machine_os');
             $table->string('machine_since');
+            // $table->string('machine_camera')->comment('カメラ');
+            // $table->string('machine_cpu')->comment('CPU');
+            // $table->string('machine_memory')->comment('メモリ');
+            // $table->string('machine_hasdrive')->comment('DVD/BDドライブ搭載');
+            // $table->string('machine_connector')->comment('接続端子');
+            // $table->string('machine_canto11')->comment('Win11Upgrade');
             $table->string('machine_memo');
             $table->boolean('machine_is_expired');
             $table->timestamps();
