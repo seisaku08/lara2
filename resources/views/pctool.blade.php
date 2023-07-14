@@ -10,7 +10,9 @@
   <div class="box1000 ">
     <p>
       使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。<br>
-      準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo">詳細（クリックで開く）</a>
+      準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo">詳細（クリックで開く）</a><br>
+      ＜参考＞東京発着荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank">こちら</a>（ヤマト運輸のサイトが開きます）
+
     </p>
     <div class="collapse" id="scheduleinfo">
       <div class="card card-body">
@@ -29,7 +31,7 @@
       <div class="column col-8">
         <div class="row">
           <div class="col text-center p-1">
-            <label>セミナー開催日</label>
+            <label>セミナー開催日（複数日の場合は初日）</label>
             <input type="date" name="seminar_day" value="{{$input->seminar_day}}{{ old('seminar_day') }}" onchange="submit(this.form)">
           </div>
         </div>
@@ -52,26 +54,6 @@
     </div>
 </div>
 
-    {{-- <table id="days">
-      <tr>
-        <td colspan="2" class="center">
-          <label>セミナー開催日</label>
-          <input type="date" name="seminar_day" value="{{$input->seminar_day}}{{ old('seminar_day') }}" onchange="submit(this.form)">
-        </td>
-        <td rowspan="2" class="text-center"><button type="submit" form="pctool" class="m-1">カートに入れる</button><br><button type="button" onclick="location.href='/cart'" class="m-1">カートの中を見る</button></td>
-      </tr>
-      <tr>
-        <td class="center">
-          <label>予約開始日</label>
-          <input type="date" name="from" value="{{$input->from}}{{ old('from') }}" onchange="submit(this.form)">
-        </td>
-        <td class="center">
-          <label>予約終了日</label>
-          <input type="date" name="to" value="{{$input->to}}{{ old('to') }}" onchange="submit(this.form)">
-        </td>
-      </tr>
-    </table>
- --}}
 </form>
   @if(count($errors)>0)
   <div class="container col-8">
