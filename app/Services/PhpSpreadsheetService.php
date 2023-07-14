@@ -5,6 +5,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill as Fill;
 use App\Models\MachineDetail;
+use App\Models\MachineDetailOrder;
 use App\Models\DayMachine;
 use Carbon\Carbon;
 use Yasumi\Yasumi;
@@ -60,7 +61,12 @@ class PhpSpreadsheetService
             $usage = DayMachine::join('machine_detail_order', 'day_machine_detail.machine_id', '=', 'machine_detail_order.machine_id')
             ->join('orders', 'machine_detail_order.order_id', '=', 'orders.order_id')
             ->join('users', 'orders.user_id', '=', 'users.id')
-            ->where('day', $day)->where('machine_detail_order.machine_id', $machine->machine_id)->first();
+            ->where('day', $day)->where('machine_detail_order.machine_id', $machine->machine_id)
+            ->where('orders.order_use_from', '<=', $day )
+            ->where('orders.order_use_to', '>=', $day )
+            ->first();
+
+            // dd($usage);
 
             //使用中のセミナーがある場合書き込む
             if(!empty($usage->seminar_name)){
@@ -73,7 +79,6 @@ class PhpSpreadsheetService
 
 
             }
-
             }
             //デバッグ用
             // $sheet->getActiveSheet()
