@@ -81,6 +81,7 @@
                 <th scope="col">期間</td>
                 <th scope="col">予約No. </td>
                 <th scope="col">セミナー名</td>
+                <th scope="col">現在の状態</td>
             </tr>
         </thead>
         @if(isset($orders))
@@ -90,6 +91,7 @@
                     <td class="kizai-left">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
                     <td class="kizai-right"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></td>
                     <td class="kizai-right">{{$order->seminar_name}}</td>
+                    <td class="kizai-right">{{$order->order_status}}</td>
                 </tr>
             @endforeach
         @else

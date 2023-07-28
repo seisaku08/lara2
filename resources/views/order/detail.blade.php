@@ -8,9 +8,29 @@
 <h1 class="p-2">@yield('title')</h1>
 <article id="list">
 {{-- <?php dd($orders, $user, $user->id == $orders->user_id);?> --}}
+	@if(count($errors)>0)
+	<div>
+		<ul>
+			@foreach($errors->all() as $error)
+				<li>{{ $error }}</li>
+			@endforeach
+		</ul>
+	</div>
+	@endif
+
 	<table id="kizai2">
 		<tr class="midashi">
-			<th colspan="4">予約者情報</th>
+			<th colspan="4">予約者情報
+				@if($orders->user_id == 2)
+				<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.changetome', $orders->order_id) }}" onclick="return confirm('この予約の担当者を変更します。');">担当者を自分に変更する</a>
+				@elseif($orders->user_id != 2 && $orders->temporary_name != null)
+				<a class="btn btn-danger btn-sm ml-3 p-1" href="{{ route('order.changetojohn', $orders->order_id) }}" onclick="return confirm('この予約を仮登録の状態に戻します。誤って予約者を変更してしまった場合のみこのコマンドを実行してください。');">仮登録に戻す</a>
+				{{-- @elseif($user->id == $orders->user_id)
+				<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">担当者を変更する</a>
+				@else
+				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は変更できません</div> --}}
+				@endif
+			</th>
 		</tr>
 		<tr>
 			<td class="w20"><label>ご担当者氏名</label></td>
@@ -25,11 +45,21 @@
 			<td class="w30">{{$orders->user_tel}}</td>
 		</tr>
 	<tr class="midashi">
-			<th colspan="4">セミナー情報</th>
+			<th colspan="4">セミナー情報
+				@if($user->role == 1 || $user->id == $orders->user_id)
+				<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a>
+				@else
+				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
+				@endif
+			</th>
 		</tr>
 		<tr>
 			<td class="w30"><label>セミナー名</label></td>
 			<td class="w50">{{$orders->seminar_name}}</td>
+		</tr>
+		<tr>
+			<td class="w30"><label>現在の状態</label></td>
+			<td class="w25">{{ $orders->order_status }}</td>
 		</tr>
 		<tr>
 			<td class="w30"><label>セミナー開催日</label></td>
@@ -45,7 +75,7 @@
 		</tr>
 		<tr class="midashi">
 			<th colspan="4">配送先情報
-				@if($user->id == $orders->user_id)
+				@if($user->role == 1 || $user->id == $orders->user_id)
 				<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.edit', $orders->order_id) }}">編集</a>
 				@else
 				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
@@ -109,7 +139,7 @@
 <table id="kizai">
 	<tr class="midashi">
 		<th colspan="4">選択機材情報
-			@if($user->id == $orders->user_id)
+			@if($user->role == 1 || $user->id == $orders->user_id)
 			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">追加</a>
 			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.delpc', $orders->order_id) }}">削除</a>
 			@else

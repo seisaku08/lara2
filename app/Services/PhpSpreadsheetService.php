@@ -79,12 +79,26 @@ class PhpSpreadsheetService
             //使用中のセミナーがある場合書き込む
             if(!empty($usage->seminar_name)){
                 $uday = Carbon::parse($usage->seminar_day)->format('md');
-                $usage_data = "{$usage->seminar_name}（{$usage->name}）";
+                if($usage->user_id == 2){
+                    $usage_data = "{$usage->seminar_name}（{$usage->temporary_name}（仮））";
+                }else{
+                    $usage_data = "{$usage->seminar_name}（{$usage->name}）";
+                }
                 $sheet->getActiveSheet()
                 ->setCellValue([$key+2,$i+2], $usage_data);
-                $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
-                getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ff7f50');
-
+                //仮登録の場合、セルを真っ赤に塗りつぶす
+                if($usage->user_id == 2){
+                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
+                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ff0000');
+                //住所登録がまだの場合、セルを黄色に塗りつぶす
+                }elseif($usage->seminar_venue_pending == true){
+                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
+                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ffff00');
+                //不備のない予約の場合、セルを緑に塗りつぶす
+                }else{
+                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
+                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('0060ff70');
+            }
 
             }
             }

@@ -52,6 +52,8 @@ Route::middleware('verified')->group(function () {
     
     Route::get('/order', 'OrderController@list')->name('order.list');
     Route::get('/order/detail/{id}', 'OrderController@detail')->name('order.detail');
+    Route::get('/order/changetome/{id}', 'OrderController@changetome')->name('order.changetome');
+    Route::get('/order/changetojohn/{id}', 'OrderController@changetojohn')->name('order.changetojohn');
     Route::get('/order/edit/{id}', 'OrderController@edit')->name('order.edit');
     Route::get('/order/edit/del/{id}', 'OrderController@delpc')->name('order.delpc');
     Route::get('/order/edit/add/{id}', 'OrderController@addpc')->name('order.addpc');
@@ -69,6 +71,7 @@ Route::middleware('verified')->group(function () {
         Route::post('/maintenance/selpc', 'MaintenanceController@selpc')->name('selpc');
 
         Route::get('/shipping', 'ShippingController@index')->name('shipping');
+        Route::post('/shipping/order', 'ShippingController@order')->name('shipping.order');
 
     // });
 

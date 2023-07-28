@@ -16,18 +16,18 @@ return new class extends Migration
             $table->bigInteger('order_id')->unsigned();
             $table->string('order_no')->nullable();
             $table->bigInteger('user_id')->unsigned();
-            $table->string('seminar_day')->nullable();
+            $table->date('seminar_day')->nullable();
             $table->string('seminar_name')->nullable();
+            $table->string('order_status')->comment('現在の状況');
             $table->date('order_use_from')->nullable();
             $table->date('order_use_to')->nullable();
-            // $table->integer('token')->comment('重複対策トークン');
-            // $table->boolean('seminar_venue_pending')->nullable()->comment('送付先住所後送フラグ');
-            // $table->boolean('reminder_sent')->nullable()->comment('リマインダメール送付済フラグ');
-            // $table->datetime('nine_day_before')->nullable()->comment('リマインダメール送付日「9営業日前」');
-            // $table->boolean('order_finished')->nullable()->comment('完了セミナーフラグ');
-            $table->softDeletes();//削除・Model\Orderのuseも削除する
+            $table->integer('token')->comment('重複対策トークン');
+            $table->boolean('seminar_venue_pending')->nullable()->comment('送付先住所後送フラグ');
+            $table->boolean('reminder_sent')->nullable()->comment('リマインダメール送付済フラグ');
+            $table->datetime('nine_day_before')->nullable()->comment('リマインダメール送付日「9営業日前」');
+            $table->string('temporary_name')->nullable()->comment('仮担当者');
             $table->timestamps();
-            $table->primary(['order_id','user_id'])->change();
+            $table->primary(['order_id','user_id','order_status'])->change();
 
         });
 
@@ -36,7 +36,7 @@ return new class extends Migration
 
 
             // 外部キー制約
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
 
         });
     }

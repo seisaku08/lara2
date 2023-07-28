@@ -5,7 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Machine extends Model
+class Supply extends Model
 {
+
     use HasFactory;
+
+    protected $primaryKey = 'supply_id';
+    
 }

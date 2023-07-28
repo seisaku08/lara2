@@ -129,6 +129,8 @@ class OrderController extends Controller
                         $day_machine = new DayMachine;
                         $day_machine->day = date($start->format('Y-m-d'));
                         $day_machine->machine_id = $i;
+                        $day_machine->order_id = $id;
+                        $day_machine->order_status = $order->order_status;
                         $day_machine->save();
                         $start->modify('1 day');
                         }
@@ -137,6 +139,7 @@ class OrderController extends Controller
                         $mdo = new MachineDetailOrder;
                         $mdo->machine_id = $i;
                         $mdo->order_id = $id;
+                        $mdo->order_status = $order->order_status;
                         $mdo->save();
 
                     }
@@ -197,19 +200,19 @@ class OrderController extends Controller
                 if(!is_array($request->id)){
                     throw new Exception("機材が選択されていません。", 499);
                 }else{
-                    $addid = $request->id;
+                    $delid = $request->id;
 
-                    foreach($addid as $i){
-                        //machine_detail_orderテーブルに既登録がある場合は処理を中断
+                    foreach($delid as $i){
+                        //machine_detail_orderテーブルに登録がない場合は処理を中断
                         if(MachineDetailOrder::where('order_id', '=', $id)->where('machine_id', '=', $i)->first() == null){
                             throw new Exception("選択した機材は登録されていません。既に削除されている可能性があります。", 499);
                         }
-                        //day_machineテーブルに機材占有状況を展開
+                        //day_machineテーブルの機材占有状況を展開
                         $start = new Carbon($order->order_use_from);
                         $end = new Carbon($order->order_use_to);
                         while($start <= $end){
                             // dump($start->format('Y-m-d'), $i, Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first());
-                            //day_machineテーブルに既登録がある場合は処理を中断
+                            //day_machineテーブルに既に登録がない場合は処理を中断
                             if(Daymachine::where('day', '=', $start)->where('machine_id', '=', $i)->first() == null){
                                 throw new Exception("選択した機材は登録されていません。既に削除されている可能性があります。", 499);
                             }
@@ -218,7 +221,7 @@ class OrderController extends Controller
                         $start->modify('1 day');
                         }
 
-                        //machine_detail_orderテーブルに予約と機材IDの対応を1組ずつ展開
+                        //machine_detail_orderテーブルにある予約と機材IDの対応を1組ずつ削除
                         $mdo = new MachineDetailOrder;
                         // dd($mdo->where('order_id', '=', $id)->where('machine_id', '=', $i)->get());
 
@@ -352,10 +355,89 @@ class OrderController extends Controller
         $data = null;
         $data = [
 
-            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('seminar_day', 'asc')->get(),
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('order_no', 'asc')->get(),
 
         ];
         return view('order.index', $data);
+    }
+
+    public function changetome($id){
+        $user = Auth::user();
+        try{
+
+            DB::transaction(function ()use($user, $id) {
+
+            Order::where('order_id', '=', $id)
+            ->update([
+                'user_id' => $user->id,
+                'order_status' => '受付済'
+            ]);
+
+            MachineDetailOrder::where('order_id', '=', $id)
+            ->update([
+                'order_status' => '受付済'
+            ]);
+            
+            DayMachine::where('order_id', '=', $id)
+            ->update([
+                'order_status' => '受付済'
+            ]);
+
+            // dd($user);
+            // throw new Exception("トランザクション阻止");
+
+            });
+        }
+        catch(\Exception $e){
+            return redirect()->action('OrderController@detail', $id)->withErrors($e->getMessage());
+
+        }
+        $data = null;
+        $data = [
+
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('order_no', 'asc')->get(),
+        ];
+        
+        return redirect()->route('order.list', $data);
+    }
+    public function changetojohn($id){
+        $user = Auth::user();
+        try{
+
+            DB::transaction(function ()use($user, $id) {
+
+            Order::where('order_id', '=', $id)
+            ->update([
+                'user_id' => 2,
+                'order_status' => '仮登録'
+            ]);
+
+            MachineDetailOrder::where('order_id', '=', $id)
+            ->update([
+                'order_status' => '仮登録'
+            ]);
+
+            DayMachine::where('order_id', '=', $id)
+            ->update([
+                'order_status' => '仮登録'
+            ]);
+
+            // dd($user);
+            // throw new Exception("トランザクション阻止");
+
+            });
+        }
+        catch(\Exception $e){
+            return redirect()->action('OrderController@detail', $id)->withErrors($e->getMessage());
+
+        }
+        $data = null;
+        $data = [
+
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('order_no', 'asc')->get(),
+        ];
+        
+        return redirect()->route('order.list', $data);
     }
 
 }

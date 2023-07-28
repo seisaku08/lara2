@@ -365,7 +365,7 @@ return [
         ],
         [
             'text' => '機材発送・受領確認',
-            'route'  => 'maintenance',
+            'route'  => 'shipping',
             'icon' => 'fas fa-fw fa-shipping-fast',
             'can' => ['daioh', 'sys-ad']
         ],
@@ -381,7 +381,7 @@ return [
         ],
         [
             'text' => 'ユーザー属性変更',
-            'route'  => 'maintenance',
+            // 'route'  => 'maintenance',
             'icon' => 'fas fa-fw fa-user-cog',
             'can' => ['sys-ad']
         ],

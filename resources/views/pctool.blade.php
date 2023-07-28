@@ -10,7 +10,7 @@
   <div class="box1000 ">
     <p>
       使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。<br>
-      準備・配送に要する期間がございますので、入力できる年月日には制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo"><b>詳細（クリックで開く）</b></a><br>
+      準備・配送に要する期間を確保するため、予約（入力）できる期間には以下の制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo"><b>詳細（クリックで開く）</b></a><br>
      <div class="collapse" id="scheduleinfo">
       <div class="card card-body">
         <p>
@@ -19,7 +19,7 @@
         「予約終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}）</b>
       </p>
       </div>
-    </div>
+    </div>　
     <b> ＜参考＞</b>荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank"><b>こちら</b></a>から検索できます（ヤマト運輸のサイトが開きます）
 
     </p>
@@ -75,31 +75,47 @@
     {{ Form::hidden('seminar_day', $input->seminar_day)}}
     {{ Form::hidden('from', $input->from)}}
     {{ Form::hidden('to', $input->to)}}
-    <table class="table table-striped">
+    <table class="table table-striped table-sm" id="pctool">
       <tr class="midashi">
         <th>　</th>
         <th>ID</th>
         <th>機材番号</th>
         {{-- <th>状態</th> --}}
-        <th>規格</th>
-        {{-- <th>OS/PW</th>
+        <th>型番</th>
         <th>導入年月</th>
-        <th>備考</th> --}}
+        <th>OS</th>
+        <th>CPU</th>
+        <th>メモリ</th>
+        <th>モニタ</th>
+        <th>PPT</th>
+        <th>カメラ</th>
+        <th>BD/DVD</th>
+        <th>Video</th>
+        <th>toWin11</th>
+        <th>備考</th>
       </tr>
       @foreach($records as $record)
         <tr class="{{ in_array($record->machine_id, $usage)? 'trused' : '' }} ">
-          <td class="p-1 text-center"><input type="checkbox" name="id[]" value="{{$record->machine_id}}"
+          <td class="text-center"><input type="checkbox" name="id[]" value="{{$record->machine_id}}"
             class="{{ in_array($record->machine_id, $usage)? 'chused' : '' }}"
             @if ($input->id <> null)
               {{ in_array($record->machine_id, $input->id)? ' checked' : '' }}
             @endif></td>
-          <td class="p-1">{{$record->machine_id}}</td>
-          <td class="p-1"><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
+          <td>{{$record->machine_id}}</td>
+          <td><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
           {{-- <td class="p-1">{{$record->machine_status}}</td> --}}
-          <td class="p-1">{{$record->machine_spec}}</td>
-          {{-- <td>{{$record->machine_os}}</td>
-          <td>{{$record->machine_since}}</td>
-          <td>{{$record->machine_memo}}</td> --}}
+          <td>{{$record->machine_spec}}</td>
+          <td>{{Carbon\Carbon::parse($record->machine_since)->format('Y-m')}}</td>
+          <td>{{$record->machine_os}}</td>
+          <td>{{$record->machine_cpu}}</td>
+          <td>{{$record->machine_memory}}</td>
+          <td>{{$record->machine_monitor}}</td>
+          <td>{{$record->machine_powerpoint}}</td>
+          <td>{{$record->machine_camera == true ? '有' : '無'}}</td>
+          <td>{{$record->machine_hasdrive == true ? '有' : '無'}}</td>
+          <td>{{$record->machine_connector}}</td>
+          <td>{{$record->machine_canto11}}</td>
+          <td>{{$record->machine_memo}}</td>
         </tr>
       @endforeach
     </table>

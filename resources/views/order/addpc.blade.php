@@ -15,8 +15,14 @@
   </div>
 <div class="container darkgray box1000">
     <div class="row">
-      <div class="column col-8">
-        <div class="row">
+      <div class="column col-12">
+        <div class="col text-center p-1">
+          <span class="larger"><label>セミナー名:
+          {{ $order->seminar_name }}</label></span>
+        </div>
+      </div>
+        <div class="column col-8">
+          <div class="row">
           <div class="col text-center p-1">
             <label>セミナー開催日:</label>
             <span class="larger">{{ $order->seminar_day }}</span>

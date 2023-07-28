@@ -12,21 +12,21 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('day_machine_detail', function (Blueprint $table) {
-            $table->bigInteger('id');
+            $table->bigInteger('id')->unsigned();
             $table->date('day');
             $table->bigInteger('machine_id')->unsigned();
+            $table->bigInteger('order_id')->unsigned();
+            $table->string('order_status')->comment('オーダーの状況');
             $table->timestamps();
-            $table->primary(['id','day','machine_id']);
+            $table->primary(['id','day','machine_id','order_id']);
         });
 
         Schema::table('day_machine_detail', function (Blueprint $table) {
 
-            $table->increments('id')->change();
+            $table->bigIncrements('id')->change();
 
-            // 外部キー制約（dayは使わなくなるので適宜削除）
-            $table->foreign('day')->references('day')->on('days')->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('machine_id')->references('machine_id')->on('machine_details')->onDelete('cascade')->onUpdate('cascade');
-
+            $table->foreign('order_id')->references('order_id')->on('orders')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

@@ -10,6 +10,7 @@ use App\Models\Temporary;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Maintenance;
+use App\Models\Supply;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Yasumi\Yasumi;
@@ -118,6 +119,7 @@ class pctoolController extends Controller
         $data = [
             'id'=> $id,
             'machine_details' => MachineDetail::find($id),
+            'supplies' => Supply::where('machine_id', '=', $id)->get(),
             'orders' => Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
                 ->join('machine_details','machine_detail_order.machine_id','=','machine_details.machine_id')
                 ->where('machine_details.machine_id',$id)

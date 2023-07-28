@@ -12,10 +12,21 @@ class ShippingController extends Controller
         // dd($request);
         $data = [
             'records' => MachineDetail::all(),
-            'orders' => Order::orderBy('seminar_day','asc')->get(),
+            'orders' => Order::join('shippings','orders.order_id', '=', 'shippings.order_id')->orderBy('seminar_day','asc')->get(),
             'input' => $request,
         ];
         return view('shipping.index', $data);
+
+    }
+
+    public function order(Request $request){
+
+        $data = [
+            'records' => MachineDetail::all(),
+            'orders' => Order::orderBy('seminar_day','asc')->get(),
+            'input' => $request,
+        ];
+        return view('shipping.work', $data);
 
     }
 

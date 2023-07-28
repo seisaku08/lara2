@@ -15,6 +15,7 @@ return new class extends Migration
             $table->bigInteger('id');
             $table->bigInteger('machine_id')->unsigned();
             $table->bigInteger('order_id')->unsigned();
+            $table->string('order_status')->comment('オーダーの状況');
             $table->timestamps();
             $table->primary(['id','machine_id','order_id']);
         });

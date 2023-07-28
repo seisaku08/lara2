@@ -60,6 +60,7 @@ class FinishController extends Controller
                 $order->user_id = Auth::user()->id;
                 $order->seminar_day = $request->seminar_day;
                 $order->seminar_name = $request->seminar_name;
+                $order->order_status = '受付済';
                 $order->order_use_from = $request->order_use_from;
                 $order->order_use_to = $request->order_use_to;
                 $order->token = $request->session()->get('Session.Token');
@@ -87,6 +88,8 @@ class FinishController extends Controller
                     $day_machine = new DayMachine;
                         $day_machine->day = date($start->format('Y-m-d'));
                         $day_machine->machine_id = $i;
+                        $day_machine->order_id = $last_order_id;
+                        $day_machine->order_status = '受付済';
                         $day_machine->save();
                     $start->modify('1 day');
                     }
@@ -101,6 +104,7 @@ class FinishController extends Controller
                 $mdo = new MachineDetailOrder;
                     $mdo->machine_id = $i;
                     $mdo->order_id = $last_order_id;
+                    $mdo->order_status = '受付済';
                     $mdo->save();
 
                 }

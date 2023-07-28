@@ -29,6 +29,7 @@
                 <tr>
                     <th>　</th>
                     <th scope="col">セミナー開催日</td>
+                    <th scope="col">機材到着希望日時</td>
                     <th scope="col">予約No. </td>
                     <th scope="col">セミナー名</td>
                 </tr>
@@ -38,12 +39,13 @@
                 @foreach($orders as $order)
                     <tr>
                         <td class="p-1 text-center">
-                            {{ Form::open(['route'=>['selorder']]) }}
+                            {{ Form::open(['route'=>['shipping.order']]) }}
                             {{ Form::submit('選択', ['name' => 'delete_machine_id', 'class' => 'btn btn-primary p-1']) }}
                             {{ Form::hidden('order_id', $order->order_id) }}
                             {{ Form::close() }}
                         </td>
                         <td class="kizai-left">{{$order->seminar_day}}（開催{{ Carbon\Carbon::today()->diffindays($order->seminar_day);}}日{{ Carbon\Carbon::create($order->seminar_day)->isFuture()?'前':'過ぎ'; }}）</td>
+                        <td class="kizai-left">{{$order->shipping_arrive_day}}（{{ Carbon\Carbon::today()->diffindays($order->shipping_arrive_day);}}日{{ Carbon\Carbon::create($order->shipping_arrive_day)->isFuture()?'前':'過ぎ'; }}）</td>
                         <td class="kizai-right"><a href="order/detail/{{$order->order_id}}" target="_blank">{{$order->order_no}}</a></td>
                         <td class="kizai-right">{{$order->seminar_name}}</td>
                     </tr>
