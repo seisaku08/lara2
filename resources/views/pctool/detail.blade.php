@@ -71,6 +71,7 @@
 		</tr>
 
 	</table>
+	@if(!empty($supplies))
 	<table class="full">
 		<tr class="midashi">
 			<th colspan="2">付属品</th>
@@ -80,13 +81,14 @@
 			<td class="w60"><label>備考</label></td>
 		</tr>
 
-	@if()@foreach($supplies as $supply)
-		<tr>
-			<td class="w40">{{$supply->supply_name}}</td>
-			<td class="w60">{{$supply->supply_memo}}</td>
-		</tr>
-	@endforeach
-</table>
+		@foreach($supplies as $supply)
+			<tr>
+				<td class="w40">{{$supply->supply_name}}</td>
+				<td class="w60">{{$supply->supply_memo}}</td>
+			</tr>
+		@endforeach
+	</table>
+	@endif
 	<table class="full">
 		<tr class="midashi">
 			<th colspan="5">貸出予定</th>
