@@ -160,7 +160,6 @@ class FinishController extends Controller
         $request->session()->forget('Session');
         //予約Noを抽出
         $data['order_no'] = $order_no;
-dd(Temporary::where('user_id', Auth::user())->get());
         return view('finish', $data);
 
         }
