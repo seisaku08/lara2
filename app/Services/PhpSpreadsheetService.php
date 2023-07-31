@@ -109,7 +109,7 @@ class PhpSpreadsheetService
 
 
         // 1行目(ヘッダー)を固定
-        $sheet->getActiveSheet()->freezePane('A3');
+        $sheet->getActiveSheet()->freezePane('B3');
 
         // 列幅を調整
         $sheet->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
@@ -151,7 +151,7 @@ class PhpSpreadsheetService
         ];
 
         $sheet->getActiveSheet()->getStyle("A1:{$maxCellAddress}")->applyFromArray($styleArray);
-        $sheet->getActiveSheet()->getStyle("B2");
+        $sheet->getActiveSheet()->getStyle("B32");
 
         // Excelファイルをダウンロード
         $file_name = "機材管理表_{$today}.xlsx";
