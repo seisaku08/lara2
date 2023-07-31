@@ -156,7 +156,7 @@ class FinishController extends Controller
             },5);
 
         //テンポラリデータをもろもろ削除
-        Temporary::where('user_id', Auth::user())->delete();  
+        Temporary::where('user_id', Auth::user()->id)->delete();  
         $request->session()->forget('Session');
         //予約Noを抽出
         $data['order_no'] = $order_no;
