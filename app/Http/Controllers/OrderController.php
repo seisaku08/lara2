@@ -12,6 +12,8 @@ use App\Models\Temporary;
 use App\Models\MachineDetailOrder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\OrderMail;      //Mailableクラス
+use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Exception;
@@ -382,6 +384,21 @@ class OrderController extends Controller
             ->update([
                 'order_status' => '受付済'
             ]);
+
+            //メール送信
+            $orderdata = [
+                'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->join('orders', 'machine_detail_order.order_id','=', 'orders.order_id')->where('orders.order_id', '=', $id)->get(),
+                'user' => Auth::user(),
+            //     'input' => $request,
+                'order' => Order::where('order_id', '=', $id)->first(),
+                'venue' => Venue::join('shippings', 'venues.venue_id', '=', 'shippings.venue_id')->where('shippings.order_id', '=', $id)->first(),
+                'shipping' => Shipping::where('order_id', '=', $id)->first(),
+            ];
+            // dump($order,  $venue, $ship);
+            // dd($orderdata);
+            Mail::to(Auth::user())
+               ->send(new OrderMail($orderdata)); 
+
 
             // dd($user);
             // throw new Exception("トランザクション阻止");

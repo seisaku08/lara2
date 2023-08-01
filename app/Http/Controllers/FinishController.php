@@ -139,7 +139,7 @@ class FinishController extends Controller
             $last_shipping_id = DB::getPdo()->lastInsertId();
 
                 $orderdata = [
-                    'machines' => MachineDetail::wherein('machine_id', $request->id)->get('machine_id'),
+                    'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
                     'user' => Auth::user(),
                 //     'input' => $request,
                     'order' => Order::find($last_order_id),
