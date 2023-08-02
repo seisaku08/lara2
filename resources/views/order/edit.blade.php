@@ -37,7 +37,7 @@
 			<td class="w25"><input type="date" name="seminar_day" placeholder="" value="{{!empty(old('seminar_day'))? old('seminar_day'):$orders->seminar_day}}"></td>
 		</tr>
 		<tr>
-			<td class="w30">予約期間<br>（変更できません。）</td>
+			<td class="w30"><label>予約期間</label><br>（変更できません。）</td>
 			<td class="">{{$orders->order_use_from}}～{{$orders->order_use_to}}</td>
 		</tr>
 		<tr class="midashi">
@@ -106,7 +106,14 @@
 </table>
 <table id="kizai">
 	<tr class="midashi">
-		<th colspan="4">選択機材情報（変更できません。）</th>
+		<th colspan="4">選択機材情報
+			@if($user->role == 1 || $user->id == $orders->user_id)
+			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">追加</a>
+			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.delpc', $orders->order_id) }}">削除</a>
+			@else
+			<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
+			@endif
+</th>
 	</tr>
 	<tr>
 		<td class="w100">
