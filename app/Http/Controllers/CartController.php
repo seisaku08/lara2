@@ -64,7 +64,7 @@ class CartController extends Controller
         [
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
             'from.required_with_all' => '予約開始日は入力必須です。',
-            'to.required_with_all' => '予約終了日は入力必須です。',
+            'to.required_with_all' => '予約終了日は入力必須（セミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能）です。',
             'seminar_day.after_or_equal' => 'セミナー開催日は本日の4営業日後（'.$day4after->format('Y/m/d').'）から入力可能です。',
             'from.after_or_equal' => '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
             'from.before_or_equal' => '予約開始日はセミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能です。',
