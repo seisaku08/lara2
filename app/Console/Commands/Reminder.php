@@ -57,7 +57,7 @@ class Reminder extends Command
 
             $orderdata = [
                 //機材情報を取得
-                'machines' => MachineDetail::wherein('machine_id', $machine)->get('machine_id'),
+                'machines' => MachineDetail::wherein('machine_id', $machine)->get(),
                 //担当者情報を取得
                 'user' => $user,
                 //予約情報を取得
