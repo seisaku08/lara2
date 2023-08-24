@@ -11,7 +11,7 @@
     <p class="text-left">お世話になっております。<br>
         株式会社大應【機材管理システム】より送信させていただいております。</p>
     <p class="text-left">
-        予約No. {{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の{{ Carbon\Carbon::today()->diffindays($orderdata['order']['seminar_day']);}}営業日{{ Carbon\Carbon::create($orderdata['order']['seminar_day'])->isFuture()?'前':'過ぎ'; }}となりましたのでご連絡いたします。
+        予約No. {{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の{{ Carbon\Carbon::today()->diffinweekdays($orderdata['order']['seminar_day']);}}営業日{{ Carbon\Carbon::create($orderdata['order']['seminar_day'])->isFuture()?'前':'過ぎ'; }}となりましたのでご連絡いたします。
         予約内容の変更・取消などございましたら、下記よりお手続きをお願いいたします。</p>
     {{-- 送り先未入力の場合、解消されるまで送られ続けることへの注意書 --}}
     @if( $orderdata['order']['seminar_venue_pending'] == true )
