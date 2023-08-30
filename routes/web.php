@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 //ログイン不要なページ
 Route::get('ordermailsample', 'OrdermailController@view');
+Route::get('shippingmailsample', 'ShippingmailController@view');
 Route::get('ninedaymailsample', 'NineDayMailController@view');
 Route::get('/helo', 'HeloController@view');
 Route::get('/xlsdl',[SpreadsheetController::class, 'index']);
@@ -50,7 +51,7 @@ Route::middleware('verified')->group(function () {
     Route::post('/addCart', 'CartController@addCart')->name('addCart');
     Route::post('/delCart', 'CartController@delCart')->name('delCart');
     
-    Route::get('/order', 'OrderController@list')->name('order.list');
+    Route::match(['get','post'],'/order', 'OrderController@list')->name('order.list');
     Route::get('/order/detail/{id}', 'OrderController@detail')->name('order.detail');
     Route::get('/order/changetome/{id}', 'OrderController@changetome')->name('order.changetome');
     Route::get('/order/changetojohn/{id}', 'OrderController@changetojohn')->name('order.changetojohn');
@@ -71,7 +72,8 @@ Route::middleware('verified')->group(function () {
         Route::post('/maintenance/selpc', 'MaintenanceController@selpc')->name('selpc');
 
         Route::get('/shipping', 'ShippingController@index')->name('shipping');
-        Route::post('/shipping/order', 'ShippingController@order')->name('shipping.order');
+        Route::match(['get','post'],'/shipping/order', 'ShippingController@order')->name('shipping.order');
+        Route::match(['get','post'],'/shipping/invoice', 'ShippingController@invoice')->name('shipping.invoice');
 
     // });
 

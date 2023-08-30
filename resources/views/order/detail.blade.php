@@ -17,6 +17,7 @@
 		</ul>
 	</div>
 	@endif
+<?php use App\Libs\Common; use Carbon\Carbon;?>
 
 	<table id="kizai2">
 		<tr class="midashi">
@@ -140,8 +141,13 @@
 	<tr class="midashi">
 		<th colspan="4">選択機材情報
 			@if($user->role == 1 || $user->id == $orders->user_id)
-			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">追加</a>
-			<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.delpc', $orders->order_id) }}">削除</a>
+				@if(Carbon::today() > Common::daybefore(Carbon::parse($orders->seminar_day),3))
+				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">変更可能期間を過ぎたため編集できません</div>
+
+				@else
+					<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.addpc', $orders->order_id) }}">追加</a>
+					<a class="btn btn-primary btn-sm ml-3 p-1" href="{{ route('order.delpc', $orders->order_id) }}">削除</a>
+				@endif
 			@else
 			<div class="btn btn-primary btn-sm ml-3 p-1 disabled">予約者以外は編集できません</div>
 			@endif

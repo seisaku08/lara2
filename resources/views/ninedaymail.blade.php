@@ -4,15 +4,16 @@
     <link rel="stylesheet" href="{{ asset('vendor/adminlte/dist/css/adminlte.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
     <link rel="stylesheet" href="{{ asset('css/sendstyle.css') }}" type="text/css">
+    <?php use App\Libs\Common; use Carbon\Carbon;?>
 
 <body class="mail">
     <p class="text-left">{{ $orderdata['user']['name'] }}様</p>
     <p class="text-left">※このメールはシステムからの自動送信です</p>
     <p class="text-left">お世話になっております。<br>
-        株式会社大應【機材管理システム】より送信させていただいております。</p>
+        株式会社大應【機材管理システム】からご連絡いたします。</p>
     <p class="text-left">
-        予約No. {{ $orderdata['order']['order_no'] }}として承りましたセミナーが、開催日の{{ Carbon\Carbon::today()->diffinweekdays($orderdata['order']['seminar_day']);}}営業日{{ Carbon\Carbon::create($orderdata['order']['seminar_day'])->isFuture()?'前':'過ぎ'; }}となりましたのでご連絡いたします。
-        予約内容の変更・取消などございましたら、下記よりお手続きをお願いいたします。</p>
+        予約No. {{ $orderdata['order']['order_no'] }}として承りましたセミナーが、{{ Common::businessdaycheck($orderdata['order']['seminar_day']) }}の開催となりました。<br>
+        ご予約に変更はございませんでしょうか。万一内容の変更や取消などがございましたら、以下よりお手続きをお願いいたします。</p>
     {{-- 送り先未入力の場合、解消されるまで送られ続けることへの注意書 --}}
     @if( $orderdata['order']['seminar_venue_pending'] == true )
         <p class="text-left">また、本予約につきましては<span class="text-red text-bold">配送先住所が未入力となっております。</span><br>このままでは配送のお手続きを進めることができませんので、ご入力をお願いいたします。</p>
@@ -21,7 +22,7 @@
     {{-- https://daioh-pc.com/order/detail/{{$orderdata['order']['order_id']}} --}}
         <a href="{{route("order.detail",$orderdata['order']['order_id'])}}">変更はこちら（webブラウザが開きます）</a><br>
         <h5 class="mt-3 mb-2">【予約の変更・取消について】</h5>
-<p class="text-left">システムを利用しての予約変更・取消は、セミナー開催日の3営業日前まで受付可能です。<br>
+<p class="text-left">システムを利用しての予約変更・取消は、セミナー開催日の3営業日前（本予約の場合、{{ Common::daybefore(Carbon::parse($orderdata['order']->seminar_day),3)->format('Y年m月d日') }}）まで受付可能です。<br>
     システムによる受付締切後のご相談や、ご不明な点がございましたら、下記お問い合わせ先までご連絡くださいますようお願いいたします。</p>
     
 <table id="form">
