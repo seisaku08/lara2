@@ -83,7 +83,7 @@ class ShippingController extends Controller
             $shippingdata = [
                 'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get(),
                 'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first(),
-                'invoice' => Invoice::where('shipping_id', '=',$request->shipping_id),
+                'invoice' => Invoice::where('shipping_id', '=',$request->shipping_id)->get(),
             ];
             Mail::to($data['orders']->email)
             ->send(new ShippingMail($shippingdata));

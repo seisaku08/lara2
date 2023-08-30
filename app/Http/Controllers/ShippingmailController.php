@@ -15,17 +15,13 @@ class ShippingmailController extends Controller
     public function view(Request $request){
 
     $data = [
-        'orderdata' => [
-        'machines'=> MachineDetail::wherein('machine_id', [1,2,3])->get(),
-        'user' => User::find(1),
-        'order' => Order::find(1),
-        'venue' => Venue::find(1),
-        'shipping' => Shipping::find(1),
-        'invoice' => Invoice::where('shipping_id', '=', 1)->get(),
-
+        'shippingdata' => [
+            'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', 1)->orderBy('machine_details.machine_id','asc')->get(),
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', 1)->first(),
+            'invoice' => Invoice::where('shipping_id', '=',1)->get(),
     ]
 ];
-
+// dd($data);
         return view('shippingmail', $data);
     }
     //

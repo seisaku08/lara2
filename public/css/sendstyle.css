@@ -94,6 +94,11 @@ input[type="text"].ss{
     box-sizing: border-box;
 }
 
+input[type="text"].invoice{
+    width: 120px;
+    box-sizing: border-box;
+}
+
 input#zip{
     width: 90px;
     box-sizing: border-box;
