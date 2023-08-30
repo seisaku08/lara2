@@ -9,9 +9,10 @@
     <p class="text-left">{{ $shippingdata['orders']['name'] }}様</p>
     {{-- <p class="text-left">※このメールはシステムからの自動送信です</p> --}}
     <p class="text-left">お世話になっております。<br>
-        株式会社大應【機材管理システム】より送信させていただいております。</p>
-        <p class="text-left">ご予約をいただいておりましたセミナーにつきまして、会場への機材発送を行いましたことをご報告いたします。</p>
+        株式会社大應【機材管理システム】からご連絡いたします。</p>
+        <p class="text-left">ご予約をいただいておりましたセミナーにつきまして、会場への機材発送を行いました。</p>
         <p class="text-left">伝票番号等、発送情報は以下の通りです。</p>
+        <p class="text-left">万一ご不明な点がございましたら、下記お問い合わせ先までご連絡くださいますようお願いいたします。
     <h4 class="mt-3 text-center">ご予約情報（予約No. {{$shippingdata['orders']['order_no']}}）</h4>
 
 <table id="form">
