@@ -18,8 +18,8 @@
         <p>送り状番号を入力してください。</p>
         {{ Form::open(['route'=>['shipping.invoice']]) }}
         1. <input type="text" name="no[]" class="invoice">
-        {{-- 2. <input type="text" name="no[]" class="invoice">
-        3. <input type="text" name="no[]" class="invoice">
+         2. <input type="text" name="no[]" class="invoice">
+        {{--3. <input type="text" name="no[]" class="invoice">
         4. <input type="text" name="no[]" class="invoice">
         5. <input type="text" name="no[]" class="invoice"> --}}
 
