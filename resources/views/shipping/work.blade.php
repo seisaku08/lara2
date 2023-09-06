@@ -18,10 +18,10 @@
         <p>送り状番号を入力してください。</p>
         {{ Form::open(['route'=>['shipping.invoice']]) }}
         1. <input type="text" name="no[]" class="invoice">
-         2. <input type="text" name="no[]" class="invoice">
-        {{--3. <input type="text" name="no[]" class="invoice">
+        2. <input type="text" name="no[]" class="invoice">
+        3. <input type="text" name="no[]" class="invoice">
         4. <input type="text" name="no[]" class="invoice">
-        5. <input type="text" name="no[]" class="invoice"> --}}
+        5. <input type="text" name="no[]" class="invoice">
 
         {{-- <p>また、発送を行った旨のメールがご担当者様に送られ<span class="text-danger text-bold">（未実装）</span>、送り状用B2・納品書excelファイルが生成されます<span class="text-danger text-bold">（未実装）</span>。</p> --}}
         <p>よろしいですか？</p>

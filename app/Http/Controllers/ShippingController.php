@@ -50,11 +50,20 @@ class ShippingController extends Controller
         try{
         $validator = Validator::make($request->all(),
         [
-            'id' => ['nullable']
+            'no.0' => ['required_without_all:no.1,no.2,no.3,no.4', 'nullable', 'regex:/\d{4}-?\d{4}-?\d{4}/'],
+            'no.1' => ['nullable', 'regex:/\d{4}-?\d{4}-?\d{4}/'],
+            'no.2' => ['nullable', 'regex:/\d{4}-?\d{4}-?\d{4}/'],
+            'no.3' => ['nullable', 'regex:/\d{4}-?\d{4}-?\d{4}/'],
+            'no.4' => ['nullable', 'regex:/\d{4}-?\d{4}-?\d{4}/'],
         ],
+        
         [
-            'id.nullable' => '伝票番号は',
-            'id.regex' => '伝票番号は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。'
+            'no.0.required_without_all' => '伝票番号は最低1つ入力してください。',
+            'no.0.regex' => '伝票番号(1)は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。',
+            'no.1.regex' => '伝票番号(2)は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。',
+            'no.2.regex' => '伝票番号(3)は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。',
+            'no.3.regex' => '伝票番号(4)は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。',
+            'no.4.regex' => '伝票番号(5)は「4桁-4桁-4桁」もしくは「12桁」の形式で入力してください。',
         ]);
 
         if($validator->fails()){
@@ -73,7 +82,7 @@ class ShippingController extends Controller
                 $invoice->save();
                 }
 
-            Order::where('order_id', $request->id)->update(['order_status' => '発送済']);
+            // Order::where('order_id', $request->id)->update(['order_status' => '発送済']);
             MachineDetailOrder::where('order_id', $request->id)->update(['order_status' => '発送済']);
             DayMachine::where('order_id', $request->id)->update(['order_status' => '発送済']);
             MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->update(['machine_details.machine_status' => '貸出中']);
