@@ -82,7 +82,7 @@ class ShippingController extends Controller
                 $invoice->save();
                 }
 
-            // Order::where('order_id', $request->id)->update(['order_status' => '発送済']);
+            Order::where('order_id', $request->id)->update(['order_status' => '発送済']);
             MachineDetailOrder::where('order_id', $request->id)->update(['order_status' => '発送済']);
             DayMachine::where('order_id', $request->id)->update(['order_status' => '発送済']);
             MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->update(['machine_details.machine_status' => '貸出中']);
