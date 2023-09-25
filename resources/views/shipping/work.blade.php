@@ -19,17 +19,17 @@
             <form action="{{ url('/invoicedl') }}" method="POST">
                 {{ Form::hidden('id', $orders->order_id) }}
                 @csrf
-                <h2>セミナー情報を元に送り状データを生成します。以下のボタンを押下してファイルをダウンロードしてください。</h2>
-                <button>download</button>
+                <p>セミナー情報を元に送り状データを生成します。<br>以下のボタンを押してファイルをダウンロードしてください。</p>
+                <p><button class='btn btn-primary p-1'>送り状生成</button></p>
             </form>
         
-            <p>送り状番号を入力してください。</p>
+            <p>B2クラウドを使用して送り状を印刷したら、伝票番号を入力してください。</p>
             {{ Form::open(['route'=>[$route]]) }}
-            1. <input type="text" name="no[]" class="invoice">
+           <p> 1. <input type="text" name="no[]" class="invoice">
             2. <input type="text" name="no[]" class="invoice">
             3. <input type="text" name="no[]" class="invoice">
             4. <input type="text" name="no[]" class="invoice">
-            5. <input type="text" name="no[]" class="invoice">
+            5. <input type="text" name="no[]" class="invoice"></p>
             @endif
         @elseif($route == 'shipping.back')
         {{ Form::open(['route'=>[$route]]) }}
@@ -37,8 +37,8 @@
         @endif
 
         {{-- <p>また、発送を行った旨のメールがご担当者様に送られ<span class="text-danger text-bold">（未実装）</span>、送り状用B2・納品書excelファイルが生成されます<span class="text-danger text-bold">（未実装）</span>。</p> --}}
-        <p>よろしいですか？</p>
-        {{ Form::submit('選択', ['name' => 'submit', 'class' => 'btn btn-primary p-1']) }}
+        <p>「送信」ボタンを押すと、セミナー担当者に送り状を記載したメールが送られます。<br>よろしいですか？</p>
+        <p>{{ Form::submit('送信', ['name' => 'submit', 'class' => 'btn btn-primary p-1']) }}</p>
         {{ Form::hidden('id', $orders->order_id) }}
         {{ Form::hidden('shipping_id', $orders->shipping_id) }}
         {{ Form::close() }}

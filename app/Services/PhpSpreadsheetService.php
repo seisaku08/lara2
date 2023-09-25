@@ -226,7 +226,7 @@ class PhpSpreadsheetService
                 $ship_data->seminar_name,//品名２
                 '精密機器',//荷扱い１
                 "予約No.".$ship_data->order_no,//記事
-                "=roundup(".$invoice_amount."/2,0)",//発行枚数
+                "=roundup(".$invoice_amount."/7,0)",//発行枚数
                 '3',//個数口枠の印字
                 '033292148807',//ご請求先顧客コード
                 '01',//運賃管理番号
@@ -252,7 +252,7 @@ class PhpSpreadsheetService
                 $ship_data->seminar_name,//品名２
                 '精密機器',//荷扱い１
                 "予約No.".$ship_data->order_no,//記事
-                "=roundup(".$invoice_amount."/2,0)",//発行枚数
+                "=roundup(".$invoice_amount."/7,0)",//発行枚数
                 '',//個数口枠の印字
                 '',//ご請求先顧客コード
                 '',//運賃管理番号
