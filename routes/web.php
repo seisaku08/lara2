@@ -23,6 +23,7 @@ Route::get('ninedaymailsample', 'NineDayMailController@view');
 Route::get('/helo', 'HeloController@view');
 Route::get('/xlsdl',[SpreadsheetController::class, 'index']);
 Route::post('/download', [SpreadsheetController::class, 'download']);
+Route::post('/invoicedl', [SpreadsheetController::class, 'invoice']);
 
 //ログイン要・メール認証不要なページ
 Route::middleware('auth')->group(function () {
@@ -74,6 +75,8 @@ Route::middleware('verified')->group(function () {
         Route::get('/shipping', 'ShippingController@index')->name('shipping');
         Route::match(['get','post'],'/shipping/order', 'ShippingController@order')->name('shipping.order');
         Route::match(['get','post'],'/shipping/invoice', 'ShippingController@invoice')->name('shipping.invoice');
+        Route::match(['get','post'],'/shipping/return', 'ShippingController@return')->name('shipping.return');
+        Route::match(['get','post'],'/shipping/back', 'ShippingController@back')->name('shipping.back');
 
     // });
 

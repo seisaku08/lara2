@@ -35,6 +35,20 @@ class ShippingController extends Controller
             'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get(),
             'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first(),
             'input' => $request,
+            'route' => 'shipping.invoice',
+
+        ];
+        return view('shipping.work', $data);
+
+    }
+    public function return(Request $request){
+
+        $data = [
+            'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get(),
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first(),
+            'input' => $request,
+            'route' => 'shipping.back',
+
         ];
         return view('shipping.work', $data);
 
@@ -45,6 +59,8 @@ class ShippingController extends Controller
             'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get(),
             'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first(),
             'input' => $request,
+            'route' => 'shipping.invoice',
+
         ];
         // dd($data,$request);
         try{
@@ -96,6 +112,48 @@ class ShippingController extends Controller
             ];
             Mail::to($data['orders']->email)
             ->send(new ShippingMail($shippingdata));
+
+
+        }
+        catch(\Exception $e){
+            // echo($e->getMessage());
+            if ($e->getcode() == 499){
+            // dd($data);
+
+                return view('shipping.work', $data)->withErrors($e->getMessage());
+
+            }
+            return view('shipping.work', $data)->withErrors($e->getmessage());
+        }
+        finally{
+
+        }
+
+
+        return redirect()->route('shipping');
+
+
+    //
+    }
+
+    public function back(Request $request){
+        $data = [
+            'machines' => MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get(),
+            'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first(),
+            'input' => $request,
+        ];
+        // dd($data,$request);
+        try{
+        
+            $order_no = DB::transaction(function ()use($request) {
+
+            Order::where('order_id', $request->id)->update(['order_status' => '返却済']);
+            MachineDetailOrder::where('order_id', $request->id)->update(['order_status' => '返却済']);
+            DayMachine::where('order_id', $request->id)->update(['order_status' => '返却済']);
+            MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->update(['machine_details.machine_status' => '待機中']);
+
+            });
+            
 
 
         }

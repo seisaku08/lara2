@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Services\PhpSpreadsheetService;
+// use DragonCode\Contracts\Cashier\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Http\Request;
 
 class SpreadsheetController extends Controller
 {
@@ -40,6 +42,17 @@ class SpreadsheetController extends Controller
     {
         $this->spreadsheet->export();
         return view('xlsdl');
+    }
+
+    /**
+     * 送り状発行.
+     *
+     * @return View
+     */
+    public function invoice(Request $request): View
+    {
+        $this->spreadsheet->invoice($request);
+        return back();
     }
 }
 

@@ -10,18 +10,31 @@
 <h1 class="text-center p-2">@yield('title')</h1>
         {{-- <?php dump($orders);?> --}}
     <div class="box1000">
+        @if($route == 'shipping.invoice')
         <p>以下のセミナーの発送処理を行います。</p>
-        @if($orders->seminar_venue_pending == 1)
-        <p class='text-danger text-bold'>配送先住所が未記入です。<br>開催期日が差し迫っている場合は、ご担当者様に連絡してください。</p>
+            @if($orders->seminar_venue_pending == 1)
+            <p class='text-danger text-bold'>配送先住所が未記入です。<br>開催期日が差し迫っている場合は、ご担当者様に連絡してください。</p>
 
-        @else
-        <p>送り状番号を入力してください。</p>
-        {{ Form::open(['route'=>['shipping.invoice']]) }}
-        1. <input type="text" name="no[]" class="invoice">
-        2. <input type="text" name="no[]" class="invoice">
-        3. <input type="text" name="no[]" class="invoice">
-        4. <input type="text" name="no[]" class="invoice">
-        5. <input type="text" name="no[]" class="invoice">
+            @else
+            <form action="{{ url('/invoicedl') }}" method="POST">
+                {{ Form::hidden('id', $orders->order_id) }}
+                @csrf
+                <h2>セミナー情報を元に送り状データを生成します。以下のボタンを押下してファイルをダウンロードしてください。</h2>
+                <button>download</button>
+            </form>
+        
+            <p>送り状番号を入力してください。</p>
+            {{ Form::open(['route'=>[$route]]) }}
+            1. <input type="text" name="no[]" class="invoice">
+            2. <input type="text" name="no[]" class="invoice">
+            3. <input type="text" name="no[]" class="invoice">
+            4. <input type="text" name="no[]" class="invoice">
+            5. <input type="text" name="no[]" class="invoice">
+            @endif
+        @elseif($route == 'shipping.back')
+        {{ Form::open(['route'=>[$route]]) }}
+        <p>以下のセミナーの返却処理を行います。</p>
+        @endif
 
         {{-- <p>また、発送を行った旨のメールがご担当者様に送られ<span class="text-danger text-bold">（未実装）</span>、送り状用B2・納品書excelファイルが生成されます<span class="text-danger text-bold">（未実装）</span>。</p> --}}
         <p>よろしいですか？</p>
@@ -29,7 +42,6 @@
         {{ Form::hidden('id', $orders->order_id) }}
         {{ Form::hidden('shipping_id', $orders->shipping_id) }}
         {{ Form::close() }}
-        @endif
     </div>
       @if(count($errors)>0)
       <div class="container col-8">

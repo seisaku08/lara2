@@ -65,7 +65,7 @@
 
     <h4 class="text-bold text-center">返却手続きを行うセミナーを選択</h4>
     <div id='list3'>
-        {{ Form::open(['route' => 'shipping.order', 'id' => 'shipping3']) }}
+        {{ Form::open(['route' => 'shipping.return', 'id' => 'shipping3']) }}
         <table id="kizai2" class="table table-striped table-sm caption-top">
             <thead class="thead-light">
                 <tr>

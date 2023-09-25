@@ -10,12 +10,20 @@ use App\Models\DayMachine;
 use Carbon\Carbon;
 use Yasumi\Yasumi;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as Align;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XReader;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XWriter;
+use App\Models\Order;
+use Illuminate\Http\Request;
+use App\Libs\Common;
+
 
 ini_set("max_execution_time",180);
 ini_set('memory_limit', '512M');
 
 class PhpSpreadsheetService
 {
+    protected $spreadsheet;
+
     /**
      * Excelファイルを出力.
      *
@@ -165,5 +173,107 @@ class PhpSpreadsheetService
     }
     
     
+    public function invoice(Request $request): void
+    {
+
+        $xreader = new XReader();
+        $template = $_SERVER['DOCUMENT_ROOT']."/tmp/invoice_master.xlsx"; //任意のテンプレート
+        $xreader -> setReadDataOnly(false); //これをfalseにしないと複写できない
+        $spread = $xreader -> load($template); //テンプレートをロードする
+        $sheet = $spread->getActiveSheet();
+        $sheet->getSheetView() -> setZoomScale(85);
+
+        $today = Carbon::now()->format('Ymd-His');
+        $ship_data = Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first();
+
+        //送り状枚数計算用
+        $invoice_amount = MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->count();
+        //到着時間指定
+        if($ship_data->shipping_arrive_time == '午前中'){
+            $shipping_arrive_time = '0812';
+        }elseif($ship_data->shipping_arrive_time == '14時～16時'){
+            $shipping_arrive_time = '1416';
+        }elseif($ship_data->shipping_arrive_time == '16時～18時'){
+            $shipping_arrive_time = '1618';
+        }elseif($ship_data->shipping_arrive_time == '18時～20時'){
+            $shipping_arrive_time = '1820';
+        }elseif($ship_data->shipping_arrive_time == '20時～21時'){
+            $shipping_arrive_time = '1921';
+        }else{
+            $shipping_arrive_time = '';
+        }
+
+
+        $invoice_data = [
+            [//発払いのほう
+                '0',//送り状種類
+                Common::daybefore(Carbon::parse($ship_data->shipping_arrive_day),2)->format('Y/m/d'),//出荷予定日
+                Carbon::parse($ship_data->shipping_arrive_day)->format('Y/m/d'),//お届け予定（指定）日
+                $shipping_arrive_time,//配達時間帯
+                $ship_data->venue_tel,//お届け先電話番号
+                $ship_data->venue_zip,//お届け先郵便番号
+                $ship_data->venue_addr1,//お届け先住所1
+                $ship_data->venue_addr2,//お届け先住所2
+                $ship_data->venue_addr3,//お届け先会社・部門名１
+                $ship_data->venue_addr4,//お届け先会社・部門名２
+                $ship_data->venue_name,//お届け先名
+                '03-3292-1488',//ご依頼主電話番号
+                '1010047',//ご依頼主郵便番号
+                '東京都千代田区内神田1-7-5',//ご依頼主住所
+                '旭栄ビル',//ご依頼主住所（アパートマンション名）
+                '株式会社 大應',//ご依頼主名
+                'セミナー使用機材',//品名１
+                $ship_data->seminar_name,//品名２
+                '精密機器',//荷扱い１
+                "予約No.".$ship_data->order_no,//記事
+                "=roundup(".$invoice_amount."/2,0)",//発行枚数
+                '3',//個数口枠の印字
+                '033292148807',//ご請求先顧客コード
+                '01',//運賃管理番号
+            ],
+            [//着払いのほう
+                '5',//送り状種類
+                Carbon::parse($ship_data->shipping_return_day)->format('Y/m/d'),//出荷予定日
+                Common::dayafter(Carbon::parse($ship_data->shipping_return_day),1)->format('Y/m/d'),//お届け予定（指定）日
+                '0812',//配達時間帯
+                '03-3292-1488',//お届け先電話番号
+                '1010047',//お届け先郵便番号
+                '東京都千代田区内神田1-7-5',//お届け先住所1
+                '旭栄ビル 3F',//お届け先住所2
+                '株式会社 大應',//お届け先会社・部門名１
+                '機材管理システム　管理チーム',//お届け先会社・部門名２
+                '藤森',//お届け先名
+                '03-3292-1488',//ご依頼主電話番号
+                '1010047',//ご依頼主郵便番号
+                '東京都千代田区内神田1-7-5',//ご依頼主住所
+                '旭栄ビル',//ご依頼主住所（アパートマンション名）
+                '株式会社 大應',//ご依頼主名
+                'セミナー使用機材 返送',//品名１
+                $ship_data->seminar_name,//品名２
+                '精密機器',//荷扱い１
+                "予約No.".$ship_data->order_no,//記事
+                "=roundup(".$invoice_amount."/2,0)",//発行枚数
+                '',//個数口枠の印字
+                '',//ご請求先顧客コード
+                '',//運賃管理番号
+            ]
+        ];
+        // dd($invoice_data);
+
+
+        $sheet->fromArray($invoice_data,NULL, 'A2');
+
+        // Excelファイルをダウンロード
+        $file_name = "予約No_{$ship_data->order_no}.xlsx";
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;');
+        header("Content-Disposition: attachment; filename=\"{$file_name}\"");
+        header('Cache-Control: max-age=0');
+
+        $writer = IOFactory::createWriter($spread, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+    
+ 
 }
 
