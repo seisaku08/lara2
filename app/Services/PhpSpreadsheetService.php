@@ -1,23 +1,22 @@
 <?php
 namespace App\Services;
 
+use Carbon\Carbon;
+use Yasumi\Yasumi;
+use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill as Fill;
-use App\Models\MachineDetail;
-use App\Models\MachineDetailOrder;
-use App\Models\DayMachine;
-use Carbon\Carbon;
-use Yasumi\Yasumi;
 use PhpOffice\PhpSpreadsheet\Style\Alignment as Align;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XReader;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XWriter;
-use App\Models\Order;
-use Illuminate\Http\Request;
 use App\Libs\Common;
+use App\Models\MachineDetail;
+use App\Models\DayMachine;
+use App\Models\Order;
 
 
-ini_set("max_execution_time",180);
+ini_set("max_execution_time", 180);
 ini_set('memory_limit', '512M');
 
 class PhpSpreadsheetService
@@ -183,12 +182,12 @@ class PhpSpreadsheetService
         $sheet = $spread->getActiveSheet();
         $sheet->getSheetView() -> setZoomScale(85);
 
-        $today = Carbon::now()->format('Ymd-His');
         $ship_data = Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first();
 
         //送り状枚数計算用
-        $invoice_amount = MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->count();
-        //到着時間指定
+         $machines = MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->orderBy('machine_details.machine_id','asc')->get();
+
+         //到着時間指定
         if($ship_data->shipping_arrive_time == '午前中'){
             $shipping_arrive_time = '0812';
         }elseif($ship_data->shipping_arrive_time == '14時～16時'){
@@ -226,13 +225,14 @@ class PhpSpreadsheetService
                 $ship_data->seminar_name,//品名２
                 '精密機器',//荷扱い１
                 "予約No.".$ship_data->order_no,//記事
-                "=roundup(".$invoice_amount."/7,0)",//発行枚数
+                // "=roundup(".$machines->count()."/7,0)",//発行枚数
+                (int)ceil($machines->count()/7),//発行枚数
                 '3',//個数口枠の印字
                 '033292148807',//ご請求先顧客コード
                 '01',//運賃管理番号
             ],
             [//着払いのほう
-                '5',//送り状種類
+                5,//送り状種類
                 Carbon::parse($ship_data->shipping_return_day)->format('Y/m/d'),//出荷予定日
                 Common::dayafter(Carbon::parse($ship_data->shipping_return_day),1)->format('Y/m/d'),//お届け予定（指定）日
                 '0812',//配達時間帯
@@ -252,16 +252,34 @@ class PhpSpreadsheetService
                 $ship_data->seminar_name,//品名２
                 '精密機器',//荷扱い１
                 "予約No.".$ship_data->order_no,//記事
-                "=roundup(".$invoice_amount."/7,0)",//発行枚数
-                '',//個数口枠の印字
-                '',//ご請求先顧客コード
-                '',//運賃管理番号
+                (int)ceil($machines->count()/7),//発行枚数
+                null,//個数口枠の印字
+                null,//ご請求先顧客コード
+                null,//運賃管理番号
             ]
         ];
-        // dd($invoice_data);
 
 
         $sheet->fromArray($invoice_data,NULL, 'A2');
+
+
+        //納品書を作る
+
+        $nouhin = $spread -> getSheet(1);
+        $nouhin->setCellValue('B3', "{$ship_data->name} 様（予約No.{$ship_data->order_no}）");
+        $nouhin->setCellValue('B9', "案件名：{$ship_data->seminar_name}");
+        $nouhin->setCellValue('E3', Carbon::parse($ship_data->shipping_arrive_day)->format("Y年m月d日"));
+
+        foreach($machines as $key => $machine){
+        $nouhin_data[$key] = [
+            $key+1,//通し番号
+            $machine->machine_id,
+            $machine->machine_name,
+
+        ];
+        }
+        $nouhin->fromArray($nouhin_data,NULL, "A11");
+        // dd($invoice_data,$machines,$nouhin_data);
 
         // Excelファイルをダウンロード
         $file_name = "予約No_{$ship_data->order_no}.xlsx";
