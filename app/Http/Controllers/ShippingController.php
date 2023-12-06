@@ -147,9 +147,9 @@ class ShippingController extends Controller
         
             $order_no = DB::transaction(function ()use($request) {
 
-            Order::where('order_id', $request->id)->update(['order_status' => '返却済']);
-            MachineDetailOrder::where('order_id', $request->id)->update(['order_status' => '返却済']);
-            DayMachine::where('order_id', $request->id)->update(['order_status' => '返却済']);
+            Order::where('order_id', $request->id)->update(['order_status' => '返却完了']);
+            MachineDetailOrder::where('order_id', $request->id)->update(['order_status' => '返却完了']);
+            DayMachine::where('order_id', $request->id)->update(['order_status' => '返却完了']);
             MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')->where('machine_detail_order.order_id', '=', $request->id)->update(['machine_details.machine_status' => '待機中']);
 
             });

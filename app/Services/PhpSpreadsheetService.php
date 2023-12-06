@@ -101,6 +101,10 @@ class PhpSpreadsheetService
                 }elseif($usage->seminar_venue_pending == true){
                     $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
                     getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ffff00');
+                //完了した予約の場合、セルをグレーに塗りつぶす
+                }elseif($usage->order_status == '返却完了'){
+                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
+                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00dddddd');
                 //不備のない予約の場合、セルを緑に塗りつぶす
                 }else{
                     $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
