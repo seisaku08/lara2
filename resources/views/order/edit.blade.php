@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', 'セミナー情報変更 | 予約No. '.$orders->order_no)
 @section('content')
-<link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/sendstyle.css')}}" rel="stylesheet" type="text/css">
 <script src="/js/number.js"></script>
 <script src="https://ajaxzip3.github.io/ajaxzip3.js"></script>
 <h1 class="p-2">@yield('title')</h1>

@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', 'ご予約を受け付けました')
 @section('css')
-<link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/sendstyle.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')

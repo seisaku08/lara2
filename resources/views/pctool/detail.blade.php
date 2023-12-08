@@ -15,7 +15,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{$machine_details->machine_name}} | 機材詳細</title>
 
-		<link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+		<link href="{{asset('/css/sendstyle.css')}}" rel="stylesheet" type="text/css">
 
 </head>
 

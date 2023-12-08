@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', 'セミナー詳細 | 予約No. '.$orders->order_no)
 @section('css')
-<link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/sendstyle.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')

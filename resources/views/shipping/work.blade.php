@@ -2,7 +2,7 @@
 @section('title', '発送詳細 | 予約No. '.$orders->order_no)
 @section('css')
 <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
-<link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/sendstyle.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 {{-- <?php dd($orders); ?> --}}
@@ -30,14 +30,16 @@
             3. <input type="text" name="no[]" class="invoice">
             4. <input type="text" name="no[]" class="invoice">
             5. <input type="text" name="no[]" class="invoice"></p>
+        <p>「送信」ボタンを押すと、セミナー担当者に送り状を記載したメールが送られます。</p>
             @endif
         @elseif($route == 'shipping.back')
         {{ Form::open(['route'=>[$route]]) }}
         <p>以下のセミナーの返却処理を行います。</p>
+        <p>「送信」ボタンを押すと、セミナー予約の終了処理を行います。</p>
         @endif
 
         {{-- <p>また、発送を行った旨のメールがご担当者様に送られ<span class="text-danger text-bold">（未実装）</span>、送り状用B2・納品書excelファイルが生成されます<span class="text-danger text-bold">（未実装）</span>。</p> --}}
-        <p>「送信」ボタンを押すと、セミナー担当者に送り状を記載したメールが送られます。<br>よろしいですか？</p>
+        <p>よろしいですか？</p>
         <p>{{ Form::submit('送信', ['name' => 'submit', 'class' => 'btn btn-primary p-1']) }}</p>
         {{ Form::hidden('id', $orders->order_id) }}
         {{ Form::hidden('shipping_id', $orders->shipping_id) }}
