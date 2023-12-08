@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', '機材追加 | 予約No. '.$order->order_no)
 @section('css')
-<link href="/css/style.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 @endsection
 <script src="{{ asset('js/pctool_hide.js') }}"></script>
 

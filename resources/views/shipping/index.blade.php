@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', '機材発送・受領確認')
 @section('css')
-<link href="/css/style.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 

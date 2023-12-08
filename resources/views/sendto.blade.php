@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', 'セミナー情報・配送先登録')
 @section('css')
-{{-- <link href="/css/style.css" rel="stylesheet" type="text/css"> --}}
+{{-- <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css"> --}}
 
 @endsection
 @section('content')

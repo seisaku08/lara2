@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', '送信内容確認画面')
 @section('css')
-{{-- <link href="/css/style.css" rel="stylesheet" type="text/css"> --}}
+{{-- <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css"> --}}
     <link href="/css/sendstyle.css" rel="stylesheet" type="text/css">
 
 @endsection

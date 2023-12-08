@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', '機材使用状況一覧ダウンロード')
 @section('css')
-<link href="/css/style.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')

@@ -1,7 +1,7 @@
 @extends('adminlte::page')
 @section('title', '機材予約フォーム')
 @section('css')
-<link href="/css/style.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 @endsection
 @section('content')
 <h2>user:{{$user->name}}</h2>
