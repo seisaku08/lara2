@@ -68,9 +68,9 @@ table.full{
 tr{
     padding: 10px 0px;
 }
-tr{
+/* tr{
     background-color: #E3E3E3;
-}
+} */
 tr.midashi{
     background-color: #BFBFBF;
 }
