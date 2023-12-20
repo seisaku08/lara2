@@ -35,6 +35,7 @@ class ShippingMail extends Mailable
             subject: "【機材管理システム】発送完了メール（予約No. {$this->shippingdata['orders']['order_no']}）",
             from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム'),
             cc: 'order@daioh-pc.com',
+            bcc: 'pc-kanri@dai-oh.co.jp',
             replyTo: 'support@daioh-pc.com'
         );
     }
