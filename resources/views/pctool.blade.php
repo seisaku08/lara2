@@ -24,7 +24,7 @@
 
     </p>
   </div>
-  <form method="post" action="/pctool">
+  <form method="post" action="">
     @csrf
 <div class="container darkgray box1000">
     <div class="row">
