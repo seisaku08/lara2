@@ -370,6 +370,9 @@ class OrderController extends Controller
 
             'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('order_no', 'asc')->get(),
             // 'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy($orderby, $sort)->get(),
+            'accept' => Order::join('users', 'orders.user_id', '=', 'users.id')->where('orders.order_status', '=', '受付済')->orderBy('order_no', 'asc')->get(),
+            'sent' => Order::join('users', 'orders.user_id', '=', 'users.id')->where('orders.order_status', '=', '発送済')->orderBy('order_no', 'asc')->get(),
+            'end' => Order::join('users', 'orders.user_id', '=', 'users.id')->where('orders.order_status', '=', '返却完了')->orderBy('order_no', 'asc')->get(),
 
         ];
         return view('order.index', $data);

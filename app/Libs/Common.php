@@ -16,7 +16,7 @@ class Common
 
     public static function dayafter(object $day, int $d) :object {
         Carbon::setLocale('ja');
-        $holidays = Yasumi::create('Japan', now()->year);
+        $holidays = Yasumi::create('Japan', $day->year);
         for ($dcalc = $day, $i=0; $i<$d;){
                 $dcalc->addDay();
             //平日かつ非祝日の判定
@@ -29,7 +29,7 @@ class Common
 
     public static function daybefore(object $day, int $d) :object {
         Carbon::setLocale('ja');
-        $holidays = Yasumi::create('Japan', now()->year);
+        $holidays = Yasumi::create('Japan', $day->year);
         for ($dcalc = $day, $i=0; $i<$d;){
                 $dcalc->subDay();
             //平日かつ非祝日の判定
