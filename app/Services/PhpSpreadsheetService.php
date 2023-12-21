@@ -274,7 +274,7 @@ class PhpSpreadsheetService
         $nouhin = $spread -> getSheet(1);
         $nouhin->setCellValue('B3', "{$ship_data->name} 様（予約No.{$ship_data->order_no}）");
         $nouhin->setCellValue('B9', "案件名：{$ship_data->seminar_name}");
-        $nouhin->setCellValue('E3', Carbon::parse($ship_data->shipping_arrive_day)->format("Y年m月d日"));
+        $nouhin->setCellValue('E3', Carbon::parse($ship_data->shipping_arrive_day)->format("Y年n月j日"));
 
         foreach($machines as $key => $machine){
         $nouhin_data[$key] = [
@@ -289,12 +289,12 @@ class PhpSpreadsheetService
 
         //作業指示書を作る
         $shiji = $spread -> getSheet(2);
-        $ship_day = Carbon::parse($ship_data->shipping_arrive_day)->format("m月d日");
-        $shiji->setCellValue('A2', Carbon::now()->format("Y年m月d日"));
+        $ship_day = Carbon::parse($ship_data->shipping_arrive_day)->format("n月j日");
+        $shiji->setCellValue('A2', Carbon::now()->format("Y年n月j日"));
         $shiji->setCellValue('A6', "No.{$ship_data->order_no}");
         $shiji->setCellValue('C6', $ship_data->seminar_name);
-        $shiji->setCellValue('A8', Carbon::parse($ship_data->seminar_day)->format("Y年m月d日"));
-        $shiji->setCellValue('C8', Common::daybefore(Carbon::parse($ship_data->shipping_arrive_day),2)->format("m月d日"));
+        $shiji->setCellValue('A8', Carbon::parse($ship_data->seminar_day)->format("Y年n月j日"));
+        $shiji->setCellValue('C8', Common::daybefore(Carbon::parse($ship_data->shipping_arrive_day),2)->format("n月j日"));
         $shiji->setCellValue('E8', "{$ship_day}－{$ship_data->shipping_arrive_time}");
         $shiji->setCellValue('A10', $ship_data->shipping_note);
 

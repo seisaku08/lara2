@@ -22,7 +22,7 @@
     {{-- https://daioh-pc.com/order/detail/{{$orderdata['order']['order_id']}} --}}
         <a href="{{route("order.detail",$orderdata['order']['order_id'])}}">変更はこちら（webブラウザが開きます）</a><br>
         <h5 class="mt-3 mb-2">【予約の変更・取消について】</h5>
-<p class="text-left">システムを利用しての予約変更・取消は、セミナー開催日の3営業日前（本予約の場合、{{ Common::daybefore(Carbon::parse($orderdata['order']->seminar_day),3)->format('Y年m月d日') }}）まで受付可能です。<br>
+<p class="text-left">システムを利用しての予約変更・取消は、セミナー開催日の3営業日前（本予約の場合、{{ Common::daybefore(Carbon::parse($orderdata['order']->seminar_day),3)->format('Y年n月j日') }}）まで受付可能です。<br>
     システムによる受付締切後のご相談や、ご不明な点がございましたら、下記お問い合わせ先までご連絡くださいますようお願いいたします。</p>
     
 <table id="form">
