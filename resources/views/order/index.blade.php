@@ -1,15 +1,22 @@
 @extends('adminlte::page')
 @section('title', '予約一覧')
 @section('css')
-<link href="/css/style.css" rel="stylesheet" type="text/css">
+<link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')
     <h1 class="text-center p-2">@yield('title')</h1>
         {{-- <?php dump($orders);?> --}}
     <div class="container box1000">
-    <form method="get" action="/order.index">
+        <form method="get" action="/order.index">
+            {{-- <form method="post" action="/order"> --}}
         @csrf
+            {{-- <div class="row border">
+            <div class="col">並び方を変える
+                {{ Form::radio('orderby', 'seminar_name') }}
+            </div>
+            <div class="col"><input type="submit"></div>
+            </div> --}}
         <div class="row border">
             <div class="col-3"><label>期間</label></div>
             <div class="col-2"><label>予約No.</label></div>

@@ -180,10 +180,12 @@ class PhpSpreadsheetService
     {
 
         $xreader = new XReader();
-        $template = $_SERVER['DOCUMENT_ROOT']."/tmp/invoice_master.xlsx"; //任意のテンプレート
+        // $template = $_SERVER['DOCUMENT_ROOT']."/tmp/invoice_master.xlsx"; //任意のテンプレート
+        $template = './tmp/invoice_master.xlsx'; //任意のテンプレート
         $xreader -> setReadDataOnly(false); //これをfalseにしないと複写できない
         $spread = $xreader -> load($template); //テンプレートをロードする
-        $sheet = $spread->getActiveSheet();
+        // $sheet = $spread -> getActiveSheet();
+        $sheet = $spread -> getSheet(0);
         $sheet->getSheetView() -> setZoomScale(85);
 
         $ship_data = Order::join('users', 'orders.user_id', '=', 'users.id')->join('shippings','orders.order_id', '=', 'shippings.order_id')->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')->where('orders.order_id', '=', $request->id)->first();
@@ -285,6 +287,26 @@ class PhpSpreadsheetService
         $nouhin->fromArray($nouhin_data,NULL, "A11");
         // dd($invoice_data,$machines,$nouhin_data);
 
+        //作業指示書を作る
+        $shiji = $spread -> getSheet(2);
+        $ship_day = Carbon::parse($ship_data->shipping_arrive_day)->format("m月d日");
+        $shiji->setCellValue('A2', Carbon::now()->format("Y年m月d日"));
+        $shiji->setCellValue('A6', "No.{$ship_data->order_no}");
+        $shiji->setCellValue('C6', $ship_data->seminar_name);
+        $shiji->setCellValue('A8', Carbon::parse($ship_data->seminar_day)->format("Y年m月d日"));
+        $shiji->setCellValue('C8', Common::daybefore(Carbon::parse($ship_data->shipping_arrive_day),2)->format("m月d日"));
+        $shiji->setCellValue('E8', "{$ship_day}－{$ship_data->shipping_arrive_time}");
+        $shiji->setCellValue('A10', $ship_data->shipping_note);
+
+        foreach($machines as $key => $machine){
+            $nouhin_data[$key] = [
+                $key+1,//通し番号
+                $machine->machine_id." - ".$machine->machine_name,
+    
+            ];
+            }
+            $shiji->fromArray($nouhin_data,NULL, "A13");
+    
         // Excelファイルをダウンロード
         $file_name = "予約No_{$ship_data->order_no}.xlsx";
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;');

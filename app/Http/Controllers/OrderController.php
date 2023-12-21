@@ -354,10 +354,22 @@ class OrderController extends Controller
     }
 
     public function list(){
+        // public function list(request $request){
         $data = null;
+        // if(empty($request->orderby)){
+        //     $orderby = 'order_no';
+        // }else{
+        // $orderby = $request->orderby;
+        // }
+        // if(empty($request->sort)){
+        //     $sort = 'asc';
+        // }else{
+        //     $sort = $request->sort;
+        // }
         $data = [
 
             'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy('order_no', 'asc')->get(),
+            // 'orders' => Order::join('users', 'orders.user_id', '=', 'users.id')->orderBy($orderby, $sort)->get(),
 
         ];
         return view('order.index', $data);
