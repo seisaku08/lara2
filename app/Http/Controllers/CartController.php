@@ -50,13 +50,13 @@ class CartController extends Controller
         $id = $request->input('id');
 
         $day1after = Common::dayafter(today(),1);
-        $day4after = Common::dayafter(today(),4);
+        $day3after = Common::dayafter(today(),3);
         $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
 
         $validator = Validator::make($request->all(),
         [
-            'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day4after}"],
+            'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day3after}"],
             'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}", "before_or_equal:{$daysemi3before}"],
             'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
             'id' => 'required',
@@ -65,7 +65,7 @@ class CartController extends Controller
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
             'from.required_with_all' => '予約開始日は入力必須です。',
             'to.required_with_all' => '予約終了日は入力必須（セミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能）です。',
-            'seminar_day.after_or_equal' => 'セミナー開催日は本日の4営業日後（'.$day4after->format('Y/m/d').'）から入力可能です。',
+            'seminar_day.after_or_equal' => 'セミナー開催日は本日の3営業日後（'.$day3after->format('Y/m/d').'）から入力可能です。',
             'from.after_or_equal' => '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
             'from.before_or_equal' => '予約開始日はセミナー開催日の3営業日前（'.$daysemi3before->format('Y/m/d').'）まで入力可能です。',
             'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
