@@ -44,6 +44,7 @@
                             {{ Form::open(['route'=>['shipping.order']]) }}
                             {{ Form::submit('選択', ['name' => 'shiporder', 'class' => 'btn btn-primary p-1']) }}
                             {{ Form::hidden('id', $order->order_id) }}
+                            {{ Form::hidden('route', 'shipping.invoice') }}
                             {{ Form::close() }}
                         </td>
                         <td class="kizai-left">{{$order->seminar_day}}（{{ Common::businessdaycheck($order->seminar_day) }}）</td>
@@ -85,6 +86,7 @@
                             {{ Form::open(['route'=>['shipping.order']]) }}
                             {{ Form::submit('選択', ['name' => 'backorder', 'class' => 'btn btn-primary p-1']) }}
                             {{ Form::hidden('id', $order->order_id) }}
+                            {{ Form::hidden('route', 'shipping.back') }}
                             {{ Form::close() }}
                         </td>
                         <td class="kizai-left">{{$order->seminar_day}}（{{ Common::businessdaycheck($order->seminar_day) }}）</td>

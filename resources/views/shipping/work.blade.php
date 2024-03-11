@@ -8,9 +8,9 @@
 {{-- <?php dd($orders); ?> --}}
 @section('content')
 <h1 class="text-center p-2">@yield('title')</h1>
-        {{-- <?php dump($orders);?> --}}
+        {{-- <?php dump($orders,$input);?> --}}
     <div class="box1000">
-        @if($route == 'shipping.invoice')
+        @if($input->route == 'shipping.invoice')
         <p>以下のセミナーの発送処理を行います。</p>
             @if($orders->seminar_venue_pending == 1)
             <p class='text-danger text-bold'>配送先住所が未記入です。<br>開催期日が差し迫っている場合は、ご担当者様に連絡してください。</p>
@@ -24,7 +24,7 @@
             </form>
         
             <p>B2クラウドを使用して送り状を印刷したら、伝票番号を入力してください。</p>
-            {{ Form::open(['route'=>[$route]]) }}
+            {{ Form::open(['route'=>[$input->route]]) }}
            <p> 1. <input type="text" name="no[]" class="invoice">
             2. <input type="text" name="no[]" class="invoice">
             3. <input type="text" name="no[]" class="invoice">
@@ -32,8 +32,8 @@
             5. <input type="text" name="no[]" class="invoice"></p>
         <p>「送信」ボタンを押すと、セミナー担当者に送り状を記載したメールが送られます。</p>
             @endif
-        @elseif($route == 'shipping.back')
-        {{ Form::open(['route'=>[$route]]) }}
+        @elseif($input->route == 'shipping.back')
+        {{ Form::open(['route'=>[$input->route]]) }}
         <p>以下のセミナーの返却処理を行います。</p>
         <p>「送信」ボタンを押すと、セミナー予約の終了処理を行います。</p>
         @endif
