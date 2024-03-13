@@ -39,7 +39,8 @@ class Reminder extends Command
      //標準出力&ログに出力するメッセージのフォーマット
 
     //9営業日前に達したorderの抽出
-    $to_send_order_no = Order::where('nine_day_before', '<=', Carbon::today())->get();
+    // $to_send_order_no = Order::where('nine_day_before', '<=', Carbon::today())->get();
+    $to_send_order_no = (object)null;
 
     //各予約の予約情報をDBより収集）
     foreach($to_send_order_no as $part_of_order){
