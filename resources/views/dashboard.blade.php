@@ -9,7 +9,7 @@
 <h1 class="text-center p-2">@yield('title')</h1>
         {{-- <?php dump($orders);?> --}}
     <div class="box1000">
-        <p>こちらはマイページです。
+        <p>こちらはテストサイトのマイページです。
         @can('sys-ad'){{-- 管理者に表示される --}}
         そしてあなたはシステム管理者です。
         @elsecan('daioh') {{-- 大應ユーザーに表示される --}}
