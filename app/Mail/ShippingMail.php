@@ -33,7 +33,7 @@ class ShippingMail extends Mailable
     {
         return new Envelope(
             subject: "【機材管理システム】発送完了メール（予約No. {$this->shippingdata['orders']['order_no']}）",
-            from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム'),
+            from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム（テストサイト）'),
             cc: 'order@daioh-pc.com',
             bcc: 'pc-kanri@dai-oh.co.jp',
             replyTo: 'support@daioh-pc.com'

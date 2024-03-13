@@ -37,7 +37,7 @@ class NineDaysBeforeMail extends Mailable
         }
         return new Envelope(
             subject: "{$pend}リマインドメール（予約No. {$this->orderdata['order']['order_no']}）",
-            from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム'),
+            from: new Address('order@daioh-pc.com', '㈱大應 セミナー機材管理システム（テストサイト）'),
             cc: 'order@daioh-pc.com',
             bcc: 'pc-kanri@dai-oh.co.jp',
             replyTo: 'support@daioh-pc.com',

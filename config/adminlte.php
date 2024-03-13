@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'セミナー機材管理システム',
+    'title' => 'セミナー機材管理システム（テストサイト）',
     'title_prefix' => '',
     'title_postfix' => '',
 
