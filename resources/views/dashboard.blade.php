@@ -1,5 +1,5 @@
 @extends('adminlte::page')
-@section('title', 'マイページ')
+@section('title', 'マイページ(test)')
 @section('css')
 <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
 
