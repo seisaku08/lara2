@@ -50,10 +50,12 @@ class pctoolController extends Controller
             'from.before_or_equal' => '予約開始日はセミナー開催日の4営業日前（'.$daysemi4before->format('Y/m/d').'）まで入力可能です。',
             'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
         ]);
-
+        // if($request->from >= $request->to){
+        //     dd($request);
+        // }
         if($validator->fails()){
-            // return back()->withErrors($validator)->withInput($request->except('to'));
-            return back()->withErrors($validator)->withInput($request->except(null));
+            return back()->withErrors($validator)->withInput($request->except('to'));
+            // return back()->withErrors($validator)->withInput($request->except(null));
         }
 
         //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
