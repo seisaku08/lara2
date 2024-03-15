@@ -52,7 +52,8 @@ class pctoolController extends Controller
         ]);
 
         if($validator->fails()){
-            return back()->withErrors($validator)->withInput($request->except('to'));
+            // return back()->withErrors($validator)->withInput($request->except('to'));
+            return back()->withErrors($validator)->withInput($request->except(null));
         }
 
         //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
