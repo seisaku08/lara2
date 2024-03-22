@@ -50,7 +50,7 @@ class pctoolController extends Controller
             'from.before_or_equal' => '予約開始日はセミナー開催日の4営業日前（'.$daysemi4before->format('Y/m/d').'）まで入力可能です。',
             'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
         ]);
-        // if($request->from >= $request->to){
+                // if($request->from >= $request->to){
         //     dd($request);
         // }
         if($validator->fails()){
