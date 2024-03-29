@@ -16,11 +16,7 @@
         <p>
         「セミナー開催日（複数日開催の場合、その初日）」は<b>本日より5営業日以降（{{ App\Libs\Common::dayafter(today(),5)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
         「予約開始日」は<b>セミナー開催日の4営業日以前（上記の場合、{{ App\Libs\Common::dayafter(today(),1)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
-<<<<<<< HEAD
         「予約終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),8)->isoFormat('YYYY年M月D日（ddd）'); }}）</b>
-=======
-        「予約終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),7)->isoFormat('YYYY年M月D日（ddd）'); }}）</b>
->>>>>>> 10d645562be2ed363898abe7cbd08ed2e5ae915d
       </p>
       </div>
     </div>　
