@@ -30,7 +30,7 @@ class pctoolController extends Controller
         //使用日関連の変数を作る
         $day1after = Common::dayafter(today(),1);
         $day4after = Common::dayafter(today(),4);
-        $day5after = Common::dayafter(today(),4);
+        $day5after = Common::dayafter(today(),5);
         $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi4before = Common::daybefore(Carbon::parse($request->seminar_day),4);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);

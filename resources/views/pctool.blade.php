@@ -33,16 +33,19 @@
           <div class="col text-center p-1">
             <label>セミナー開催日（複数日の場合は初日）</label>
             <input type="date" name="seminar_day" value="{{$input->seminar_day}}{{ old('seminar_day') }}" onchange="submit(this.form)">
+            {{-- <input type="date" name="seminar_day" value="{{$input->seminar_day}}{{ old('seminar_day') }}" > --}}
           </div>
         </div>
         <div class="row">
           <div class="col text-center p-1">
           <label>予約開始日</label>
           <input type="date" name="from" value="{{$input->from}}{{ old('from') }}" onchange="submit(this.form)">
+          {{-- <input type="date" name="from" value="{{$input->from}}{{ old('from') }}" > --}}
           </div>
           <div class="col text-center p-1">
             <label>予約終了日</label>
             <input type="date" name="to" value="{{$input->to}}{{ old('to') }}" onchange="submit(this.form)">
+            {{-- <input type="date" name="to" value="{{$input->to}}{{ old('to') }}" > --}}
           </div>
         </div>
       </div>
@@ -50,6 +53,7 @@
         <div class="custom-control custom-switch">
           <input type="checkbox" class="custom-control-input" id="show_used" ><label class="custom-control-label" for="show_used">予約中の機材も表示する</label>
         </div>
+        {{-- <button>検索</button> --}}
       </div>
     </div>
 </div>
