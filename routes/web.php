@@ -22,6 +22,8 @@ Route::get('shippingmailsample', 'ShippingmailController@view');
 Route::get('ninedaymailsample', 'NineDayMailController@view');
 Route::get('/helo', 'HeloController@view');
 Route::get('/xlsdl',[SpreadsheetController::class, 'index']);
+Route::get('/ajax','AjaxController@view');
+Route::get('/ajax/show_all','AjaxController@showall');
 Route::post('/download', [SpreadsheetController::class, 'download']);
 Route::post('/invoicedl', [SpreadsheetController::class, 'invoice']);
 
@@ -30,6 +32,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
+Route::match(['get','post'],'/ajaxpctool','AjaxpctoolController@view');
+Route::get('/ajaxpctool/show_all','AjaxpctoolController@show_all');
+Route::post('/ajaxpctool/checkday','AjaxpctoolController@checkday');
     Route::get('/dashboard', ['uses'=>'DashboardController@index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
