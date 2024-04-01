@@ -141,7 +141,7 @@
 	<tr class="midashi">
 		<th colspan="4">選択機材情報
 			@if($user->role == 1 || $user->id == $orders->user_id)
-				@if(Carbon::today() > Common::daybefore(Carbon::parse($orders->seminar_day),3))
+				@if(Carbon::today() > Common::daybefore(Carbon::parse($orders->seminar_day),4))
 				<div class="btn btn-primary btn-sm ml-3 p-1 disabled">変更可能期間を過ぎたため編集できません</div>
 
 				@else
