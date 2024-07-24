@@ -64,6 +64,43 @@
         </table>
           </div>
 
+          <h4 class="text-bold text-center">発送先未登録セミナー一覧</h4>
+          <div id='list2'>
+              {{ Form::open(['route' => 'shipping.order', 'id' => 'shipping4']) }}
+              <table id="kizai2" class="table table-striped table-sm caption-top">
+                  <thead class="thead-light">
+                      <tr>
+                          <th>　</th>
+                          <th scope="col">セミナー開催日</td>
+                          <th scope="col">機材到着希望日時</td>
+                          <th scope="col">予約No. </td>
+                          <th scope="col">状態</td>
+                          <th scope="col">セミナー名</td>
+                      </tr>
+                  </thead>
+                  @if(isset($pend_orders))
+                  {{-- <?php dump($pend_orders);  ?> --}}
+                      @foreach($pend_orders as $order)
+                          <tr>
+                              <td class="p-1 text-center">
+                              </td>
+                              <td class="kizai-left">{{$order->seminar_day}}（{{ Common::businessdaycheck($order->seminar_day) }}）</td>
+                              <td class="kizai-left">{{$order->shipping_arrive_day}}（{{ Common::businessdaycheck($order->shipping_arrive_day) }}）</td>
+                              <td class="kizai-right"><a href="order/detail/{{$order->order_id}}" target="_blank">{{$order->order_no}}</a></td>
+                              <td class="kizai-right">{{$order->order_status}}</td>
+                              <td class="kizai-right">{{$order->seminar_name}}</td>
+                          </tr>
+                      @endforeach
+                  @else
+                      <td>　</td>
+                      <td class="kizai-left">データはありません。</td>
+                      <td class="kizai-right"></td>
+                      <td class="kizai-right"></td>
+                  @endif
+          
+              </table>
+                </div>
+      
     <h4 class="text-bold text-center">返却手続きを行うセミナーを選択</h4>
     <div id='list3'>
         {{ Form::open(['route' => 'shipping.return', 'id' => 'shipping3']) }}
