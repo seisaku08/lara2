@@ -2,7 +2,7 @@
 @section('title', '予約一覧')
 @section('css')
 <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
-<script src="{{ asset('js/finished_hide.js') }}"></script>
+<script src="{{ asset('/js/finished_hide.js') }}"></script>
 
 @endsection
 
