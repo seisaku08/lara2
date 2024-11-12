@@ -2,6 +2,7 @@
 @section('title', 'マイページ')
 @section('css')
 <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
+<script src="{{ asset('js/finished_hide.js') }}"></script>
 
 @endsection
 
@@ -39,7 +40,7 @@
         @endif
         <h5>最新の更新情報</h5>
         <ul>
-            <li>予約登録時の日程に関するルールを変更しました。詳細は「機材予約フォーム」ページからご覧ください。（4/1）</li>
+            <li>マイページの登録済みセミナー一覧をステータス別に表示するようにしました。（11/12）</li>
         </ul>
             <p><a class="" data-toggle="collapse" href="#updateinfo" role="button" aria-expanded="false" aria-controls="updateinfo">過去の更新情報（クリックで開く）</a></p>
         <div class="collapse" id="updateinfo">
@@ -64,6 +65,7 @@
             <li>セミナー開催9営業日前に送られるリマインドメールにおいて、当該セミナー情報へのリンクURLが誤って生成される不具合を修正しました。（6/26）</li>
             <li>機材使用状況一覧（旧来の管理表と同等の表）出力機能、操作マニュアル表示機能を実装しました。（7/14）</li>
             <li>予約詳細画面において、機材の追加・削除ができるようになりました。（7/14）</li>
+            <li>予約登録時の日程に関するルールを変更しました。詳細は「機材予約フォーム」ページからご覧ください。（2024/4/1）</li>
         </ul>
     </div>
 </div>
@@ -76,31 +78,136 @@
             @csrf
         </form>
     <h4 class="text-bold">登録済みセミナー</h4>
-    <table id="kizai2" class="table table-striped table-sm caption-top">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">期間</td>
-                <th scope="col">予約No. </td>
-                <th scope="col">セミナー名</td>
-                <th scope="col">現在の状態</td>
-            </tr>
-        </thead>
-        @if(isset($orders))
-        {{-- <?php dump($orders);?> --}}
-            @foreach($orders as $order)
-                <tr>
-                    <td class="kizai-left">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
-                    <td class="kizai-right"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></td>
-                    <td class="kizai-right">{{$order->seminar_name}}</td>
-                    <td class="kizai-right">{{$order->order_status}}</td>
-                </tr>
-            @endforeach
-        @else
-            <td class="kizai-left">データはありません。</td>
-            <td class="kizai-right"></td>
-            <td class="kizai-right"></td>
-        @endif
+    <div class="container box1000">
+        <form method="get" action="/order.index">
+            {{-- <form method="post" action="/order"> --}}
+        @csrf
+            {{-- <div class="row border">
+            <div class="col">並び方を変える
+                {{ Form::radio('orderby', 'seminar_name') }}
+            </div>
+            <div class="col"><input type="submit"></div>
+            </div> --}}
+        <div class="row border">
+            <div class="col-12 text-center bg-info"><label>進行中（貸出中）の予約</label></div>
+        </div>
+        <div class="row border bg-secondary">
+            <div class="col-3"><label>期間</label></div>
+            <div class="col-2"><label>予約No.</label></div>
+            <div class="col"><label>セミナー名</label></div>
+            <div class="col-2"><label>現在の状態</label></div>
+        </div>
+        {{ Form::close() }}
+    @if(isset($sent))
+        @foreach($sent as $order)
+        <div class="row border {{$order->user_id == 2? "text-danger bg-warning" : ""}}">
+            <div class="col-3">{{$order->order_use_from}}～{{$order->order_use_to}}</div>
+            <div class="col-2 text-bold"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></div>
+            <div class="col">{{$order->seminar_name}}</div>
+            <div class="col-2 {{$order->user_id == 2? "text-danger text-bold" : ""}}">{{$order->order_status}}</div>
+        </div>
+        @endforeach
+    @else
+        <div class="row">
+            <div class="col">データはありません。</div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+        </div>
+    @endif
 
-    </table>
+    </div>
+    
+<br>
+
+    <div class="container box1000">
+        <form method="get" action="/order.index">
+            {{-- <form method="post" action="/order"> --}}
+        @csrf
+            {{-- <div class="row border">
+            <div class="col">並び方を変える
+                {{ Form::radio('orderby', 'seminar_name') }}
+            </div>
+            <div class="col"><input type="submit"></div>
+            </div> --}}
+        <div class="row border">
+            <div class="col-12 text-center bg-info"><label>受付済の予約</label></div>
+        </div>
+        <div class="row border bg-secondary">
+            <div class="col-3"><label>期間</label></div>
+            <div class="col-2"><label>予約No.</label></div>
+            <div class="col"><label>セミナー名</label></div>
+            <div class="col-2"><label>現在の状態</label></div>
+        </div>
+        {{ Form::close() }}
+    @if(isset($accept))
+        @foreach($accept as $order)
+        <div class="row border {{$order->user_id == 2? "text-danger bg-warning" : ""}}">
+            <div class="col-3">{{$order->order_use_from}}～{{$order->order_use_to}}</div>
+            <div class="col-2 text-bold"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></div>
+            <div class="col">{{$order->seminar_name}}</div>
+            <div class="col-2 {{$order->user_id == 2? "text-danger text-bold" : ""}}">{{$order->order_status}}</div>
+        </div>
+        @endforeach
+    @else
+        <div class="row">
+            <div class="col">データはありません。</div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+        </div>
+    @endif
+
+    </div>
+    
+<br>
+
+    <div class="container box1000">
+        <form method="get" action="/order.index">
+            {{-- <form method="post" action="/order"> --}}
+        @csrf
+            {{-- <div class="row border">
+            <div class="col">並び方を変える
+                {{ Form::radio('orderby', 'seminar_name') }}
+            </div>
+            <div class="col"><input type="submit"></div>
+            </div> --}}
+        <div class="row border">
+            <div class="col-12 text-center bg-info">
+                <label>終了済の予約
+                    <div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="show_finished" >
+                        <label class="custom-control-label" for="show_finished">表示する</label>
+                    </div>
+                </label>
+            </div>
+        </div>
+    <div id="finishedlist" class="hidden">
+        <div class="row border bg-secondary">
+            <div class="col-3"><label>期間</label></div>
+            <div class="col-2"><label>予約No.</label></div>
+            <div class="col"><label>セミナー名</label></div>
+            <div class="col-2"><label>現在の状態</label></div>
+        </div>
+        {{ Form::close() }}
+    @if(isset($end))
+        @foreach($end as $order)
+        <div class="row border {{$order->user_id == 2? "text-danger bg-warning" : ""}}">
+            <div class="col-3">{{$order->order_use_from}}～{{$order->order_use_to}}</div>
+            <div class="col-2 text-bold"><a href="order/detail/{{$order->order_id}}">{{$order->order_no}}</a></div>
+            <div class="col">{{$order->seminar_name}}</div>
+            <div class="col-2 {{$order->user_id == 2? "text-danger text-bold" : ""}}">{{$order->order_status}}</div>
+        </div>
+        @endforeach
+    @else
+        <div class="row">
+            <div class="col">データはありません。</div>
+            <div class="col"></div>
+            <div class="col"></div>
+            <div class="col"></div>
+        </div>
+    @endif
+    </div>
+    </div>
+    </div>
     　
 @endsection

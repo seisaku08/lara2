@@ -167,6 +167,9 @@ input#zip{
 select.kizai{
     width: 100%;
 }
+#finishedlist.hidden{
+    display: none;
+}
 
 @media (max-width: 768px){
 
@@ -187,5 +190,6 @@ td.kizai-right{
 td.kizai-left{
     padding: 2px 10px!important;
 }
+
 
 }

@@ -2,8 +2,10 @@
 @section('title', '予約一覧')
 @section('css')
 <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css">
+<script src="{{ asset('js/finished_hide.js') }}"></script>
 
 @endsection
+
 @section('content')
     <h1 class="text-center p-2">@yield('title')</h1>
 
@@ -105,9 +107,17 @@
             </div>
             <div class="col"><input type="submit"></div>
             </div> --}}
-        <div class="row border">
-            <div class="col-12 text-center bg-info"><label>終了済の予約</label></div>
-        </div>
+            <div class="row border">
+                <div class="col-12 text-center bg-info">
+                    <label>終了済の予約
+                        <div class="custom-control custom-switch"><input type="checkbox" class="custom-control-input" id="show_finished" >
+                            <label class="custom-control-label" for="show_finished">表示する</label>
+                        </div>
+                    </label>
+                </div>
+            </div>
+        <div id="finishedlist" class="hidden">
+
         <div class="row border bg-secondary">
             <div class="col-3"><label>期間</label></div>
             <div class="col-2"><label>予約No.</label></div>
@@ -134,7 +144,7 @@
             <div class="col"></div>
         </div>
     @endif
-
+    </div>
     </div>
 
 @endsection
