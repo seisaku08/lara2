@@ -69,7 +69,8 @@ class OrderController extends Controller
         $order = Order::where('order_id', $id)->first();
         $data = [
             'id'=> $id,
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'input' => $request,
             'order' => $order,
             'user' => Auth::user(),

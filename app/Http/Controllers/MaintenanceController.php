@@ -13,7 +13,8 @@ class MaintenanceController extends Controller
     public function index(Request $request){
 
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'orders' => Order::orderBy('seminar_day','asc')->get(),
             'input' => $request,
         ];
@@ -24,7 +25,8 @@ class MaintenanceController extends Controller
     public function selorder(Request $request){
 
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'orders' => Order::orderBy('seminar_day','asc')->get(),
             'input' => $request,
         ];
@@ -35,7 +37,8 @@ class MaintenanceController extends Controller
     public function selpc(Request $request){
         // dd($request);
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'orders' => Order::orderBy('seminar_day','asc')->get(),
             'input' => $request,
         ];

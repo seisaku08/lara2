@@ -36,7 +36,8 @@ class PhpSpreadsheetService
 
         $today = Carbon::now()->format('Ymd-His');
 
-        $machines = MachineDetail::all();
+        // $machines = MachineDetail::all();
+        $machines = MachineDetail::where('machine_is_expired','!=',1)->get();
         // ヘッダー部分出力
         //1列目(A1)
         $sheet->getActiveSheet()

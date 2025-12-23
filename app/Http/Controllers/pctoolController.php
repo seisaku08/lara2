@@ -22,7 +22,8 @@ class pctoolController extends Controller
     public function view(Request $request){
 
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'user' => Auth::user(),
             'input' => $request,
         ];
@@ -75,7 +76,8 @@ class pctoolController extends Controller
     }
     public function retry(Request $request){
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'user' => Auth::user(),
             'input' => $request,
             

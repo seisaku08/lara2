@@ -20,7 +20,8 @@ class ShippingController extends Controller
     public function index(Request $request){
         // dd($request);
         $data = [
-            'records' => MachineDetail::all(),
+            // 'records' => MachineDetail::all(),
+            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             // 'orders' => Order::join('shippings','orders.order_id', '=', 'shippings.order_id')->wherein('orders.order_status', ['受付済','仮登録'])->orderBy('seminar_day','asc')->get(),
             'orders' => Order::join('shippings','orders.order_id', '=', 'shippings.order_id')->wherein('orders.order_status', ['受付済','仮登録'])->where('shippings.shipping_arrive_day' ,'<>', null )->orderBy('shippings.shipping_arrive_day','asc')->get(),
             'input' => $request,
