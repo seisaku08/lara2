@@ -100,9 +100,9 @@
 		</tr>
 	@foreach($orders as $order)
 		<tr>
-			@if($order->order_status != '返却完了')
+			@if($order->order_status == '受付済' || $order->order_status == '発送済')
 			<td class="w25">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
-			<td class="w15">{{$order->order_no}}</td>
+			<td class="w15"><a href="{{route('order.detail',[$order->order_id])}}" target="_blank">{{$order->order_no}}</a></td>
 			<td class="w60" colspan="3">{{$order->seminar_name}}</td>
 			@endif
 		</tr>
