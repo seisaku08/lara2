@@ -100,9 +100,11 @@
 		</tr>
 	@foreach($orders as $order)
 		<tr>
+			@if($order->order_status != '返却完了')
 			<td class="w25">{{$order->order_use_from}}～{{$order->order_use_to}}</td>
 			<td class="w15">{{$order->order_no}}</td>
 			<td class="w60" colspan="3">{{$order->seminar_name}}</td>
+			@endif
 		</tr>
 	@endforeach
 </table>
