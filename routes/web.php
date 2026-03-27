@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('ordermailsample', 'OrdermailController@view');
 Route::get('shippingmailsample', 'ShippingmailController@view');
 Route::get('ninedaymailsample', 'NineDayMailController@view');
+Route::get('alertmailsample', 'AlertMailController@view');
 Route::get('/helo', 'HeloController@view');
 Route::get('/xlsdl',[SpreadsheetController::class, 'index']);
 Route::post('/download', [SpreadsheetController::class, 'download']);
@@ -42,6 +43,7 @@ Route::middleware('verified')->group(function () {
 
     Route::match(['get','post'],'/pctool', 'pctoolController@view')->name('pctool');
     Route::match(['get','post'],'/sendto', 'SendtoController@view')->name('sendto');
+    Route::post('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
     Route::get('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
     Route::get('/pctool/detail/{id}', 'pctoolController@detail');
     Route::post('/confirm', 'ConfirmController@post')->name('confirm');

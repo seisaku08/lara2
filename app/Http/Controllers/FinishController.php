@@ -37,15 +37,39 @@ class FinishController extends Controller
         try{
             $order_no = DB::transaction(function ()use($request) {
 
-            //識別トークンが存在しない（以前適切にセッションが通っている＝ブラウザバック等で重複データが送られてきている）
-            if(!$request->session()->has('Session.Token')){
-                throw new Exception("エラー：セッショントークンが読み込めません。ブラウザを開いたまま長時間経過したか、セミナー名「{$request->seminar_name}」が登録済みである可能性があります。", 499);
+            $token = $request->session()->get('Session.Token');
+
+            // 1. セッショントークンが存在しない
+            if (!$token) {
+                throw new Exception(
+                    "エラー：セッショントークンが読み込めません。ブラウザを開いたまま長時間経過したか、セミナー名「{$request->seminar_name}」が登録済みである可能性があります。",
+                    499
+                );
             }
-            //識別トークンが既に登録済み
-            elseif(Order::where('token', $request->session()->get('Session.Token'))->exists() == true){
-                
-                $err = Order::where('token', $request->session()->get('Session.Token'))->first();
-                throw new Exception("エラー：予約No. {$err->order_no}「{$err->seminar_name}」は登録済みです。", 499);
+
+            // 2. トークンが既に登録済み
+            if (Order::where('token', $token)->exists()) {
+                $err = Order::where('token', $token)->first();
+                throw new Exception(
+                    "エラー：予約No. {$err->order_no}「{$err->seminar_name}」は登録済みです。",
+                    499
+                );
+            }
+
+            // 3. 必須項目チェック
+            $required = [
+                'seminar_day'    => '「セミナー開催日」',
+                'order_use_from' => '「予約開始日」',
+                'order_use_to'   => '「予約終了日」',
+            ];
+
+            foreach ($required as $field => $label) {
+                if (empty($request->$field)) {
+                    throw new Exception(
+                        "エラー：{$label}が空欄になっています。ブラウザを開いたまま長時間経過したか、ページ遷移が適切に行われなかった可能性があります。お手数ですが、登録作業をはじめからやり直してください。",
+                        499
+                    );
+                }
             }
 
             //セミナー開催日から連番を取得
@@ -86,7 +110,7 @@ class FinishController extends Controller
                 $end = new Carbon($request->order_use_to);
                 while($start <= $end){
                     $day_machine = new DayMachine;
-                        $day_machine->day = date($start->format('Y-m-d'));
+                        $day_machine->day = $start->format('Y-m-d');
                         $day_machine->machine_id = $i;
                         $day_machine->order_id = $last_order_id;
                         $day_machine->order_status = '受付済';
@@ -134,12 +158,12 @@ class FinishController extends Controller
                 $ship->shipping_special = $request->shipping_special == true ? 1 : 0;
                 $ship->shipping_note = $request->shipping_note;
                 $ship->save();
-                
+
             //shipping_idを取得
             $last_shipping_id = DB::getPdo()->lastInsertId();
 
                 $orderdata = [
-                    'machines' => MachineDetail::wherein('machine_id', $request->id)->get(),
+                    'machines' => MachineDetail::whereIn('machine_id', $request->id)->get(),
                     'user' => Auth::user(),
                 //     'input' => $request,
                     'order' => Order::find($last_order_id),
@@ -165,12 +189,13 @@ class FinishController extends Controller
         }
         catch(\Exception $e){
             // echo($e->getMessage());
-            if ($e->getcode() == 499){
+            if ($e->getCode() == 499){
 
                 return redirect()->action('pctoolController@view')->withErrors($e->getMessage());
 
             }
-            return view('confirm', $data)->withErrors($e->getmessage());
+            // return view('confirm', $data)->withErrors($e->getMessage());
+            return view('confirm', $data)->with('errors', $e->getMessage());
         }
         finally{
 
