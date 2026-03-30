@@ -23,7 +23,7 @@
             @endif
         </ul>
         です。</p>
- <?php dump($alertdata ?? null);?>
+ {{-- <?php dump($alertdata ?? null);?> --}}
    
 @if(isset($alertdata['duplicates']) && count($alertdata['duplicates']) > 0)
 <h5 class="mt-3 mb-2">【トークンが重複しているセミナー】</h5>
