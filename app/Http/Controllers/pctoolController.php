@@ -16,26 +16,45 @@ use Illuminate\Support\Facades\Auth;
 use Yasumi\Yasumi;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Validated;
+use Illuminate\Support\Facades\Log;
 
 class pctoolController extends Controller
 {
     public function view(Request $request){
+        // PRG: retry() からの遷移で保存された使用情報を取得して一時的に利用する（取得後はセッションから削除）
+        $usageFromSession = $request->session()->pull('Session.Usage', null);
+
+        // selected IDs はセッションの ids またはリクエストの id を利用
+        if (!empty($usageFromSession) && !empty($usageFromSession['ids'])) {
+            $selectedIds = array_map('strval', (array)$usageFromSession['ids']);
+        } else {
+            $selectedIds = array_map('strval', (array)$request->input('id', []));
+        }
+
+        // セッションの日時情報があり、かつリクエストに値が無ければマージしておく
+        if (!empty($usageFromSession)) {
+            $merge = [];
+            if (empty($request->input('seminar_day')) && !empty($usageFromSession['seminar_day'] ?? null)) $merge['seminar_day'] = $usageFromSession['seminar_day'];
+            if (empty($request->input('from')) && !empty($usageFromSession['from'] ?? null)) $merge['from'] = $usageFromSession['from'];
+            if (empty($request->input('to')) && !empty($usageFromSession['to'] ?? null)) $merge['to'] = $usageFromSession['to'];
+            if (!empty($merge)) $request->merge($merge);
+        }
 
         $data = [
-            // 'records' => MachineDetail::all(),
             'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
             'user' => Auth::user(),
             'input' => $request,
+            'selectedIds' => $selectedIds,
         ];
 
-        //使用日関連の変数を作る
+        // 使用日関連の変数を作る
         $day1after = Common::dayafter(today(),1);
         $day4after = Common::dayafter(today(),4);
         $day5after = Common::dayafter(today(),5);
         $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi4before = Common::daybefore(Carbon::parse($request->seminar_day),4);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
-        // dd($request,$day1after,$daysemi3after);
+
         $validator = Validator::make($request->all(),
         [
             'seminar_day' => ['date','required_with_all:from,to', "after_or_equal:{$day5after}"],
@@ -65,57 +84,54 @@ class pctoolController extends Controller
                 $from->modify('1 day');
             }
             $dm = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
-            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::user())->pluck('machine_id')->toarray()));
+            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::id())->pluck('machine_id')->toarray()));
             $data['usage'] = array_merge($dm, $tm);
         }else{
             $data['usage'] = [];
         }
         
-        // dd($dm,$tm,$data['usage']);
+        // デバッグログ：request/session/selectedIds/records/usage の状態
+        try {
+            Log::debug('pctool.view debug', [
+                'request' => $request->all(),
+                'session_Usage_before_pull' => $usageFromSession,
+                'selectedIds' => $selectedIds,
+                'records_count' => is_object($data['records']) ? $data['records']->count() : null,
+                'usage' => $data['usage'] ?? null,
+            ]);
+        } catch (\Exception $e) {
+            // ログ失敗は無視
+        }
+
         return view('pctool', $data);
     }
     public function retry(Request $request){
-        $data = [
-            // 'records' => MachineDetail::all(),
-            'records' => MachineDetail::where('machine_is_expired','!=',1)->get(),
-            'user' => Auth::user(),
-            'input' => $request,
-            
-        ];
-        if($request->session()->has('Session.SeminarDay')){
-            $merge['seminar_day'] = $request->session()->get('Session.SeminarDay');
-        }
-        if($request->session()->has('Session.CartData')){
-            $merge['id'] = $request->session()->get('Session.CartData');
-        }
-        if($request->session()->has('Session.UseFrom')){
-            $merge['from'] = $request->session()->get('Session.UseFrom');
-        }
-        if($request->session()->has('Session.UseTo')){
-            $merge['to'] = $request->session()->get('Session.UseTo');
-        }
-        
-        if(isset($merge)){
-            $request->merge($merge);
-        }
+        // merge any saved cart/session values so we capture intended selection
+        $merge = [];
+        if($request->session()->has('Session.SeminarDay')) $merge['seminar_day'] = $request->session()->get('Session.SeminarDay');
+        if($request->session()->has('Session.CartData'))   $merge['id'] = $request->session()->get('Session.CartData');
+        if($request->session()->has('Session.UseFrom'))    $merge['from'] = $request->session()->get('Session.UseFrom');
+        if($request->session()->has('Session.UseTo'))      $merge['to'] = $request->session()->get('Session.UseTo');
+        if (!empty($merge)) $request->merge($merge);
 
-        //使用状況の確認（From:予約開始日からTo:予約終了日の間にday_machineテーブルに存在するmachine_idをピックアップする）
-        if($request->from != "" && $request->to != ""){
-            $from = new Carbon($request->from);
-            $to = new Carbon($request->to);
-            while($from <= $to){
-                $u[] = $from->format('Y-m-d');
-                $from->modify('1 day');
-            }
-            $dm = array_keys(array_count_values(DayMachine::whereIn('day', $u)->pluck('machine_id')->toarray()));
-            $tm = array_keys(array_count_values(Temporary::whereIn('day', $u)->where('user_id', '<>', Auth::user()->id)->pluck('machine_id')->toarray()));
-            $data['usage'] = array_merge($dm, $tm);
-        }else{
-            $data['usage'] = [];
-        }
-        
-        // dd($dm,$tm,$data['usage']);
-        return view('pctool', $data,);
+        // selected ids from request (may come from session.CartData merged above)
+        $selectedIds = (array)$request->input('id', []);
+
+        // persist selection and dates to Session.Usage, then redirect to GET /pctool (PRG)
+        $usage = [
+            'seminar_day' => $request->input('seminar_day', null),
+            'from' => $request->input('from', null),
+            'to'   => $request->input('to', null),
+            'ids'  => $selectedIds,
+        ];
+
+        $request->session()->put('Session.Usage', $usage);
+
+        return redirect()->route('pctool', [
+            'seminar_day' => $usage['seminar_day'],
+            'from' => $usage['from'],
+            'to' => $usage['to'],
+        ]);
     }
     //
     public function detail(Request $request){

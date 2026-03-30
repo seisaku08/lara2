@@ -115,7 +115,7 @@ class AnomalyAlert extends Command
 
     //メールを担当者に送付
     Mail::to('seisaku08@dai-oh.co.jp')
-        // ->cc('support@daioh-pc.com')
+        ->cc('support@daioh-pc.com')
         ->send(new AnomalyAlertMail($data));
 
      $message = '[' . date('Y-m-d H:i:s') . ']UserCount:' . User::count();

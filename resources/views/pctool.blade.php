@@ -24,7 +24,7 @@
 
     </p>
   </div>
-  <form method="post" action="">
+  <form method="post" action="{{ route('pctool') }}">
     @csrf
 <div class="container darkgray box1000">
     <div class="row">
@@ -100,11 +100,15 @@
       </tr>
       @foreach($records as $record)
         <tr class="{{ in_array($record->machine_id, $usage)? 'trused' : '' }} ">
+          @php
+            $selected_arr = [];
+            if (isset($selectedIds) && is_array($selectedIds)) $selected_arr = array_map('strval', $selectedIds);
+            if (is_array(old('id'))) $selected_arr = array_unique(array_merge($selected_arr, array_map('strval', old('id'))));
+            if (is_array($input->id)) $selected_arr = array_unique(array_merge($selected_arr, array_map('strval', (array)$input->id)));
+          @endphp
           <td class="text-center"><input type="checkbox" name="id[]" value="{{$record->machine_id}}"
             class="{{ in_array($record->machine_id, $usage)? 'chused' : '' }}"
-            @if ($input->id <> null)
-              {{ in_array($record->machine_id, $input->id)? ' checked' : '' }}
-            @endif></td>
+            @if (in_array((string)$record->machine_id, $selected_arr)) checked @endif></td>
           <td>{{$record->machine_id}}</td>
           <td><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
           {{-- <td class="p-1">{{$record->machine_status}}</td> --}}
