@@ -19,7 +19,7 @@
             <li>トークン重複（連続クリック等による多重登録の可能性が高いもの）が{{ count($alertdata['duplicates']) }}件</li>
             @endif
             @if(isset($alertdata['incomplete_orders']) && count($alertdata['incomplete_orders']) > 0)
-                <li>セミナー開催日、予約開始日、予約終了日のいず期日のいずれかに空白のある予約が{{ count($alertdata['incomplete_orders']) }}件</li>
+                <li>セミナー開催日、予約開始日、予約終了日のいずれかに空白のある予約が{{ count($alertdata['incomplete_orders']) }}件</li>
             @endif
         </ul>
         です。</p>

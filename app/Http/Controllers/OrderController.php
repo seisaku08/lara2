@@ -343,12 +343,15 @@ class OrderController extends Controller
     public function destroy($id){
 
         $order = Order::where('order_id', $id)->first();
-        $machine = Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
-        ->where('machine_detail_order.order_id',$id)
-        ->pluck('machine_id')
-        ->toarray();
+        // $machine = Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
+        // ->where('machine_detail_order.order_id',$id)
+        // ->pluck('machine_id')
+        // ->toarray();
+        // DayMachine::wherein('machine_id', $machine)->wherebetween('day', [$order->order_use_from,$order->order_use_to])->delete();
+        // dd(DayMachine::where('order_id', $id)->pluck('id'),MachineDetailOrder::where('order_id', $id)->pluck('id'));
 
-        DayMachine::wherein('machine_id', $machine)->wherebetween('day', [$order->order_use_from,$order->order_use_to])->delete();
+        DayMachine::where('order_id', $id)->delete();
+        MachineDetailOrder::where('order_id', $id)->delete();
         $order->delete();
 
         return redirect()->route('dashboard');
