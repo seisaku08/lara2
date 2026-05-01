@@ -76,7 +76,7 @@
             <tr class="">
               <td class="p-1 text-center"><input type="checkbox" name="id[]" value="{{$record->machine_id}}" class=""></td>
               <td class="p-1">{{$record->machine_id}}</td>
-              <td class="p-1"><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
+              <td class="p-1"><a href="{{ route('pctool.detail', $record->machine_id) }}" target="_blank">{{$record->machine_name}}</a></td>
               <td class="p-1">{{$record->machine_spec}}</td>
             </tr>
           @endforeach

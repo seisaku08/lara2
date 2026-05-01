@@ -82,7 +82,7 @@
             >
           </td>
           <td class="p-1">{{$record->machine_id}}</td>
-          <td class="p-1"><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
+          <td class="p-1"><a href="{{ route('pctool.detail', $record->machine_id) }}" target="_blank">{{$record->machine_name}}</a></td>
           {{-- <td class="p-1">{{$record->machine_status}}</td> --}}
           <td class="p-1"><label class="thin" for="{{$record->machine_id}}">{{$record->machine_spec}}</label></td>
           {{-- <td>{{$record->machine_os}}</td>

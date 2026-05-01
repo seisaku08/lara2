@@ -37,7 +37,7 @@
         <tr>
           <td><input type="checkbox" name="id[]" value="{{$record->machine_id}}"{{ $record->machine_id == $input->id? ' checked' : '' }}></td>
           <td>{{$record->machine_id}}</td>
-          <td><a href="pctool/detail/{{$record->machine_id}}" target="_self">{{$record->machine_name}}</a></td>
+          <td><a href="{{ route('pctool.detail', $record->machine_id) }}" target="_self">{{$record->machine_name}}</a></td>
           <td>{{$record->machine_status}}</td>
           <td>{{$record->machine_spec}}</td>
           <!-- <td>{{$record->machine_os}}</td>

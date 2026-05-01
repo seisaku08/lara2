@@ -110,7 +110,7 @@
             class="{{ in_array($record->machine_id, $usage)? 'chused' : '' }}"
             @if (in_array((string)$record->machine_id, $selected_arr)) checked @endif></td>
           <td>{{$record->machine_id}}</td>
-          <td><a href="pctool/detail/{{$record->machine_id}}" target="_blank">{{$record->machine_name}}</a></td>
+          <td><a href="{{ route('pctool.detail', $record->machine_id) }}" target="_blank">{{$record->machine_name}}</a></td>
           {{-- <td class="p-1">{{$record->machine_status}}</td> --}}
           <td>{{$record->machine_spec}}</td>
           <td>{{Carbon\Carbon::parse($record->machine_since)->format('Y-m')}}</td>

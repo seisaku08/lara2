@@ -162,7 +162,7 @@
                   {{ Form::hidden('id[]', $machine->machine_id )}}
               <div class="row">
                   <div class="col-2">{{$machine->machine_id}}</div>
-                  <div class="col-10"><a href="/pctool/detail/{{$machine->machine_id}}" target="_blank">{{$machine->machine_name}}</a></div>
+                  <div class="col-10"><a href="{{ route('pctool.detail', $machine->machine_id) }}" target="_blank">{{$machine->machine_name}}</a></div>
               </div>
               @endforeach
           </td>
