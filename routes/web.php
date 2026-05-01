@@ -45,7 +45,9 @@ Route::middleware('verified')->group(function () {
     Route::match(['get','post'],'/sendto', 'SendtoController@view')->name('sendto');
     Route::post('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
     Route::get('/pctool.retry', 'pctoolController@retry')->name('pctool.retry');
-    Route::get('/pctool/detail/{id}', 'pctoolController@detail');
+    Route::get('/pctool/detail/{id}', 'pctoolController@detail')->name('pctool.detail');
+    Route::get('/pctool/edit/{id}', 'pctoolController@edit')->name('pctool.edit');
+    Route::put('/pctool/update/{id}', 'pctoolController@update')->name('pctool.update');
     Route::post('/confirm', 'ConfirmController@post')->name('confirm');
     Route::post('/finish', 'FinishController@finish')->name('finish');
 
