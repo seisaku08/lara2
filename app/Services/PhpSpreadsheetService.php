@@ -4,6 +4,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use Yasumi\Yasumi;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Style\Fill as Fill;
@@ -21,7 +22,7 @@ ini_set('memory_limit', '512M');
 
 class PhpSpreadsheetService
 {
-    protected $spreadsheet;
+    protected Spreadsheet $spreadsheet;
 
     /**
      * Excelファイルを出力.
@@ -30,126 +31,179 @@ class PhpSpreadsheetService
      */
     public function export(): void
     {
-        $this->spreadsheet = new Spreadsheet();
-        $sheet = $this->spreadsheet;
-        $sheet -> getActiveSheet()->getSheetView() -> setZoomScale(85);
-
-        $today = Carbon::now()->format('Ymd-His');
-
-        // $machines = MachineDetail::all();
-        $machines = MachineDetail::where('machine_is_expired','!=',1)->get();
-        // ヘッダー部分出力
-        //1列目(A1)
-        $sheet->getActiveSheet()
-        ->setCellValue([1,1], '機種');
-        //A2以降横軸＝機材
-        foreach ($machines as $key => $machine) {
-            $sheet->getActiveSheet()
-            ->setCellValue([$key+2,1], $machine->machine_id);
-            $sheet->getActiveSheet()->getStyle([$key+2,1])->
-            getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00E6B8B7');
-            $sheet->getActiveSheet()->getStyle([$key+2,1])
-            ->getAlignment() -> setHorizontal(Align::HORIZONTAL_CENTER);
-            $sheet->getActiveSheet()
-            ->setCellValue([$key+2,2], $machine->machine_name);
-            $sheet->getActiveSheet()->getStyle([$key+2,2])->
-            getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00E6B8B7');
-            $sheet->getActiveSheet()->getStyle([$key+2,2])->getAlignment() -> setHorizontal(Align::HORIZONTAL_CENTER);
-        }
-
-
         
-        //縦軸＝1日を400日間（だいたい1カ月前から1年後まで）
-        for($i = 1; $i <= 400; $i++) {
-            $day = Carbon::today()->submonth()->addDay($i);
-            $holidays = Yasumi::create('Japan', $day->year);
+    //     // セルキャッシュ（phpTemp）
+    // \PhpOffice\PhpSpreadsheet\Settings::setCacheStorageMethod(
+    //     \PhpOffice\PhpSpreadsheet\CachedObjectStorageFactory::cache_to_phpTemp,
+    //     ['memoryCacheSize' => '32MB']
+    // );
 
-            $sheet->getActiveSheet()
-            ->setCellValue([1,$i+2], $day->isoFormat('YYYY年M月D日（ddd）'));
-            if($holidays->isHoliday($day) == true || $day->isweekday() != true){
-                $sheet->getActiveSheet()->getStyle([1,$i+2])->
-                getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ffcccc');
+    $this->spreadsheet = new Spreadsheet();
+    $sheet = $this->spreadsheet;
+    $activeSheet = $sheet->getActiveSheet();
+    $activeSheet->getSheetView()->setZoomScale(85);
 
-            }
+    $today = Carbon::now()->format('Ymd-His');
 
-            //使用中の機材を検索、セミナー名を取得
-            foreach ($machines as $key => $machine) {
-            $usage = DayMachine::join('machine_detail_order', 'day_machine_detail.machine_id', '=', 'machine_detail_order.machine_id')
-            ->join('orders', 'machine_detail_order.order_id', '=', 'orders.order_id')
-            ->join('users', 'orders.user_id', '=', 'users.id')
-            ->where('day', $day)->where('machine_detail_order.machine_id', $machine->machine_id)
-            ->where('orders.order_use_from', '<=', $day )
-            ->where('orders.order_use_to', '>=', $day )
-            ->first();
+    // 機材一覧（横軸）
+    $machines = MachineDetail::where('machine_is_expired', '!=', 1)
+        ->get(['machine_id', 'machine_name']);
 
-            // dd($usage);
+    // ヘッダ（機材ID / 機材名）
+    $activeSheet->setCellValue([1, 1], '機種');
+    $machineIndexMap = [];
+    foreach ($machines as $key => $machine) {
+        $col = $key + 2;
+        $machineIndexMap[$machine->machine_id] = $col;
+    }
 
-            //使用中のセミナーがある場合書き込む
-            if(!empty($usage->seminar_name)){
-                $uday = Carbon::parse($usage->seminar_day)->format('md');
-                if($usage->user_id == 2){
-                    $usage_data = "{$usage->seminar_name}（{$usage->temporary_name}（仮））";
-                }else{
-                    $usage_data = "{$usage->seminar_name}（{$usage->name}）";
-                }
-                $sheet->getActiveSheet()
-                ->setCellValue([$key+2,$i+2], $usage_data);
-                //仮登録の場合、セルを真っ赤に塗りつぶす
-                if($usage->user_id == 2){
-                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
-                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ff0000');
-                //住所登録がまだの場合、セルを黄色に塗りつぶす
-                }elseif($usage->seminar_venue_pending == true){
-                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
-                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00ffff00');
-                //完了した予約の場合、セルをグレーに塗りつぶす
-                }elseif($usage->order_status == '返却完了'){
-                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
-                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('00dddddd');
-                //不備のない予約の場合、セルを緑に塗りつぶす
-                }else{
-                    $sheet->getActiveSheet()->getStyle([$key+2,$i+2])->
-                    getFill() -> setFillType(Fill::FILL_SOLID) -> getStartColor() -> setARGB('0060ff70');
-            }
-
-            }
-            }
-            //デバッグ用
-            // $sheet->getActiveSheet()
-            // ->setCellValue([$key+2,$i+1], floor(memory_get_usage() / 1024).'KB');
+    // ヘッダの値は fromArray でまとめて書き込み、スタイル適用回数を削減
+    if ($machines->isNotEmpty()) {
+        $machineIds = [];
+        $machineNames = [];
+        foreach ($machines as $machine) {
+            $machineIds[] = $machine->machine_id;
+            $machineNames[] = $machine->machine_name;
         }
+        $activeSheet->fromArray([$machineIds], null, 'B1');
+        $activeSheet->fromArray([$machineNames], null, 'B2');
+
+        $lastMachineCol = Coordinate::stringFromColumnIndex($machines->count() + 1);
+        $activeSheet->getStyle("B1:{$lastMachineCol}1")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('00E6B8B7');
+        $activeSheet->getStyle("B2:{$lastMachineCol}2")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('00E6B8B7');
+        $activeSheet->getStyle("B1:{$lastMachineCol}2")->getAlignment()->setHorizontal(Align::HORIZONTAL_CENTER);
+    }
+
+    // 日付範囲：400日
+    $start = Carbon::today()->subMonth()->addDays(1);
+    $end = (clone $start)->addDays(399);
+
+    // 1回クエリで使用情報を取得（orders / users を結合）
+    $usages = DayMachine::select(
+        'day_machine_detail.day',
+        'day_machine_detail.machine_id',
+        'day_machine_detail.order_status',
+        'orders.seminar_name',
+        'orders.seminar_day',
+        'orders.user_id',
+        'orders.temporary_name',
+        'orders.seminar_venue_pending',
+        'users.name as user_name'
+    )
+    ->leftJoin('orders', 'day_machine_detail.order_id', '=', 'orders.order_id')
+    ->leftJoin('users', 'orders.user_id', '=', 'users.id')
+    ->whereBetween('day_machine_detail.day', [$start->toDateString(), $end->toDateString()])
+    ->get();
+
+    // A列の日付だけをまとめて書き込む（空セルは生成しない）
+    $dateLabels = [];
+    for ($i = 0; $i < 400; $i++) {
+        $day = (clone $start)->addDays($i);
+        $dateLabels[] = [$day->isoFormat('YYYY年M月D日（ddd）')];
+    }
+    $activeSheet->fromArray($dateLabels, null, 'A3');
+
+    // 付随スタイル：A列の休日塗り（400 件）
+    $holidayProviders = [];
+    $holidayDateCells = [];
+    for ($i = 0; $i < 400; $i++) {
+        $day = (clone $start)->addDays($i);
+        $rowIndex = $i + 3;
+        $year = $day->year;
+        if (!isset($holidayProviders[$year])) {
+            $holidayProviders[$year] = Yasumi::create('Japan', $year);
+        }
+        if ($holidayProviders[$year]->isHoliday($day) || !$day->isWeekday()) {
+            $holidayDateCells[] = "A{$rowIndex}";
+        }
+    }
+    if (!empty($holidayDateCells)) {
+        foreach ($holidayDateCells as $cellAddress) {
+            $activeSheet->getStyle($cellAddress)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('00ffcccc');
+        }
+    }
+
+    // 付随スタイル：使用セルの色付けは usage レコードのみ走査（最小限）
+    $usageCellsByColor = [
+        '00ff0000' => [],
+        '00ffff00' => [],
+        '00dddddd' => [],
+        '0060ff70' => [],
+    ];
+    foreach ($usages as $u) {
+        if (empty($u->seminar_name)) {
+            continue;
+        }
+        $colIndex = $machineIndexMap[$u->machine_id] ?? null;
+        if (!$colIndex) {
+            continue;
+        }
+
+        $rowIndex = Carbon::parse($u->day)->diffInDays($start) + 3;
+        if ($rowIndex < 3 || $rowIndex > 402) {
+            continue;
+        }
+
+        $colLetter = Coordinate::stringFromColumnIndex($colIndex);
+        $addr = "{$colLetter}{$rowIndex}";
+
+        if ($u->user_id == 2) {
+            $cellText = "{$u->seminar_name}（{$u->temporary_name}（仮））";
+            $usageCellsByColor['00ff0000'][] = $addr;
+        } else {
+            $cellText = "{$u->seminar_name}（{$u->user_name}）";
+            if ($u->seminar_venue_pending == true) {
+                $usageCellsByColor['00ffff00'][] = $addr;
+            } elseif ($u->order_status == '返却完了') {
+                $usageCellsByColor['00dddddd'][] = $addr;
+            } else {
+                $usageCellsByColor['0060ff70'][] = $addr;
+            }
+        }
+
+        $activeSheet->setCellValue($addr, $cellText);
+    }
+
+    foreach ($usageCellsByColor as $color => $addresses) {
+        if (empty($addresses)) {
+            continue;
+        }
+        foreach ($addresses as $cellAddress) {
+            $activeSheet->getStyle($cellAddress)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($color);
+        }
+    }
 
 
         // 1行目(ヘッダー)を固定
-        $sheet->getActiveSheet()->freezePane('B3');
+        $activeSheet->freezePane('B3');
 
         // 列幅を調整
-        $sheet->getActiveSheet()->getRowDimension(1)->setRowHeight(20);
-        $sheet->getActiveSheet()->getRowDimension(2)->setRowHeight(20);
-        $sheet->getActiveSheet()->getColumnDimension('A')->setWidth(20);
+        $activeSheet->getRowDimension(1)->setRowHeight(20);
+        $activeSheet->getRowDimension(2)->setRowHeight(20);
+        $activeSheet->getColumnDimension('A')->setWidth(20);
 
         // 最終行まで一括で
-        $limitCol = $sheet->getActiveSheet() -> getHighestColumn();
+        $limitCol = $activeSheet->getHighestColumn();
         $limitCol++;
         $currentCol = "B";
         while( $currentCol != $limitCol ){
-            $sheet->getActiveSheet()->getColumnDimension($currentCol)->setWidth(16);
+            $activeSheet->getColumnDimension($currentCol)->setWidth(16);
             $currentCol++;
         }
 
         
-        $limitRow = $sheet->getActiveSheet() -> getHighestRow();
+        $limitRow = $activeSheet->getHighestRow();
         $limitRow++;
 
         $currentRow = 2;
         while( $currentRow != $limitRow ){
-            $sheet->getActiveSheet()->getRowDimension($currentRow)->setRowHeight(14);
+            $activeSheet->getRowDimension($currentRow)->setRowHeight(14);
             $currentRow++;
         }
 
 
-        $max_row = $sheet->getActiveSheet()->getHighestRow(); //最終行（最下段）の取得
-        $max_col = $sheet->getActiveSheet()->getHighestColumn(); //最終列（右端）の取得
+        $max_row = $activeSheet->getHighestRow(); //最終行（最下段）の取得
+        $max_col = $activeSheet->getHighestColumn(); //最終列（右端）の取得
         $maxCellAddress = $max_col.$max_row; //最終セルのアドレスを格納する変数
 
         $styleArray = [
@@ -162,8 +216,8 @@ class PhpSpreadsheetService
 
         ];
 
-        $sheet->getActiveSheet()->getStyle("A1:{$maxCellAddress}")->applyFromArray($styleArray);
-        $sheet->getActiveSheet()->getStyle("B32");
+        $activeSheet->getStyle("A1:{$maxCellAddress}")->applyFromArray($styleArray);
+        $activeSheet->getStyle("B32");
 
         // Excelファイルをダウンロード
         $file_name = "機材管理表_{$today}.xlsx";
@@ -277,6 +331,7 @@ class PhpSpreadsheetService
         $nouhin->setCellValue('B9', "案件名：{$ship_data->seminar_name}");
         $nouhin->setCellValue('E3', Carbon::parse($ship_data->shipping_arrive_day)->format("Y年n月j日"));
 
+        $nouhin_data = [];
         foreach($machines as $key => $machine){
         $nouhin_data[$key] = [
             $key+1,//通し番号
@@ -299,14 +354,15 @@ class PhpSpreadsheetService
         $shiji->setCellValue('E8', "{$ship_day}－{$ship_data->shipping_arrive_time}");
         $shiji->setCellValue('A10', $ship_data->shipping_note);
 
+        $shiji_data = [];
         foreach($machines as $key => $machine){
-            $nouhin_data[$key] = [
+            $shiji_data[$key] = [
                 $key+1,//通し番号
                 $machine->machine_id." - ".$machine->machine_name,
     
             ];
             }
-            $shiji->fromArray($nouhin_data,NULL, "A13");
+            $shiji->fromArray($shiji_data,NULL, "A13");
     
         // Excelファイルをダウンロード
         $file_name = "予約No_{$ship_data->order_no}.xlsx";
