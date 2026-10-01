@@ -41,7 +41,7 @@ class CartController extends Controller
             'to' => $request->session()->get('Session.UseTo'),
             
         ];
-        return view('cart', $data);
+        return view('cart.index', $data);
     }
 
     public function addCart(Request $request,)
@@ -55,15 +55,23 @@ class CartController extends Controller
         $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi4before = Common::daybefore(Carbon::parse($request->seminar_day),4);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
+        $isAdminCreate = $request->routeIs('admin.orders.create.cart');
 
-        $validator = Validator::make($request->all(),
-        [
+        $rules = $isAdminCreate
+        ? [
+            'seminar_day' => ['required', 'date', 'after_or_equal:'.Common::dayafter(today(), 5)->toDateString()],
+            'from' => ['required', 'date'],
+            'to' => ['required', 'date', 'after_or_equal:from'],
+            'id' => 'required',
+        ]
+        : [
             'seminar_day' => ['required_with_all:from,to', "after_or_equal:{$day5after}"],
             'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}", "before_or_equal:{$daysemi4before}"],
             'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
             'id' => 'required',
-        ],
-        [
+        ];
+
+        $messages = [
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
             'from.required_with_all' => '予約開始日は入力必須です。',
             'to.required_with_all' => '予約終了日は入力必須（セミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能）です。',
@@ -72,7 +80,13 @@ class CartController extends Controller
             'from.before_or_equal' => '予約開始日はセミナー開催日の4営業日前（'.$daysemi4before->format('Y/m/d').'）まで入力可能です。',
             'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
             'id' => '機材は必ず一つ以上選択してください。',
-        ]);
+        ];
+        if ($isAdminCreate) {
+            $messages['seminar_day.after_or_equal'] = 'セミナー開催日は本日の5営業日後以降の日付にしてください。';
+            $messages['to.after_or_equal'] = '予約終了日は予約開始日以降の日付にしてください。';
+        }
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if($validator->fails()){
             //セッションに機材ID、日程を登録
@@ -81,6 +95,10 @@ class CartController extends Controller
             $request->session()->put('Session.UseFrom', $request->from);
             $request->session()->put('Session.UseTo', $request->to);
 
+            if ($isAdminCreate) {
+                return back()->withErrors($validator)->withInput();
+            }
+
             return redirect()->route('pctool.retry')->withErrors($validator);
         }
 
@@ -88,6 +106,7 @@ class CartController extends Controller
         //$uに検索日程を1日ずつ格納
         $from = new Carbon($request->from);
         $to = new Carbon($request->to);
+        $u = [];
         while($from <= $to){
             $u[] = $from->format('Y-m-d');
             $from->modify('1 day');
@@ -147,7 +166,7 @@ class CartController extends Controller
             $request->session()->put('Session.CartData', $removed);
         }else{
             session()->forget('Session.CartData');
-            return view('cart_empty');
+            return redirect()->route('cart.index');
         }
         
         // dd($request, $sessionCartData, $removed, $request->session()->get('Session.CartData'));

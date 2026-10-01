@@ -31,6 +31,11 @@ class AuthServiceProvider extends ServiceProvider
     Gate::define('daioh', function ($user) {
     return ($user->role >= 2 && $user->role <= 10);
     });
+
+    // Reservation operations are available to both system administrators and Daioh users.
+    Gate::define('reservation-operator', function ($user) {
+        return $user->role == 1 || ($user->role >= 2 && $user->role <= 10);
+    });
         
         //
     }

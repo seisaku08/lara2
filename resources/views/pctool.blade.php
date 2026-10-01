@@ -11,7 +11,8 @@
     <p>
       使用期間を入力すると、期間内に使用可能な機材が一覧表示されます。<br>
       準備・配送に要する期間を確保するため、予約（入力）できる期間には以下の制限がございます。<a class="" data-toggle="collapse" href="#scheduleinfo" role="button" aria-expanded="false" aria-controls="scheduleinfo"><b>詳細（クリックで開く）</b></a><br>
-     <div class="collapse" id="scheduleinfo">
+    </p>
+    <div class="collapse" id="scheduleinfo">
       <div class="card card-body">
         <p>
         「セミナー開催日（複数日開催の場合、その初日）」は<b>本日より5営業日以降（{{ App\Libs\Common::dayafter(today(),5)->isoFormat('YYYY年M月D日（ddd）'); }}）</b><br>
@@ -19,9 +20,9 @@
         「予約終了日」は<b>セミナー開催日（複数日開催、または連続使用の場合はその最終日）の3営業日以降（上記の場合、{{ App\Libs\Common::dayafter(today(),8)->isoFormat('YYYY年M月D日（ddd）'); }}）</b>
       </p>
       </div> 
-    </div>　
+    </div>
+    <p>
     <b> ＜参考＞</b>荷物の配送所要日数は<a href="http://date.kuronekoyamato.co.jp/date/Main?LINK=TK" target="_blank"><b>こちら</b></a>から検索できます（ヤマト運輸のサイトが開きます）
-
     </p>
   </div>
   <form method="post" action="{{ route('pctool') }}">
@@ -74,7 +75,7 @@
     {{implode(',', $inUse)}}
   @endif
 <div id='list'>
-  {{ Form::open(['route' => 'addCart', 'id' => 'pctool']) }}
+  {{ Form::open(['route' => 'addCart', 'id' => 'add-cart-form']) }}
     {{ Form::hidden('user_id', $user->id) }}
     {{ Form::hidden('seminar_day', $input->seminar_day)}}
     {{ Form::hidden('from', $input->from)}}
@@ -127,10 +128,9 @@
         </tr>
       @endforeach
     </table>
-</div>
-  <p class="text-center p-2 m-0"><button type="submit" form="pctool" class="m-1">カートに入れる</button></p>
   {{ Form::Close() }}
 </div>
+<p class="text-center p-2 m-0"><button type="submit" form="add-cart-form" class="m-1">カートに入れる</button></p>
 @endsection
 
 {{-- @section('footer')

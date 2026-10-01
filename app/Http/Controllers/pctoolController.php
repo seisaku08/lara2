@@ -13,6 +13,7 @@ use App\Models\Maintenance;
 use App\Models\Supply;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Yasumi\Yasumi;
 use Carbon\Carbon;
 use Illuminate\Auth\Events\Validated;
@@ -45,6 +46,7 @@ class pctoolController extends Controller
             'user' => Auth::user(),
             'input' => $request,
             'selectedIds' => $selectedIds,
+            'searchRoute' => $request->routeIs('admin.orders.create') ? 'admin.orders.create' : 'pctool',
         ];
 
         // 使用日関連の変数を作る
@@ -54,22 +56,32 @@ class pctoolController extends Controller
         $daysemi3before = Common::daybefore(Carbon::parse($request->seminar_day),3);
         $daysemi4before = Common::daybefore(Carbon::parse($request->seminar_day),4);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
+        $isAdminCreate = $request->routeIs('admin.orders.create');
 
-        $validator = Validator::make($request->all(),
-        [
+        $rules = [
             'seminar_day' => ['date','required_with_all:from,to', "after_or_equal:{$day5after}"],
-            'from' => ['required_with_all:seminar_day,to', "after_or_equal:{$day1after}", "before_or_equal:{$daysemi4before}"],
-            'to' => ['required_with_all:seminar_day,from', "after_or_equal:{$daysemi3after}"],
-        ],
-        [
+            'from' => ['nullable', 'date', 'required_with_all:seminar_day,to'],
+            'to' => ['nullable', 'date', 'required_with_all:seminar_day,from'],
+        ];
+        if (!$isAdminCreate) {
+            $rules['from'][] = "after_or_equal:{$day1after}";
+            $rules['from'][] = "before_or_equal:{$daysemi4before}";
+            $rules['to'][] = "after_or_equal:{$daysemi3after}";
+        }
+
+        $messages = [
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
             'from.required_with_all' => '予約開始日は入力必須です。',
             'to.required_with_all' => '予約終了日は入力必須（セミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能）です。',
             'seminar_day.after_or_equal' => 'セミナー開催日は本日の5営業日後（'.$day5after->format('Y/m/d').'）から入力可能です。',
-            'from.after_or_equal' => '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。',
-            'from.before_or_equal' => '予約開始日はセミナー開催日の4営業日前（'.$daysemi4before->format('Y/m/d').'）まで入力可能です。',
-            'to.after_or_equal' => '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。',
-        ]);
+        ];
+        if (!$isAdminCreate) {
+            $messages['from.after_or_equal'] = '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。';
+            $messages['from.before_or_equal'] = '予約開始日はセミナー開催日の4営業日前（'.$daysemi4before->format('Y/m/d').'）まで入力可能です。';
+            $messages['to.after_or_equal'] = '予約終了日はセミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能です。';
+        }
+
+        $validator = Validator::make($request->all(), $rules, $messages);
 
         if($validator->fails()){
             return back()->withErrors($validator)->withInput($request->except('to'));
@@ -79,6 +91,7 @@ class pctoolController extends Controller
         if($request->from != "" && $request->to != ""){
             $from = new Carbon($request->from);
             $to = new Carbon($request->to);
+            $u = [];
             while($from <= $to){
                 $u[] = $from->format('Y-m-d');
                 $from->modify('1 day');
@@ -103,7 +116,8 @@ class pctoolController extends Controller
             // ログ失敗は無視
         }
 
-        return view('pctool', $data);
+        $view = $request->routeIs('admin.orders.create') ? 'order.admin-pctool' : 'pctool';
+        return view($view, $data);
     }
     public function retry(Request $request){
         // merge any saved cart/session values so we capture intended selection
@@ -152,5 +166,104 @@ class pctoolController extends Controller
             return view('pctool/error', $data);
         }
         return view('pctool/detail', $data);
+    }
+
+    public function edit(Request $request){
+        $id = $request->id;
+        $machine = MachineDetail::find($id);
+        if($machine == null){
+            return view('pctool/error', ['id' => $id]);
+        }
+        $data = [
+            'id' => $id,
+            'machine_details' => $machine,
+            'supplies' => Supply::where('machine_id', $id)->get(),
+        ];
+        return view('pctool/edit', $data);
+    }
+
+    public function update(Request $request, int $id){
+        $request->validate([
+            'machine_name' => 'required|string|max:255',
+            'machine_spec' => 'nullable|string|max:255',
+            'machine_status' => 'nullable|string|max:255',
+            'machine_since' => 'nullable|date',
+            'machine_os' => 'nullable|string|max:255',
+            'machine_cpu' => 'nullable|string|max:255',
+            'machine_memory' => 'nullable|string|max:255',
+            'machine_monitor' => 'nullable|string|max:255',
+            'machine_powerpoint' => 'nullable|string|max:255',
+            'machine_connector' => 'nullable|string|max:255',
+            'machine_canto11' => 'nullable|string|max:255',
+            'machine_memo' => 'nullable|string',
+        ]);
+
+        $machine = MachineDetail::find($id);
+        if(!$machine){
+            return redirect()->back()->withErrors(['error'=>'対象の機材が見つかりません。']);
+        }
+
+        $machine->machine_name = $request->input('machine_name');
+        $machine->machine_spec = $request->input('machine_spec');
+        $machine->machine_status = $request->input('machine_status');
+        $machine->machine_since = $request->input('machine_since');
+        $machine->machine_os = $request->input('machine_os');
+        $machine->machine_cpu = $request->input('machine_cpu');
+        $machine->machine_memory = $request->input('machine_memory');
+        $machine->machine_monitor = $request->input('machine_monitor');
+        $machine->machine_powerpoint = $request->input('machine_powerpoint');
+        $machine->machine_camera = $request->has('machine_camera') ? 1 : 0;
+        $machine->machine_hasdrive = $request->has('machine_hasdrive') ? 1 : 0;
+        $machine->machine_connector = $request->input('machine_connector');
+        $machine->machine_canto11 = $request->input('machine_canto11');
+        $machine->machine_memo = $request->input('machine_memo');
+
+        try {
+            DB::transaction(function() use ($machine, $request, $id) {
+                $machine->save();
+
+                // handle deletions
+                $deleted = $request->input('supplies_deleted', []);
+                if(!empty($deleted)){
+                    Supply::whereIn('supply_id', $deleted)->delete();
+                }
+
+                $suppliesInput = $request->input('supplies', []);
+                foreach($suppliesInput as $supplyData){
+                    $supplyId = $supplyData['supply_id'] ?? null;
+                    $name = isset($supplyData['supply_name']) ? trim($supplyData['supply_name']) : '';
+                    $memo = isset($supplyData['supply_memo']) ? trim($supplyData['supply_memo']) : '';
+
+                    if($supplyId){
+                        $s = Supply::find($supplyId);
+                        if($s){
+                            // Skip updating to blank to avoid accidental deletion
+                            if($name === '' && $memo === '') continue;
+                            $s->supply_name = $name;
+                            $s->supply_memo = $memo;
+                            $s->save();
+                        }
+                    } else {
+                        // new supply: only create when at least one field provided
+                        if($name !== '' || $memo !== ''){
+                            $s = new Supply();
+                            $s->machine_id = $id;
+                            $s->supply_name = $name;
+                            $s->supply_memo = $memo;
+                            $s->save();
+                        }
+                    }
+                }
+            });
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('pctool.update DB error', ['id' => $id, 'error' => $e->getMessage(), 'errorInfo' => $e->errorInfo ?? null]);
+            $msg = 'データベースが読み取り専用モードのため、更新できませんでした。DB設定（read_only/super_read_only）や接続先を確認してください。';
+            return redirect()->back()->withInput()->withErrors(['db' => $msg]);
+        } catch (\Exception $e) {
+            Log::error('pctool.update unexpected error', ['id' => $id, 'error' => $e->getMessage()]);
+            return redirect()->back()->withInput()->withErrors(['error' => '更新中にエラーが発生しました。管理者に連絡してください。']);
+        }
+
+        return redirect()->route('pctool.detail', ['id' => $id])->with('status', '更新しました。');
     }
 }

@@ -7,7 +7,6 @@
 @section('content')
 <h1 class="p-2">@yield('title')</h1>
 
-        @csrf
 {{-- <?php dump($input,);?> --}}
         <table id="kizai" class="container table table-sm table-striped col-8">
             {{-- <thead class="text-center">
@@ -48,7 +47,4 @@
                 <button type="submit" name="submit" value="submit">イベント情報登録へ</button>
             </p>
         {{ Form::close() }}
-
-        </form>
-    </div>
 @endsection

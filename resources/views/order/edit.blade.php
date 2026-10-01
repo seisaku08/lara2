@@ -139,7 +139,3 @@
 
 
 @endsection
-
-@section('footer')
-(c)2023
-@endsection

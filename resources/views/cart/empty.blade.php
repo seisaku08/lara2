@@ -7,7 +7,6 @@
 @section('content')
 <h1 class="p-2">@yield('title')</h1>
 
-        @csrf
 {{-- <?php dump($input,);?> --}}
         <table id="kizai" class="container table table-sm table-striped col-8">
             {{-- <thead class="text-center">
@@ -24,8 +23,7 @@
                 <th>削除</th>
             </tr>
             <tr>
-                <th colspan="4" class="text-center">カートは空です。</td>
-                </td>
+                <td colspan="4" class="text-center">カートは空です。</td>
             </tr>
         </table>
 
@@ -34,7 +32,4 @@
                 <button type="submit" name="back" value="back">前の画面（機材検索）に戻る</button>
             </p>
         {{ Form::close() }}
-
-        </form>
-    </div>
 @endsection

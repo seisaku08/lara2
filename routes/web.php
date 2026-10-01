@@ -36,6 +36,39 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile', [ProfileController::class, 'pageback'])->name('profile.pageback');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/admin/orders', 'OrderController@adminMachineList')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders');
+    Route::match(['get', 'post'], '/admin/orders/create', 'pctoolController@view')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.create');
+    Route::post('/admin/orders/create/cart', 'CartController@addCart')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.create.cart');
+    Route::get('/admin/orders/{id}/machines', 'OrderController@adminMachineEdit')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.machines.edit');
+    Route::get('/admin/orders/{id}/machines/manage', 'OrderController@adminMachineManage')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.machines.manage');
+    Route::post('/admin/orders/{id}/machines/manage', 'OrderController@updateAdminMachineManage')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.machines.manage.update');
+    Route::get('/admin/orders/{id}/edit', 'OrderController@adminEdit')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.edit');
+    Route::put('/admin/orders/{id}/edit', 'OrderController@updateAdminSeminar')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.update');
+    Route::get('/admin/orders/{id}/shipping/edit', 'OrderController@adminShippingEdit')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.shipping.edit');
+    Route::put('/admin/orders/{id}/shipping/edit', 'OrderController@updateAdminShipping')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.shipping.update');
+    Route::patch('/admin/orders/{id}/user', 'OrderController@updateAdminReservationUser')
+        ->middleware(['verified', 'can:reservation-operator'])
+        ->name('admin.orders.user.update');
 });
 
 // //ログイン要・メール認証要なページ

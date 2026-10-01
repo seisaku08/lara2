@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\User;
 use App\Models\Venue;
 use App\Models\Shipping;
 use App\Models\DayMachine;
@@ -16,6 +17,7 @@ use App\Mail\OrderMail;      //Mailableクラス
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Exception;
 
 class OrderController extends Controller
@@ -87,6 +89,7 @@ class OrderController extends Controller
         // if($request->from != "" && $request->to != ""){
             $from = new Carbon($order->order_use_from);
             $to = new Carbon($order->order_use_to);
+            $u = [];
             while($from <= $to){
                 $u[] = $from->format('Y-m-d');
                 $from->modify('1 day');
@@ -103,7 +106,7 @@ class OrderController extends Controller
         return view('order/addpc', $data);
     }
 
-    public function addprocess(Request $request, $id){
+    public function addprocess(Request $request, int $id){
         $order = Order::find($id);
         if($request->input('back') == '前の画面に戻る'){
             return redirect()->action('OrderController@detail', $id);
@@ -193,7 +196,7 @@ class OrderController extends Controller
         return view('order/delpc', $data);
     }
 
-    public function delprocess(Request $request, $id){
+    public function delprocess(Request $request, int $id){
         $order = Order::find($id);
         if($request->input('back') == '前の画面に戻る'){
             return redirect()->action('OrderController@detail', $id);
@@ -257,7 +260,7 @@ class OrderController extends Controller
 
 
 
-    public function update(Request $request, $id){
+    public function update(Request $request, int $id){
         $id= $request->id;
         if($request->input('back') == '前の画面に戻る'){
             return redirect()->action('OrderController@detail', $id);
@@ -340,7 +343,7 @@ class OrderController extends Controller
         return redirect()->route('order.detail', ['id' =>$id]);
     }
 
-    public function destroy($id){
+    public function destroy(int $id){
 
         $order = Order::where('order_id', $id)->first();
         // $machine = Order::join('machine_detail_order','orders.order_id','=','machine_detail_order.order_id')
@@ -355,6 +358,394 @@ class OrderController extends Controller
         $order->delete();
 
         return redirect()->route('dashboard');
+    }
+
+    public function adminMachineList(){
+        $orders = Order::join('shippings', 'orders.order_id', '=', 'shippings.order_id')
+            ->join('users', 'orders.user_id', '=', 'users.id')
+            ->whereIn('orders.order_status', ['受付済', '仮登録'])
+            ->select('orders.*', 'users.name')
+            ->orderBy('orders.seminar_day', 'asc')
+            ->orderBy('orders.order_no', 'asc')
+            ->get();
+
+        return view('order.admin-machines', compact('orders'));
+    }
+
+    public function adminMachineEdit(int $id){
+        $data = [
+            'id' => $id,
+            'user' => Auth::user(),
+            'users' => User::orderBy('id')->get(['id', 'name']),
+            'machines' => Order::join('machine_detail_order', 'orders.order_id', '=', 'machine_detail_order.order_id')
+            ->join('machine_details', 'machine_detail_order.machine_id', '=', 'machine_details.machine_id')
+            ->where('orders.order_id', $id)
+            ->orderBy('machine_detail_order.machine_id', 'asc')
+            ->get(),
+            'orders' => Order::join('shippings', 'orders.order_id', '=', 'shippings.order_id')
+                ->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')
+                ->join('users', 'orders.user_id', '=', 'users.id')
+                ->where('orders.order_id', $id)
+                ->first(),
+        ];
+
+        if ($data['orders'] == null) {
+            return view('order/error', $data);
+        }
+
+        return view('order.admin-machine-edit', $data);
+    }
+
+    public function adminMachineManage(int $id){
+        $order = Order::where('order_id', $id)->firstOrFail();
+        $machineIds = MachineDetailOrder::where('order_id', $id)->pluck('machine_id');
+        $days = [];
+        $day = Carbon::parse($order->order_use_from);
+        $end = Carbon::parse($order->order_use_to);
+        while ($day->lte($end)) {
+            $days[] = $day->toDateString();
+            $day->addDay();
+        }
+
+        $occupiedMachineIds = DayMachine::whereIn('day', $days)
+            ->pluck('machine_id')
+            ->merge(Temporary::whereIn('day', $days)
+                ->where('user_id', '<>', Auth::id())
+                ->pluck('machine_id'))
+            ->unique()
+            ->all();
+
+        $availableMachines = MachineDetail::where('machine_is_expired', '!=', 1)
+            ->whereNotIn('machine_id', $machineIds)
+            ->whereNotIn('machine_id', $occupiedMachineIds)
+            ->orderBy('machine_id')
+            ->get();
+
+        $selectedMachines = MachineDetail::join('machine_detail_order', 'machine_details.machine_id', '=', 'machine_detail_order.machine_id')
+            ->where('machine_detail_order.order_id', $id)
+            ->orderBy('machine_details.machine_id')
+            ->get(['machine_details.machine_id', 'machine_details.machine_name', 'machine_details.machine_spec']);
+
+        return view('order.admin-machine-manage', compact('order', 'availableMachines', 'selectedMachines'));
+    }
+
+    public function updateAdminMachineManage(Request $request, int $id){
+        $operation = $request->validate([
+            'operation' => ['required', 'in:add,delete'],
+        ])['operation'];
+        $machineIdsField = $operation === 'add' ? 'add_machine_ids' : 'delete_machine_ids';
+        $validated = $request->validate([
+            $machineIdsField => ['required', 'array', 'min:1'],
+            $machineIdsField.'.*' => ['required', 'integer', 'distinct', 'exists:machine_details,machine_id'],
+        ]);
+        $selectedIds = $validated[$machineIdsField];
+
+        DB::transaction(function () use ($id, $operation, $selectedIds) {
+            $order = Order::where('order_id', $id)->lockForUpdate()->firstOrFail();
+
+            if ($operation === 'delete') {
+                $linkedIds = MachineDetailOrder::where('order_id', $id)
+                    ->whereIn('machine_id', $selectedIds)
+                    ->pluck('machine_id');
+
+                if ($linkedIds->count() !== count($selectedIds)) {
+                    throw ValidationException::withMessages([
+                        'delete_machine_ids' => '削除対象に、この予約へ登録されていない機材が含まれています。',
+                    ]);
+                }
+
+                DayMachine::where('order_id', $id)->whereIn('machine_id', $selectedIds)->delete();
+                MachineDetailOrder::where('order_id', $id)->whereIn('machine_id', $selectedIds)->delete();
+                return;
+            }
+
+            $alreadyLinked = MachineDetailOrder::where('order_id', $id)
+                ->whereIn('machine_id', $selectedIds)
+                ->exists();
+
+            if ($alreadyLinked) {
+                throw ValidationException::withMessages([
+                    'add_machine_ids' => '選択した機材の一部は、すでにこの予約に登録されています。',
+                ]);
+            }
+
+            $days = [];
+            $day = Carbon::parse($order->order_use_from);
+            $end = Carbon::parse($order->order_use_to);
+            while ($day->lte($end)) {
+                $days[] = $day->toDateString();
+                $day->addDay();
+            }
+
+            $occupied = DayMachine::whereIn('machine_id', $selectedIds)
+                ->whereIn('day', $days)
+                ->where('order_id', '<>', $id)
+                ->lockForUpdate()
+                ->exists();
+            $temporarilyOccupied = Temporary::whereIn('machine_id', $selectedIds)
+                ->whereIn('day', $days)
+                ->where('user_id', '<>', Auth::id())
+                ->exists();
+
+            if ($occupied || $temporarilyOccupied) {
+                throw ValidationException::withMessages([
+                    'add_machine_ids' => '選択した機材の一部は予約期間中に使用されています。',
+                ]);
+            }
+
+            $now = Carbon::now()->toDateTimeString();
+            $links = [];
+            $occupancies = [];
+            foreach ($selectedIds as $machineId) {
+                $links[] = [
+                    'machine_id' => $machineId,
+                    'order_id' => $id,
+                    'order_status' => $order->order_status,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+
+                foreach ($days as $date) {
+                    $occupancies[] = [
+                        'day' => $date,
+                        'machine_id' => $machineId,
+                        'order_id' => $id,
+                        'order_status' => $order->order_status,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                }
+            }
+
+            DB::table('machine_detail_order')->insert($links);
+            foreach (array_chunk($occupancies, 1000) as $chunk) {
+                DB::table('day_machine_detail')->insert($chunk);
+            }
+        });
+
+        $message = $operation === 'add' ? '機材を追加しました。' : '機材を削除しました。';
+        return redirect()->route('admin.orders.machines.manage', $id)->with('status', $message);
+    }
+
+    public function adminEdit(Request $request, int $id){
+        $order = Order::where('order_id', $id)->firstOrFail();
+        $machineIds = MachineDetailOrder::where('order_id', $id)->pluck('machine_id');
+        $previousOccupiedDay = null;
+        $nextOccupiedDay = null;
+        $periodHasConflict = false;
+
+        if ($machineIds->isNotEmpty()) {
+            $occupiedByOtherOrder = DayMachine::whereIn('machine_id', $machineIds)
+                ->where('order_id', '<>', $id);
+
+            if ($order->order_use_from && $order->order_use_to) {
+                $periodHasConflict = (clone $occupiedByOtherOrder)
+                    ->whereBetween('day', [$order->order_use_from, $order->order_use_to])
+                    ->exists();
+
+                $previousOccupiedDay = (clone $occupiedByOtherOrder)
+                    ->where('day', '<', $order->order_use_from)
+                    ->max('day');
+                $nextOccupiedDay = (clone $occupiedByOtherOrder)
+                    ->where('day', '>', $order->order_use_to)
+                    ->min('day');
+            }
+        }
+
+        $data = [
+            'id' => $id,
+            'orders' => $order,
+            'machineCount' => $machineIds->count(),
+            'availablePeriodStart' => $previousOccupiedDay
+                ? Carbon::parse($previousOccupiedDay)->addDay()->toDateString()
+                : null,
+            'availablePeriodEnd' => $nextOccupiedDay
+                ? Carbon::parse($nextOccupiedDay)->subDay()->toDateString()
+                : null,
+            'periodHasConflict' => $periodHasConflict,
+        ];
+
+        return view('order.admin-edit', $data);
+    }
+
+    public function updateAdminSeminar(Request $request, int $id){
+        if ($request->input('back') == '前の画面に戻る') {
+            return redirect()->route('admin.orders.machines.edit', $id);
+        }
+
+        $shipping = Shipping::where('order_id', $id)->first();
+        $rules = [
+            'seminar_name' => ['required', 'string'],
+            'seminar_day' => ['required', 'date'],
+            'order_use_from' => ['required', 'date', 'before:seminar_day'],
+            'order_use_to' => ['required', 'date', 'after_or_equal:seminar_day'],
+        ];
+
+        if ($shipping && $shipping->shipping_arrive_day) {
+            $rules['order_use_from'][] = 'before:'.$shipping->shipping_arrive_day;
+        }
+
+        if ($shipping && $shipping->shipping_return_day) {
+            $rules['order_use_to'][] = 'after_or_equal:'.$shipping->shipping_return_day;
+        }
+
+        $validated = $request->validate($rules, [
+            'order_use_from.before' => '予約開始日はセミナー開催日より前の日付にしてください。',
+            'order_use_to.after_or_equal' => '予約終了日はセミナー開催日以降の日付にしてください。',
+        ], [
+            'seminar_name' => 'セミナー名',
+            'seminar_day' => 'セミナー開催日',
+            'order_use_from' => '予約開始日',
+            'order_use_to' => '予約終了日',
+        ]);
+
+        DB::transaction(function () use ($id, $validated) {
+            $order = Order::where('order_id', $id)->lockForUpdate()->firstOrFail();
+            $machineIds = MachineDetailOrder::where('order_id', $id)->pluck('machine_id');
+
+            if ($machineIds->isNotEmpty()) {
+                $hasConflict = DayMachine::whereIn('machine_id', $machineIds)
+                    ->where('order_id', '<>', $id)
+                    ->whereBetween('day', [$validated['order_use_from'], $validated['order_use_to']])
+                    ->exists();
+
+                if ($hasConflict) {
+                    throw ValidationException::withMessages([
+                        'order_use_from' => '選択機材は指定期間内に別の予約で使用されています。日程を変更してください。',
+                    ]);
+                }
+            }
+
+            $order->seminar_name = $validated['seminar_name'];
+            $order->seminar_day = $validated['seminar_day'];
+            $order->order_use_from = $validated['order_use_from'];
+            $order->order_use_to = $validated['order_use_to'];
+            $order->save();
+
+            DayMachine::where('order_id', $id)->delete();
+
+            $dayMachines = [];
+            $now = Carbon::now()->toDateTimeString();
+            foreach ($machineIds as $machineId) {
+                $day = Carbon::parse($validated['order_use_from']);
+                $end = Carbon::parse($validated['order_use_to']);
+
+                while ($day->lte($end)) {
+                    $dayMachines[] = [
+                        'day' => $day->toDateString(),
+                        'machine_id' => $machineId,
+                        'order_id' => $id,
+                        'order_status' => $order->order_status,
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
+                    $day->addDay();
+
+                    if (count($dayMachines) >= 1000) {
+                        DB::table('day_machine_detail')->insert($dayMachines);
+                        $dayMachines = [];
+                    }
+                }
+            }
+
+            if ($dayMachines) {
+                DB::table('day_machine_detail')->insert($dayMachines);
+            }
+        });
+
+        return redirect()->route('admin.orders.machines.edit', $id)
+            ->with('status', 'セミナー情報と予約期間を更新しました。');
+    }
+
+    public function adminShippingEdit(int $id){
+        $orders = Order::join('shippings', 'orders.order_id', '=', 'shippings.order_id')
+            ->join('venues', 'shippings.venue_id', '=', 'venues.venue_id')
+            ->where('orders.order_id', $id)
+            ->firstOrFail();
+
+        return view('order.admin-shipping-edit', compact('orders'));
+    }
+
+    public function updateAdminShipping(Request $request, int $id){
+        if ($request->input('back') == '前の画面に戻る') {
+            return redirect()->route('admin.orders.machines.edit', $id);
+        }
+
+        $order = Order::where('order_id', $id)->firstOrFail();
+        $validated = $request->validate([
+            'venue_zip' => ['required', 'string'],
+            'venue_addr1' => ['required', 'string', 'max:200'],
+            'venue_addr2' => ['nullable', 'string', 'max:200'],
+            'venue_addr3' => ['nullable', 'string', 'max:200'],
+            'venue_addr4' => ['nullable', 'string', 'max:200'],
+            'venue_name' => ['required', 'string'],
+            'venue_tel' => ['required', 'digits_between:5,11'],
+            'shipping_arrive_day' => [
+                'required', 'date',
+                'before:'.$order->seminar_day,
+                'after:'.$order->order_use_from,
+            ],
+            'shipping_arrive_time' => ['required', 'string'],
+            'shipping_return_day' => [
+                'required', 'date',
+                'after_or_equal:'.$order->seminar_day,
+                'before:'.$order->order_use_to,
+            ],
+            'shipping_special' => ['nullable', 'boolean'],
+            'shipping_note' => ['nullable', 'string', 'max:200'],
+        ], [
+            'venue_tel.digits_between' => '配送先電話番号は市外局番から入力してください。',
+            'shipping_arrive_day.before' => '到着希望日はセミナー開催日より前の日付を入力してください。',
+            'shipping_arrive_day.after' => '到着希望日は予約開始日より後の日付を入力してください。',
+            'shipping_return_day.after_or_equal' => '返送機材発送予定日はセミナー開催日以降（当日を含む）の日付を入力してください。',
+            'shipping_return_day.before' => '返送機材発送予定日は予約終了日より前の日付を入力してください。',
+        ], [
+            'venue_zip' => '郵便番号',
+            'venue_addr1' => '住所',
+            'venue_name' => '配送先担当者',
+            'venue_tel' => '配送先電話番号',
+            'shipping_arrive_day' => '到着希望日',
+            'shipping_arrive_time' => '到着希望時間',
+            'shipping_return_day' => '返送機材発送予定日',
+            'shipping_note' => '備考',
+        ]);
+
+        $shippingSpecial = $request->boolean('shipping_special');
+
+        DB::transaction(function () use ($id, $validated, $shippingSpecial) {
+            $shipping = Shipping::where('order_id', $id)->lockForUpdate()->firstOrFail();
+            $venue = Venue::where('venue_id', $shipping->venue_id)->lockForUpdate()->firstOrFail();
+
+            $venue->venue_zip = $validated['venue_zip'];
+            $venue->venue_addr1 = $validated['venue_addr1'];
+            $venue->venue_addr2 = $validated['venue_addr2'] ?? null;
+            $venue->venue_addr3 = $validated['venue_addr3'] ?? null;
+            $venue->venue_addr4 = $validated['venue_addr4'] ?? null;
+            $venue->venue_name = $validated['venue_name'];
+            $venue->venue_tel = $validated['venue_tel'];
+            $venue->save();
+
+            $shipping->shipping_arrive_day = $validated['shipping_arrive_day'];
+            $shipping->shipping_arrive_time = $validated['shipping_arrive_time'];
+            $shipping->shipping_return_day = $validated['shipping_return_day'];
+            $shipping->shipping_special = $shippingSpecial;
+            $shipping->shipping_note = $validated['shipping_note'] ?? null;
+            $shipping->save();
+        });
+
+        return redirect()->route('admin.orders.machines.edit', $id)
+            ->with('status', '配送先情報を更新しました。');
+    }
+
+    public function updateAdminReservationUser(Request $request, int $id){
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+        ]);
+
+        Order::where('order_id', $id)->update(['user_id' => $validated['user_id']]);
+
+        return redirect()->route('admin.orders.machines.edit', $id)
+            ->with('status', '予約者を変更しました。');
     }
 
     public function list(){
@@ -382,7 +773,7 @@ class OrderController extends Controller
         return view('order.index', $data);
     }
 
-    public function changetome($id){
+    public function changetome(int $id){
         $user = Auth::user();
         try{
 
@@ -436,7 +827,7 @@ class OrderController extends Controller
         
         return redirect()->route('order.list', $data);
     }
-    public function changetojohn($id){
+    public function changetojohn(int $id){
         $user = Auth::user();
         try{
 

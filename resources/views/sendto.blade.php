@@ -1,14 +1,13 @@
 @extends('adminlte::page')
 @section('title', 'セミナー情報・配送先登録')
 @section('css')
-{{-- <link href="{{asset('/css/style.css')}}" rel="stylesheet" type="text/css"> --}}
+<link href="{{ asset('/css/sendstyle.css') }}" rel="stylesheet" type="text/css">
 
 @endsection
 @section('content')
 <h1 class="p-2">@yield('title')</h1>
 
     <div class="container">
-        <link href="{{ asset('css/sendstyle.css') }}" rel="stylesheet" type="text/css">
         <script src="{{ asset('js/number.js') }}"></script>
         <script src="https://ajaxzip3.github.io/ajaxzip3.js"></script>
      
@@ -144,11 +143,12 @@
                 </td>
             </tr>
         </table>
-        <p class="p-2">
+        <p class="p-2 mb-0">
             <button type="submit" id="hidebutton" name="dummy" value="dummy" disabled>ダミー</button>
             <button type="submit" name="back" value="back">戻る</button>
             <button type="submit" name="submit" value="submit">入力内容の確認</button>
         </p>
 
     {{ Form::Close() }}
+    </div>
 @endsection

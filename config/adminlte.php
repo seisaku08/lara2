@@ -385,6 +385,12 @@ return [
             'icon' => 'fas fa-fw fa-user-cog',
             'can' => ['sys-ad']
         ],
+        [
+            'text' => '予約操作',
+            'route' => 'admin.orders',
+            'icon' => 'fas fa-fw fa-edit',
+            'can' => ['sys-ad', 'daioh']
+        ],
 
         // [
         //     'text'    => 'multilevel',
