@@ -25,7 +25,7 @@
             <tr>
                 <td class="w30"><label>セミナー開催日</label><span class="red small">＊必須</span></td>
                 <td class="w25">
-                    <input type="date" name="seminar_day" value="{{ old('seminar_day', $orders->seminar_day) }}">
+                    <input type="date" name="seminar_day" min="{{ today()->toDateString() }}" value="{{ old('seminar_day', $orders->seminar_day) }}">
                     @error('seminar_day')
                         <div class="text-danger">{{ $message }}</div>
                     @enderror

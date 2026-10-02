@@ -576,7 +576,7 @@ class OrderController extends Controller
         $shipping = Shipping::where('order_id', $id)->first();
         $rules = [
             'seminar_name' => ['required', 'string'],
-            'seminar_day' => ['required', 'date'],
+            'seminar_day' => ['required', 'date', 'after_or_equal:'.today()->toDateString()],
             'order_use_from' => ['required', 'date', 'before:seminar_day'],
             'order_use_to' => ['required', 'date', 'after_or_equal:seminar_day'],
         ];
@@ -590,6 +590,7 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate($rules, [
+            'seminar_day.after_or_equal' => 'セミナー開催日は本日以降の日付にしてください。',
             'order_use_from.before' => '予約開始日はセミナー開催日より前の日付にしてください。',
             'order_use_to.after_or_equal' => '予約終了日はセミナー開催日以降の日付にしてください。',
         ], [
