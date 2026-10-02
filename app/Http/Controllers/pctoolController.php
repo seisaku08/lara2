@@ -57,9 +57,10 @@ class pctoolController extends Controller
         $daysemi4before = Common::daybefore(Carbon::parse($request->seminar_day),4);
         $daysemi3after = Common::dayafter(Carbon::parse($request->seminar_day),3);
         $isAdminCreate = $request->routeIs('admin.orders.create');
+        $seminarDayMinimum = $isAdminCreate ? today()->toDateString() : $day5after->toDateString();
 
         $rules = [
-            'seminar_day' => ['date','required_with_all:from,to', "after_or_equal:{$day5after}"],
+            'seminar_day' => ['date','required_with_all:from,to', "after_or_equal:{$seminarDayMinimum}"],
             'from' => ['nullable', 'date', 'required_with_all:seminar_day,to'],
             'to' => ['nullable', 'date', 'required_with_all:seminar_day,from'],
         ];
@@ -73,7 +74,9 @@ class pctoolController extends Controller
             'seminar_day.required_with_all' => 'セミナー開催日は入力必須です。',
             'from.required_with_all' => '予約開始日は入力必須です。',
             'to.required_with_all' => '予約終了日は入力必須（セミナー開催日の3営業日後（'.$daysemi3after->format('Y/m/d').'）から入力可能）です。',
-            'seminar_day.after_or_equal' => 'セミナー開催日は本日の5営業日後（'.$day5after->format('Y/m/d').'）から入力可能です。',
+            'seminar_day.after_or_equal' => $isAdminCreate
+                ? 'セミナー開催日は本日以降の日付にしてください。'
+                : 'セミナー開催日は本日の5営業日後（'.$day5after->format('Y/m/d').'）から入力可能です。',
         ];
         if (!$isAdminCreate) {
             $messages['from.after_or_equal'] = '予約開始日は翌営業日以降（'.$day1after->format('Y/m/d').'）から入力可能です。';

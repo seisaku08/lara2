@@ -59,7 +59,7 @@ class CartController extends Controller
 
         $rules = $isAdminCreate
         ? [
-            'seminar_day' => ['required', 'date', 'after_or_equal:'.Common::dayafter(today(), 5)->toDateString()],
+            'seminar_day' => ['required', 'date', 'after_or_equal:'.today()->toDateString()],
             'from' => ['required', 'date'],
             'to' => ['required', 'date', 'after_or_equal:from'],
             'id' => 'required',
@@ -82,7 +82,7 @@ class CartController extends Controller
             'id' => '機材は必ず一つ以上選択してください。',
         ];
         if ($isAdminCreate) {
-            $messages['seminar_day.after_or_equal'] = 'セミナー開催日は本日の5営業日後以降の日付にしてください。';
+            $messages['seminar_day.after_or_equal'] = 'セミナー開催日は本日以降の日付にしてください。';
             $messages['to.after_or_equal'] = '予約終了日は予約開始日以降の日付にしてください。';
         }
 
