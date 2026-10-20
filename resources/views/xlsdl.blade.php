@@ -9,6 +9,30 @@
     <form action="{{ url('/download') }}" method="POST">
         @csrf
         <p>現在の予約状況が一覧できるエクセルファイルがダウンロードできます<b>（リアルタイム更新）</b>。<br>下記のボタンよりファイルをダウンロードしてください。</p>
+        @auth
+            @can('sys-ad')
+                <div class="d-flex flex-wrap align-items-start">
+                    <div class="form-group mr-3">
+                        <label for="start_date">表示開始日</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control"
+                            style="width: 200px"
+                            value="{{ old('start_date', $defaultStartDate) }}" required>
+                        @error('start_date')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="end_date">表示終了日</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control"
+                            style="width: 200px"
+                            value="{{ old('end_date', $defaultEndDate) }}" required>
+                        @error('end_date')
+                            <div class="text-danger">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            @endcan
+        @endauth
         <button>download</button>
     </form>
     <br>

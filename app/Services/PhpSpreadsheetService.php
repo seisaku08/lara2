@@ -29,7 +29,7 @@ class PhpSpreadsheetService
      *
      * @return void
      */
-    public function export(): void
+    public function export(?Carbon $start = null, ?Carbon $end = null): void
     {
         
     //     // セルキャッシュ（phpTemp）
@@ -74,9 +74,14 @@ class PhpSpreadsheetService
         $activeSheet->getStyle("B1:{$lastMachineCol}2")->getAlignment()->setHorizontal(Align::HORIZONTAL_CENTER);
     }
 
-    // 日付範囲：400日
-    $start = Carbon::today()->subMonth()->addDays(1);
-    $end = (clone $start)->addDays(399);
+    // 日付範囲：400日（開始日・終了日が指定されていない場合）
+    if ($start === null && $end === null) {
+        $start = Carbon::today()->subMonth()->addDays(1);
+        $end = (clone $start)->addDays(399);
+    } elseif ($start === null || $end === null) {
+        throw new \InvalidArgumentException('開始日と終了日は両方指定してください。');
+    }
+    $dayCount = (int) $start->diffInDays($end) + 1;
 
     // 1回クエリで使用情報を取得（orders / users を結合）
     $usages = DayMachine::select(
@@ -97,16 +102,16 @@ class PhpSpreadsheetService
 
     // A列の日付だけをまとめて書き込む（空セルは生成しない）
     $dateLabels = [];
-    for ($i = 0; $i < 400; $i++) {
+    for ($i = 0; $i < $dayCount; $i++) {
         $day = (clone $start)->addDays($i);
         $dateLabels[] = [$day->isoFormat('YYYY年M月D日（ddd）')];
     }
     $activeSheet->fromArray($dateLabels, null, 'A3');
 
-    // 付随スタイル：A列の休日塗り（400 件）
+    // 付随スタイル：A列の休日塗り
     $holidayProviders = [];
     $holidayDateCells = [];
-    for ($i = 0; $i < 400; $i++) {
+    for ($i = 0; $i < $dayCount; $i++) {
         $day = (clone $start)->addDays($i);
         $rowIndex = $i + 3;
         $year = $day->year;
@@ -140,7 +145,7 @@ class PhpSpreadsheetService
         }
 
         $rowIndex = Carbon::parse($u->day)->diffInDays($start) + 3;
-        if ($rowIndex < 3 || $rowIndex > 402) {
+        if ($rowIndex < 3 || $rowIndex > $dayCount + 2) {
             continue;
         }
 
@@ -377,4 +382,3 @@ class PhpSpreadsheetService
     
  
 }
-
